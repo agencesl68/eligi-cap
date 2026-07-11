@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eligi CAP — Cockpit conseiller</title>
+<meta name="description" content="Logiciel de diagnostic patrimonial Eligi — Construire · Anticiper · Pérenniser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0C1719;--bg-1:#101F22;--bg-2:#152A2E;--card:#16292D;--card-2:#1B3236;--raise:#22403F;
+    --teal:#5FA7A8;--teal-2:#7FC8C9;--teal-dim:#467D7F;--teal-glow:rgba(95,167,168,.55);
+    --moon:#EFF2F1;--moon-dim:#A9BEBE;--moon-faint:#7A9698;
+    --line:rgba(239,242,241,.08);--line-2:rgba(239,242,241,.15);
+    --crit:#E67F70;--orange:#E6A164;--warn:#E7C06A;--good:#79C9A6;
+    --serif:"Cormorant Garamond",Georgia,serif;
+    --sans:"Montserrat","Helvetica Neue",system-ui,-apple-system,sans-serif;
+    --shadow:0 24px 60px -24px rgba(0,0,0,.7);
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg-0);color:var(--moon);font-family:var(--sans);-webkit-font-smoothing:antialiased;letter-spacing:.004em}
+  .num{font-variant-numeric:tabular-nums}
+  .c-good,.lv-good{color:var(--good)}.c-warn,.lv-warn{color:var(--warn)}.c-orange,.lv-orange{color:var(--orange)}.c-crit,.lv-crit{color:var(--crit)}
+  .bg-good{background:var(--good)}.bg-warn{background:var(--warn)}.bg-orange{background:var(--orange)}.bg-crit{background:var(--crit)}
+  ::selection{background:rgba(95,167,168,.3)}
+  button{font-family:inherit}
+
+  /* ===================== LOGIN ===================== */
+  #login{position:fixed;inset:0;display:grid;place-items:center;padding:24px;overflow:hidden;
+    background:radial-gradient(1400px 800px at 78% -10%,rgba(95,167,168,.16),transparent 55%),radial-gradient(1000px 700px at -10% 110%,rgba(70,125,127,.16),transparent 55%),var(--bg-0);z-index:100}
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;animation:float 18s ease-in-out infinite}
+  .blob.b1{width:420px;height:420px;background:radial-gradient(circle,rgba(95,167,168,.4),transparent 70%);top:-80px;right:8%}
+  .blob.b2{width:360px;height:360px;background:radial-gradient(circle,rgba(70,125,127,.4),transparent 70%);bottom:-60px;left:6%;animation-delay:-7s}
+  @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-26px)}}
+  .loginbox{position:relative;width:100%;max-width:400px;text-align:center;animation:rise .9s cubic-bezier(.2,.7,.2,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  .loginbox .word{font-family:var(--serif);font-weight:500;font-size:78px;line-height:.85;letter-spacing:.01em}
+  .loginbox .word b{color:var(--teal);font-weight:600}
+  .loginbox .rule{width:52px;height:1px;background:var(--teal);margin:20px auto 0;opacity:.6}
+  .loginbox .tag{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--moon-faint);margin-top:18px}
+  .loginbox .base{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--moon-dim);margin-top:8px}
+  .loginform{margin-top:40px;display:flex;flex-direction:column;gap:13px;text-align:left}
+  .field label{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin-bottom:7px;display:block}
+  .field input{width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:var(--moon);font-family:var(--sans);font-size:14px;transition:.2s}
+  .field input:focus{outline:none;border-color:var(--teal);background:rgba(95,167,168,.06);box-shadow:0 0 0 3px rgba(95,167,168,.12)}
+  .btn{border:none;cursor:pointer;border-radius:12px;font-size:14px;font-weight:600;padding:15px;background:linear-gradient(180deg,var(--teal-2),var(--teal));color:#0B1719;transition:.18s;letter-spacing:.01em}
+  .btn:hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 12px 30px -10px var(--teal-glow)}
+  .btn:active{transform:none}
+  .loginhint{font-size:11.5px;color:var(--moon-faint);margin-top:22px;line-height:1.7}
+
+  /* ===================== SHELL ===================== */
+  #app{display:none;grid-template-columns:256px 1fr;min-height:100vh}
+  #app.on{display:grid}
+  @media(max-width:900px){#app{grid-template-columns:1fr}.rail{display:none}}
+  .rail{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:28px 20px;display:flex;flex-direction:column;gap:26px;
+    background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 40%),var(--bg-1)}
+  .brand .word{font-family:var(--serif);font-weight:600;font-size:40px;line-height:.85}
+  .brand .word b{color:var(--teal)}
+  .brand .tag{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--moon-faint);margin-top:8px}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav .lbl{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--moon-faint);margin:0 0 9px 10px}
+  .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--moon-dim);font-size:13.5px;cursor:pointer;border:1px solid transparent;transition:.16s}
+  .nav a .ic{width:16px;height:16px;opacity:.7;flex-shrink:0}
+  .nav a:hover{color:var(--moon);background:rgba(255,255,255,.035)}
+  .nav a.active{color:var(--moon);background:linear-gradient(90deg,rgba(95,167,168,.16),rgba(95,167,168,.04));border-color:rgba(95,167,168,.25)}
+  .nav a.active .ic{opacity:1}
+  .advisor{margin-top:auto;display:flex;flex-direction:column;gap:12px}
+  .advisor .card{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.02)}
+  .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal-2),var(--teal-dim));display:grid;place-items:center;font-family:var(--serif);font-size:18px;font-weight:600;color:#0B1719}
+  .advisor .nm{font-size:12.5px;font-weight:600}.advisor .ro{font-size:10.5px;color:var(--moon-faint)}
+  .loc{font-size:10px;color:var(--moon-faint);padding-left:2px}
+  .logout{font-size:11px;color:var(--moon-faint);cursor:pointer;text-align:left;background:none;border:none;padding:2px}
+  .logout:hover{color:var(--teal)}
+
+  .main{padding:34px 44px 70px;max-width:1220px}
+  @media(max-width:640px){.main{padding:22px 18px 50px}}
+  .view{display:none}.view.on{display:block}
+
+  .crumb{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin-bottom:8px}
+  .h1{font-family:var(--serif);font-weight:600;font-size:40px;line-height:1.02;margin:0;letter-spacing:.01em;text-wrap:balance}
+  .sub{color:var(--moon-dim);font-size:14px;margin-top:10px;max-width:64ch;line-height:1.6}
+
+  .banner{display:flex;align-items:center;gap:15px;margin:24px 0 26px;padding:15px 20px;border-radius:14px;background:linear-gradient(90deg,rgba(231,192,106,.15),rgba(231,192,106,.02));border:1px solid rgba(231,192,106,.28)}
+  .banner .pulse{width:9px;height:9px;border-radius:50%;background:var(--warn);animation:pulse 2.2s infinite;flex-shrink:0}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(231,192,106,.5)}70%{box-shadow:0 0 0 13px rgba(231,192,106,0)}100%{box-shadow:0 0 0 0 rgba(231,192,106,0)}}
+  .banner b{color:var(--moon);font-weight:600}.banner span{color:var(--moon-dim);font-size:13px}
+
+  .filters{display:flex;gap:9px;margin:18px 0;flex-wrap:wrap}
+  .chip{padding:8px 16px;border-radius:22px;border:1px solid var(--line-2);background:transparent;color:var(--moon-dim);font-size:12.5px;cursor:pointer;transition:.16s}
+  .chip:hover{color:var(--moon);border-color:var(--teal-dim)}
+  .chip.active{background:var(--teal);border-color:var(--teal);color:#0B1719;font-weight:600}
+
+  .tablewrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.014);box-shadow:var(--shadow)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{text-align:left;font-weight:600;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--moon-faint);padding:15px 20px;border-bottom:1px solid var(--line)}
+  tbody tr{transition:.14s;border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr.live{cursor:pointer}
+  tbody tr.live:hover{background:rgba(95,167,168,.08)}
+  tbody tr.live:hover .arrow{color:var(--teal);transform:translateX(3px)}
+  tbody tr.static{opacity:.48}
+  tbody td{padding:16px 20px;vertical-align:middle}
+  .cli{font-weight:600}.cli small{display:block;font-weight:400;color:var(--moon-faint);font-size:11px;margin-top:2px}
+  .demo-pill{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(95,167,168,.4);border-radius:5px;padding:2px 6px;margin-left:8px;vertical-align:middle}
+  .seg{font-size:11px;padding:4px 10px;border-radius:7px;border:1px solid var(--line-2);color:var(--moon-dim)}
+  .seg.dir{color:var(--teal);border-color:rgba(95,167,168,.35);background:rgba(95,167,168,.08)}
+  .score-chip{display:inline-flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums;font-weight:600}
+  .score-chip .bar{width:48px;height:5px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden}
+  .score-chip .bar i{display:block;height:100%;border-radius:3px}
+  .relance{font-size:12px;color:var(--moon-dim)}.relance.due{color:var(--warn);font-weight:600}
+  .arrow{color:var(--moon-faint);text-align:right;font-size:16px;transition:.16s;display:inline-block}
+
+  /* ===================== WORKSPACE ===================== */
+  .backlink{display:inline-flex;gap:8px;color:var(--moon-dim);font-size:12.5px;cursor:pointer;margin-bottom:18px;transition:.15s}
+  .backlink:hover{color:var(--teal)}
+  .chead{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px}
+  .chead .nm{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1}
+  .chead .meta{color:var(--moon-faint);font-size:12.5px;margin-top:11px;display:flex;gap:18px;flex-wrap:wrap}
+  .chead .meta b{color:var(--moon-dim);font-weight:600}
+  .miniglobe{text-align:right}
+  .miniglobe .v{font-family:var(--serif);font-weight:600;font-size:46px;line-height:.85}
+  .miniglobe .o{font-size:11px;color:var(--moon-faint);margin-top:2px}
+
+  .subnav{display:flex;gap:2px;margin:24px 0 6px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .subnav button{font-size:13px;padding:12px 16px;border:none;background:none;color:var(--moon-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.16s}
+  .subnav button:hover{color:var(--moon)}
+  .subnav button.active{color:var(--moon);border-bottom-color:var(--teal)}
+  .subnav button .badge{font-size:10px;background:rgba(230,127,112,.2);color:var(--crit);border-radius:10px;padding:1px 7px;margin-left:6px;font-weight:600}
+
+  .grid{display:grid;gap:18px;margin-top:22px}
+  .row-2{grid-template-columns:1.1fr .9fr}
+  @media(max-width:920px){.row-2{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.008));border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow)}
+  .card.tight{padding:22px}
+  .eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--moon-faint);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+  .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+  .eyebrow .hint{letter-spacing:0;text-transform:none;font-size:10.5px;color:var(--moon-faint)}
+
+  /* gauge */
+  .hero{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+  .gauge{position:relative;flex-shrink:0}
+  .gtrack{fill:none;stroke:rgba(239,242,241,.08);stroke-width:11}
+  .garc{fill:none;stroke-width:11;stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;stroke-dasharray:var(--c);stroke-dashoffset:var(--c)}
+  .anim .garc{animation:arc 1.25s cubic-bezier(.4,0,.15,1) .15s forwards}
+  @keyframes arc{to{stroke-dashoffset:var(--off)}}
+  .gmid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .gmid .gv{font-family:var(--serif);font-weight:600;font-size:48px;line-height:.85}
+  .gmid .go{font-size:10.5px;color:var(--moon-faint);margin-top:3px;text-align:center;max-width:110px}
+  .axes{flex:1;display:flex;flex-direction:column;gap:15px;min-width:180px}
+  .axes .lead{font-size:12.5px;color:var(--moon-dim);margin-bottom:2px}
+  .axline{display:flex;align-items:center;gap:13px}
+  .axline .lab{width:104px;font-size:12.5px;color:var(--moon-dim);flex-shrink:0}
+  .axline .track{flex:1;height:8px;border-radius:5px;background:rgba(255,255,255,.07);overflow:hidden}
+  .axline .track i{display:block;height:100%;border-radius:5px;width:0}
+  .anim .axline .track i{animation:grow 1s cubic-bezier(.3,0,.15,1) .2s forwards}
+  @keyframes grow{to{width:var(--w)}}
+  .axline .vv{width:34px;text-align:right;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600}
+
+  /* radar */
+  .radar{overflow:visible}
+  .radar .rgrid{fill:none;stroke:rgba(239,242,241,.07);stroke-width:1}
+  .radar .rspoke{stroke:rgba(239,242,241,.08);stroke-width:1}
+  .radar .rpoly{fill:url(#rgrad);stroke:var(--teal);stroke-width:2;stroke-linejoin:round;transform-box:fill-box;transform-origin:center;transform:scale(.05);opacity:0}
+  .anim .radar .rpoly{animation:pop 1s cubic-bezier(.3,.8,.3,1) .25s forwards}
+  @keyframes pop{to{transform:scale(1);opacity:1}}
+  .radar .rdot{fill:var(--teal);opacity:0}
+  .anim .radar .rdot{animation:fadein .5s ease .9s forwards}
+  @keyframes fadein{to{opacity:1}}
+  .radar .rlab{fill:var(--moon-dim);font-size:10px;font-family:var(--sans);font-weight:500}
+  .radar .rval{fill:var(--moon);font-size:12px;font-family:var(--serif);font-weight:600}
+  .radarwrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+  .radarwrap .side{flex:1;min-width:180px;display:flex;flex-direction:column;gap:11px}
+  .legrow{display:flex;align-items:center;gap:12px;font-size:12.5px}
+  .legrow .dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+  .legrow .nm{color:var(--moon-dim);flex:1}
+  .legrow .vv{font-variant-numeric:tabular-nums;font-weight:600}
+
+  /* inaction */
+  .inaction{background:radial-gradient(700px 300px at 15% -20%,rgba(230,127,112,.18),transparent 60%),linear-gradient(180deg,rgba(230,127,112,.1),rgba(255,255,255,.008));border:1px solid rgba(230,127,112,.3);display:flex;flex-direction:column;justify-content:center}
+  .inaction .lbl{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#EBA79D;margin-bottom:14px}
+  .inaction .amount{font-family:var(--serif);font-weight:600;line-height:.95;font-variant-numeric:tabular-nums;color:#F5DED7;font-size:clamp(26px,3.4vw,42px)}
+  .inaction .amount b{color:var(--crit)}.inaction .amount .dash{color:var(--moon-faint);margin:0 10px;font-weight:400}
+  .inaction .cap{font-size:12.5px;color:var(--moon-dim);margin-top:14px;line-height:1.55;max-width:46ch}
+  .costbar{display:flex;height:11px;border-radius:6px;overflow:hidden;margin-top:20px;background:rgba(0,0,0,.25)}
+  .costbar i{height:100%;transition:width .8s ease;min-width:1px}
+  .costleg{margin-top:16px;display:flex;flex-direction:column;gap:9px;border-top:1px solid rgba(230,127,112,.18);padding-top:15px}
+  .cl{display:flex;align-items:center;gap:11px;font-size:12px}
+  .cl.off{opacity:.4}
+  .cl .sw{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+  .cl .n{color:var(--moon-dim);flex:1}.cl .n .rez{color:var(--good);font-size:10.5px;margin-left:6px}
+  .cl .a{font-variant-numeric:tabular-nums;color:var(--moon);font-weight:600;white-space:nowrap}
+
+  /* trio */
+  .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+  @media(max-width:640px){.trio{grid-template-columns:1fr}}
+  .trio .t{border:1px solid var(--line);border-radius:14px;padding:20px;background:rgba(255,255,255,.02);transition:.16s}
+  .trio .t:hover{border-color:var(--line-2);transform:translateY(-2px)}
+  .trio .t .k{font-size:11px;color:var(--moon-faint);margin-bottom:14px;min-height:44px;line-height:1.5}
+  .trio .t .val{font-family:var(--serif);font-weight:600;font-size:38px;line-height:.9}
+  .trio .t .val small{font-size:16px;color:var(--moon-faint);font-family:var(--sans);font-weight:400}
+  .trio .t .lv{font-size:11px;margin-top:9px;font-weight:600}
+
+  /* indicators */
+  .ind{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+  @media(max-width:820px){.ind{grid-template-columns:repeat(2,1fr)}}
+  .indtile{border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(255,255,255,.02);display:flex;align-items:center;gap:14px;transition:.16s}
+  .indtile:hover{border-color:var(--line-2);background:rgba(255,255,255,.035)}
+  .ringmini{position:relative;flex-shrink:0}
+  .ringmini .rt{fill:none;stroke:rgba(255,255,255,.08);stroke-width:5}
+  .ringmini .rp{fill:none;stroke-width:5;stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;stroke-dasharray:var(--c);stroke-dashoffset:var(--c)}
+  .anim .ringmini .rp{animation:arc 1.1s cubic-bezier(.4,0,.15,1) .3s forwards}
+  .ringmini .rc{position:absolute;inset:0;display:grid;place-items:center;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+  .indtile .k{font-size:12px;color:var(--moon-dim);line-height:1.35}
+
+  /* trajectory */
+  .traj svg{overflow:visible}
+  .traj .tpath{fill:none;stroke:var(--teal);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+  .anim .traj .tpath{animation:draw 1.4s cubic-bezier(.4,0,.2,1) .2s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .traj .tfill{opacity:0}
+  .anim .traj .tfill{animation:fadein .8s ease .9s forwards}
+  .traj .tdot{fill:var(--teal);opacity:0}
+  .anim .traj .tdot{animation:fadein .4s ease 1s forwards}
+  .traj .marks{display:flex;justify-content:space-between;margin-top:12px}
+  .traj .marks .m{text-align:center;flex:1}
+  .traj .marks .m .yr{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--moon-faint)}
+  .traj .marks .m .amt{font-family:var(--serif);font-weight:600;font-size:20px;margin-top:4px;font-variant-numeric:tabular-nums}
+
+  /* evolution columns */
+  .cols{display:flex;align-items:flex-end;gap:16px;height:150px;padding:0 6px}
+  .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:0;height:100%;justify-content:flex-end}
+  .col .bwrap{width:100%;max-width:60px;flex:1;display:flex;align-items:flex-end}
+  .col .b{width:100%;border-radius:8px 8px 3px 3px;height:0;position:relative;background:linear-gradient(180deg,var(--teal-2),var(--teal-dim))}
+  .col.past .b{background:linear-gradient(180deg,rgba(122,150,152,.6),rgba(122,150,152,.25))}
+  .anim .col .b{animation:rise-b 1s cubic-bezier(.3,0,.15,1) forwards}
+  @keyframes rise-b{to{height:var(--h)}}
+  .col .b .v{position:absolute;top:-24px;left:0;right:0;text-align:center;font-family:var(--serif);font-weight:600;font-size:20px}
+  .col .yl{font-size:11px;color:var(--moon-faint);margin-top:10px}
+  .col .dl{font-size:10px;color:var(--moon-faint);margin-top:2px}
+  .evonote{margin-top:20px;font-size:13px;color:var(--moon-dim);line-height:1.65}.evonote b{color:var(--teal)}
+
+  /* missions */
+  .miss{display:flex;flex-direction:column;gap:12px}
+  .m{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:17px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);transition:.16s}
+  .m:hover{border-color:var(--teal-dim);background:rgba(95,167,168,.05);transform:translateX(2px)}
+  .m .rk{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--teal);width:28px;text-align:center}
+  .m .body .nm{font-weight:600;font-size:14px}
+  .m .body .why{font-size:12px;color:var(--moon-faint);margin-top:4px}
+  .m .body .tags{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .tag{font-size:10.5px;padding:3px 10px;border-radius:7px;border:1px solid var(--line-2);color:var(--moon-dim)}
+  .tag.p1{color:var(--crit);border-color:rgba(230,127,112,.4);background:rgba(230,127,112,.08)}
+  .tag.p2{color:var(--orange);border-color:rgba(230,161,100,.4)}
+  .tag.hz{color:var(--teal);border-color:rgba(95,167,168,.35)}
+  .m .fee{text-align:right}.m .fee .amt{font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;white-space:nowrap}
+  .m .fee .st{font-size:10.5px;color:var(--moon-faint);margin-top:4px}
+  .restpistes{margin-top:14px;padding:15px 17px;border:1px dashed var(--line-2);border-radius:13px;font-size:12.5px;color:var(--moon-dim);line-height:1.5}
+  .restpistes b{color:var(--moon)}
+  .misstotal{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:16px 18px;border-radius:13px;background:linear-gradient(90deg,rgba(95,167,168,.12),rgba(95,167,168,.03));border:1px solid rgba(95,167,168,.28)}
+  .misstotal .l{font-size:12.5px;color:var(--moon-dim)}.misstotal .r{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--teal);font-variant-numeric:tabular-nums}
+
+  /* questionnaire */
+  .qintro{display:flex;justify-content:space-between;align-items:flex-start;gap:22px;flex-wrap:wrap;margin-bottom:6px}
+  .qintro .txt{max-width:60ch}
+  .qintro .txt h3{font-family:var(--serif);font-weight:600;font-size:25px;margin:0 0 7px}
+  .qintro .txt p{font-size:13px;color:var(--moon-dim);margin:0;line-height:1.55}
+  .qactions{display:flex;gap:10px;flex-shrink:0}
+  .btn-ghost{font-size:12.5px;padding:10px 16px;border-radius:10px;border:1px solid var(--line-2);background:transparent;color:var(--moon-dim);cursor:pointer;transition:.16s}
+  .btn-ghost:hover{color:var(--moon);border-color:var(--teal-dim)}
+  .btn-ghost.accent{border-color:var(--teal);color:var(--teal)}
+  .btn-ghost.accent:hover{background:rgba(95,167,168,.1)}
+  .qlayout{display:grid;grid-template-columns:1fr 260px;gap:24px;margin-top:22px;align-items:start}
+  @media(max-width:900px){.qlayout{grid-template-columns:1fr}}
+  .qside{position:sticky;top:24px;display:flex;flex-direction:column;gap:14px}
+  .qside .card{padding:20px;text-align:center}
+  .progresswrap{margin-top:16px}
+  .progressbar{height:7px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden}
+  .progressbar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal-dim),var(--teal-2));border-radius:5px;transition:width .4s ease}
+  .progresslabel{font-size:11.5px;color:var(--moon-faint);margin-top:8px}
+  .qblock{margin-top:14px}
+  .qblock .bh{display:flex;justify-content:space-between;align-items:baseline;padding:14px 4px 10px;border-bottom:1px solid var(--line)}
+  .qblock .bh .t{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--moon-dim);font-weight:600}
+  .qblock .bh .s{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600}
+  .q{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--line)}
+  .q .qt{font-size:13.5px;line-height:1.45}
+  .q .qt .qid{color:var(--moon-faint);font-variant-numeric:tabular-nums;font-size:11px;margin-right:9px}
+  .seg-ctl{display:inline-flex;background:rgba(255,255,255,.04);border:1px solid var(--line-2);border-radius:10px;padding:3px;flex-shrink:0}
+  .seg-ctl button{font-size:11.5px;padding:7px 12px;border-radius:7px;border:none;background:transparent;color:var(--moon-dim);cursor:pointer;transition:.13s;white-space:nowrap}
+  .seg-ctl button:hover{color:var(--moon)}
+  .seg-ctl button.sel[data-a="oui"]{background:var(--good);color:#0B1719;font-weight:600}
+  .seg-ctl button.sel[data-a="partiel"]{background:var(--warn);color:#0B1719;font-weight:600}
+  .seg-ctl button.sel[data-a="non"]{background:var(--crit);color:#0B1719;font-weight:600}
+  .seg-ctl button.sel[data-a="na"]{background:var(--moon-faint);color:#0B1719;font-weight:600}
+
+  .flashcta{margin-top:6px}
+  .flashcta .btn{width:100%;padding:13px}
+
+  /* rapport */
+  .rapport-hero{display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+  .rapport-hero .txt{flex:1;min-width:240px}
+  .rapport-hero .txt .nm{font-family:var(--serif);font-weight:600;font-size:26px;margin-bottom:9px}
+  .rapport-hero .txt p{font-size:13.5px;color:var(--moon-dim);line-height:1.65;margin:0}
+  .rap-cost{margin:24px 0;padding:20px;border-radius:14px;background:radial-gradient(500px 200px at 10% 0%,rgba(230,127,112,.14),transparent),rgba(230,127,112,.06);border:1px solid rgba(230,127,112,.25)}
+  .rap-cost .l{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#EBA79D;margin-bottom:10px}
+  .rap-cost .v{font-family:var(--serif);font-weight:600;font-size:32px;color:#F5DED7;font-variant-numeric:tabular-nums}
+  .concl{margin-top:24px;font-family:var(--serif);font-size:19px;font-style:italic;line-height:1.55;color:var(--moon)}
+
+  .footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);font-size:11.5px;color:var(--moon-faint);line-height:1.7;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .footer .word{font-family:var(--serif);font-size:17px;color:var(--moon-dim)}.footer .word b{color:var(--teal-dim)}
+
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--raise);border:1px solid var(--line-2);color:var(--moon);padding:13px 22px;border-radius:12px;font-size:13px;box-shadow:0 16px 50px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.28s;z-index:200}
+  .toast.on{opacity:1;transform:translateX(-50%)}
+  .fadein-view{animation:viewfade .4s ease}
+  @keyframes viewfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.axline .track i{width:var(--w)!important}.garc,.ringmini .rp{stroke-dashoffset:var(--off)!important}.radar .rpoly{transform:none!important;opacity:1!important}.radar .rdot,.traj .tfill,.traj .tdot{opacity:1!important}.traj .tpath{stroke-dashoffset:0!important}.col .b{height:var(--h)!important}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="login">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="loginbox">
+    <div class="word">Elig<b>i</b></div>
+    <div class="rule"></div>
+    <div class="tag">Cockpit conseiller</div>
+    <div class="base">Construire · Anticiper · Pérenniser</div>
+    <div class="loginform">
+      <div class="field"><label>Identifiant conseiller</label><input type="email" id="email" value="marie.schmitt@eligi.fr" autocomplete="off"></div>
+      <div class="field"><label>Mot de passe</label><input type="password" id="pwd" value="demo1234"></div>
+      <button class="btn" id="enter">Entrer dans le cockpit</button>
+    </div>
+    <div class="loginhint">Prototype de démonstration — cliquez simplement « Entrer ».<br>Aucune donnée réelle, aucune connexion.</div>
+  </div>
+</section>
+
+<!-- APP -->
+<div id="app">
+  <aside class="rail">
+    <div class="brand"><div class="word">Elig<b>i</b></div><div class="tag">CAP · Cockpit conseiller</div></div>
+    <nav class="nav">
+      <div class="lbl">Pilotage</div>
+      <a class="active" data-nav="clients"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>Portefeuille clients</a>
+      <a data-nav="clients"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>Suivi annuel</a>
+      <a data-nav="clients"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m0 14h16M8 15l3-4 3 3 4-6"/></svg>Missions &amp; honoraires</a>
+    </nav>
+    <div class="advisor">
+      <div class="card"><div class="avatar">M</div><div><div class="nm">Marie Schmitt</div><div class="ro">Conseillère Eligi</div></div></div>
+      <div class="loc">Mulhouse · Hésingue — Franco-Suisse</div>
+      <button class="logout" id="logout">↩ Se déconnecter</button>
+    </div>
+  </aside>
+  <main class="main">
+    <!-- CLIENTS -->
+    <section class="view on" id="v-clients">
+      <div class="crumb">Portefeuille · 100 dirigeants · 100 frontaliers</div>
+      <h1 class="h1">Portefeuille clients</h1>
+      <p class="sub">Chaque fiche regroupe l'historique complet du client, année par année. Un clic ouvre son cockpit : diagnostic, score CAP, coût de l'inaction et missions à déclencher.</p>
+      <div class="banner"><span class="pulse"></span><b>3 clients à relancer ce mois</b><span>— revue annuelle CAP arrivée à échéance. Une relance a été envoyée automatiquement au conseiller.</span></div>
+      <div class="filters">
+        <button class="chip active" data-filter="all">Tous</button>
+        <button class="chip" data-filter="dir">Dirigeants</button>
+        <button class="chip" data-filter="fro">Frontaliers</button>
+        <button class="chip" data-filter="due">À relancer</button>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Client</th><th>Segment</th><th>Score CAP</th><th>Dernière MàJ</th><th>Prochaine relance</th><th>Missions</th><th>Coût inaction</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+      <div class="footer"><div class="word">Elig<b>i</b> · Construire · Anticiper · Pérenniser</div><div>Prototype · 2 dossiers pilotes complets (Keller &amp; Muller). Moteur de calcul dérivé des CAP Eligi V4 &amp; Frontalier V2.</div></div>
+    </section>
+    <!-- WORKSPACE -->
+    <section class="view" id="v-client">
+      <div class="backlink" data-nav="clients">← Portefeuille clients</div>
+      <div class="chead" id="chead"></div>
+      <div class="subnav" id="subnav"></div>
+      <div id="content"></div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ELIGI CAP — données + moteur (rejoue les Excel CAP V4/Frontalier)
+   ============================================================ */
+const V={oui:5,partiel:3,non:0,na:null};
+function qVal(a,inv){let v=V[a];if(v==null)return null;if(inv)v=(v===5?0:v===0?5:v);return v;}
+function lecture(score,seg){
+  if(seg==='fro'){if(score>=80)return{l:'Structuré',c:'good'};if(score>=60)return{l:'À optimiser',c:'warn'};if(score>=40)return{l:'Prioritaire',c:'orange'};return{l:'Critique',c:'crit'};}
+  if(score>=70)return{l:'Solide',c:'good'};if(score>=60)return{l:'À consolider',c:'warn'};if(score>=40)return{l:'À renforcer',c:'orange'};return{l:'Critique',c:'crit'};
+}
+const money=n=>Math.round(n).toLocaleString('fr-FR')+' €';
+const moneyK=n=>n>=1000000?(n/1000000).toFixed(2).replace('.',',')+' M€':Math.round(n/1000)+' k€';
+
+const DIR_DIAG=[
+ ["C1","Construire",2,0,"Valorisabilite","L'entreprise dispose-t-elle d'une stratégie clairement définie pour les 3 prochaines années ?"],
+ ["C2","Construire",1,0,"Valorisabilite","Disposez-vous d'indicateurs de pilotage régulièrement suivis ?"],
+ ["C3","Construire",5,0,"Valorisabilite","La rentabilité de votre entreprise est-elle satisfaisante au regard de vos objectifs ?"],
+ ["C4","Construire",3,0,"Valorisabilite","Votre trésorerie vous permet-elle de financer sereinement vos projets ?"],
+ ["C5","Construire",2,0,"Valorisabilite","Les décisions importantes reposent-elles sur des données chiffrées plutôt que sur l'intuition ?"],
+ ["C6","Construire",2,0,"Valorisabilite","La valeur de votre entreprise a-t-elle été estimée au cours des 3 dernières années ?"],
+ ["C7","Construire",3,0,"Valorisabilite","Connaissez-vous les principaux leviers qui influencent cette valeur ?"],
+ ["C8","Construire",5,0,"Valorisabilite","L'entreprise pourrait-elle fonctionner plusieurs mois sans votre présence quotidienne ?"],
+ ["C9","Construire",5,0,"Valorisabilite","Les fonctions clés sont-elles suffisamment réparties au sein de l'organisation ?"],
+ ["C10","Construire",5,1,"Vulnerabilite","Votre activité dépend-elle fortement d'un nombre limité de clients ou partenaires ?"],
+ ["C11","Construire",5,0,"Valorisabilite","L'organisation juridique actuelle est-elle adaptée à vos objectifs futurs ?"],
+ ["C12","Construire",2,0,"Valorisabilite","L'immobilier professionnel est-il détenu dans une structure cohérente ?"],
+ ["C13","Construire",3,0,"Vulnerabilite","Les relations entre associés sont-elles clairement organisées ?"],
+ ["C14","Construire",2,0,"Valorisabilite","Les règles de gouvernance sont-elles formalisées ?"],
+ ["C15","Construire",5,0,"Vulnerabilite","La sortie éventuelle d'un associé a-t-elle été anticipée ?"],
+ ["C16","Construire",2,0,"Construire","Votre rémunération est-elle régulièrement réévaluée ?"],
+ ["C17","Construire",5,0,"Construire","La répartition entre rémunération, dividendes et capitalisation est-elle optimisée ?"],
+ ["C18","Construire",3,0,"Valorisabilite","Votre entreprise génère-t-elle une capacité d'épargne régulière ?"],
+ ["C19","Construire",5,0,"PerenniteFin","La trésorerie excédentaire fait-elle l'objet d'une stratégie clairement définie ?"],
+ ["C20","Construire",3,0,"Vulnerabilite","Les actifs professionnels et privés sont-ils clairement séparés ?"],
+ ["A1","Anticiper",5,0,"Vulnerabilite","Les conséquences financières d'un arrêt de travail prolongé ont-elles été évaluées ?"],
+ ["A2","Anticiper",5,0,"Vulnerabilite","Votre niveau de vie serait-il maintenu en cas d'invalidité ?"],
+ ["A3","Anticiper",5,0,"Vulnerabilite","Votre famille pourrait-elle maintenir son niveau de vie en cas de décès ?"],
+ ["A4","Anticiper",2,0,"Vulnerabilite","Les garanties dont vous disposez ont-elles été auditées au cours des 3 dernières années ?"],
+ ["A5","Anticiper",3,0,"Vulnerabilite","Les conséquences d'un accident de la vie sur votre patrimoine ont-elles été évaluées ?"],
+ ["A6","Anticiper",5,0,"Vulnerabilite","Votre conjoint connaît-il l'organisation de votre patrimoine ?"],
+ ["A7","Anticiper",5,0,"Vulnerabilite","Votre conjoint connaît-il l'organisation de vos sociétés ?"],
+ ["A8","Anticiper",3,0,"Vulnerabilite","Les personnes qui devraient prendre le relais en votre absence sont-elles identifiées ?"],
+ ["A9","Anticiper",5,0,"Vulnerabilite","Les informations essentielles sur votre patrimoine et vos sociétés sont-elles accessibles à votre famille ?"],
+ ["A10","Anticiper",2,0,"Vulnerabilite","Les principaux risques familiaux ont-ils été identifiés et anticipés ?"],
+ ["A11","Anticiper",5,0,"PrepTransmission","Vos objectifs de transmission sont-ils clairement définis ?"],
+ ["A12","Anticiper",5,0,"PrepTransmission","Une stratégie de transmission a-t-elle déjà été étudiée ?"],
+ ["A13","Anticiper",5,0,"PrepTransmission","Les conséquences fiscales de votre transmission sont-elles connues ?"],
+ ["A14","Anticiper",2,0,"PrepTransmission","Les modalités de répartition entre vos héritiers ont-elles été réfléchies ?"],
+ ["A15","Anticiper",2,0,"PrepTransmission","Les outils juridiques et patrimoniaux adaptés à votre situation ont-ils été étudiés ?"],
+ ["A16","Anticiper",3,0,"Anticipation","Les principaux événements des 10 prochaines années ont-ils été identifiés ?"],
+ ["A17","Anticiper",5,0,"Anticipation","Disposez-vous d'un plan pour préparer ces événements avant qu'ils ne deviennent urgents ?"],
+ ["A18","Anticiper",5,0,"Anticipation","Une réflexion a-t-elle été menée sur l'avenir de votre entreprise à long terme ?"],
+ ["A19","Anticiper",5,0,"Anticipation","Savez-vous quelles seraient les conséquences financières d'une cession ou d'une transmission ?"],
+ ["A20","Anticiper",3,0,"Anticipation","Les décisions que vous prenez aujourd'hui sont-elles cohérentes avec vos objectifs futurs ?"],
+ ["P1","Pérenniser",5,0,"PerenniteFin","Disposez-vous d'une vision consolidée de l'ensemble de votre patrimoine privé et professionnel ?"],
+ ["P2","Pérenniser",5,0,"Concentration","Connaissez-vous précisément la répartition entre patrimoine professionnel et privé ?"],
+ ["P3","Pérenniser",5,0,"PerenniteFin","Votre patrimoine est-il organisé en cohérence avec vos objectifs de vie futurs ?"],
+ ["P4","Pérenniser",2,0,"PerenniteFin","Les différents actifs ont-ils été réévalués au cours des trois dernières années ?"],
+ ["P5","Pérenniser",3,0,"PerenniteFin","Les décisions patrimoniales importantes sont-elles prises dans le cadre d'une stratégie globale ?"],
+ ["P6","Pérenniser",5,0,"Concentration","Une baisse de la valeur de votre entreprise aurait-elle un impact limité sur votre patrimoine global ?"],
+ ["P7","Pérenniser",3,0,"Concentration","Votre patrimoine génère-t-il des revenus provenant de plusieurs sources différentes ?"],
+ ["P8","Pérenniser",5,1,"Concentration","Une part importante de votre patrimoine dépend-elle encore directement de votre entreprise ?"],
+ ["P9","Pérenniser",2,0,"Concentration","Votre patrimoine dispose-t-il de suffisamment d'actifs liquides pour un imprévu important ?"],
+ ["P10","Pérenniser",3,0,"Concentration","Les risques liés à la concentration de votre patrimoine ont-ils été évalués ?"],
+ ["P11","Pérenniser",2,0,"PerenniteFin","Connaissez-vous précisément votre niveau de dépenses annuel ?"],
+ ["P12","Pérenniser",3,0,"PerenniteFin","Les dépenses importantes des dix prochaines années ont-elles été identifiées et budgétées ?"],
+ ["P13","Pérenniser",5,0,"PerenniteFin","Votre patrimoine génère-t-il des revenus indépendants de votre activité professionnelle ?"],
+ ["P14","Pérenniser",5,0,"PerenniteFin","Votre niveau de vie futur serait-il maintenu même en cas d'arrêt définitif de votre activité ?"],
+ ["P15","Pérenniser",2,0,"PerenniteFin","Les conséquences de l'inflation sur votre niveau de vie futur ont-elles été prises en compte ?"],
+ ["P16","Pérenniser",5,0,"PerenniteFin","Disposez-vous d'une projection de vos revenus futurs sur au moins 10 ans ?"],
+ ["P17","Pérenniser",5,0,"PerenniteFin","Disposez-vous d'une projection de vos dépenses futures sur au moins 10 ans ?"],
+ ["P18","Pérenniser",3,0,"PerenniteFin","Les capitaux disponibles aujourd'hui sont-ils investis selon une stratégie clairement définie ?"],
+ ["P19","Pérenniser",3,0,"PerenniteFin","Savez-vous comment vous réemploieriez le produit d'une cession d'entreprise ?"],
+ ["P20","Pérenniser",5,0,"PerenniteFin","Les décisions patrimoniales prises aujourd'hui sécurisent-elles votre niveau de vie futur ?"],
+].map(r=>({id:r[0],axe:r[1],w:r[2],inv:!!r[3],ind:r[4],t:r[5]}));
+
+const DIR_FLASH=[
+ ["B1","Construire","La valeur de votre entreprise est-elle connue et suivie régulièrement ?"],["B2","Construire","Votre entreprise pourrait-elle fonctionner plusieurs mois sans votre présence quotidienne ?"],["B3","Construire","L'organisation juridique de votre groupe est-elle adaptée à vos objectifs futurs ?"],["B4","Construire","Votre rémunération est-elle cohérente avec vos objectifs personnels et professionnels ?"],["B5","Construire","La trésorerie excédentaire fait-elle l'objet d'une stratégie clairement définie ?"],["B6","Construire","L'immobilier professionnel est-il détenu dans une structure adaptée ?"],["B7","Construire","Si vous receviez une offre de rachat demain, seriez-vous prêt à l'étudier sereinement ?"],
+ ["B8","Anticiper","Les conséquences d'un arrêt de travail ou d'une invalidité ont-elles été évaluées ?"],["B9","Anticiper","Votre famille pourrait-elle maintenir son niveau de vie en cas de décès ?"],["B10","Anticiper","Votre conjoint connaît-il l'organisation de votre patrimoine et de vos sociétés ?"],["B11","Anticiper","Votre stratégie de transmission familiale est-elle clairement définie ?"],["B12","Anticiper","Les impacts fiscaux et financiers de votre transmission ont-ils été évalués ?"],["B13","Anticiper","Les événements des 10 prochaines années (cession, retraite, transmission) sont-ils identifiés ?"],["B14","Anticiper","Disposez-vous d'un plan pour préparer ces événements avant qu'ils ne deviennent urgents ?"],
+ ["B15","Pérenniser","Disposez-vous d'une vision consolidée de l'ensemble de votre patrimoine ?"],["B16","Pérenniser","Votre patrimoine est-il suffisamment diversifié pour ne pas dépendre de votre entreprise ?"],["B17","Pérenniser","Votre patrimoine génère-t-il des revenus indépendants de votre activité ?"],["B18","Pérenniser","Avez-vous une visibilité claire sur l'évolution future de vos revenus et dépenses ?"],["B19","Pérenniser","Votre niveau de vie futur vous semble-t-il durablement sécurisé ?"],["B20","Pérenniser","Les capitaux disponibles aujourd'hui sont-ils organisés en cohérence avec vos objectifs ?"],
+].map(r=>({id:r[0],axe:r[1],w:1,inv:false,t:r[2]}));
+
+const DIR_MISSIONS=[
+ ["Valorisation & Performance","Construire","Valorisabilite",5000,10000,"Mesurer et augmenter la valeur de l'entreprise."],
+ ["Structuration du Groupe","Construire","Vulnerabilite",5000,15000,"Adapter holding, groupe, immobilier et gouvernance."],
+ ["Immobilier Professionnel","Construire","Valorisabilite",3000,7000,"Optimiser la détention et la transmission de l'immobilier pro."],
+ ["Optimisation de la Rémunération","Anticiper","Construire",2500,5000,"Aligner rémunération, fiscalité, social et retraite."],
+ ["Retraite du Dirigeant","Anticiper","Anticipation",2500,6000,"Clarifier droits, dates, revenus et arbitrages."],
+ ["Protection Sociale du Dirigeant","Anticiper","Vulnerabilite",2500,5000,"Sécuriser incapacité, invalidité, décès et homme-clé."],
+ ["Transmission Familiale","Anticiper","PrepTransmission",8000,25000,"Anticiper donation, conjoint, Dutreil et gouvernance."],
+ ["Préparation d'Opération sur le Capital","Pérenniser","Anticipation",10000,50000,"Préparer cession, transmission ou ouverture de capital."],
+ ["Organisation des Flux Futurs","Pérenniser","PerenniteFin",5000,10000,"Modéliser revenus, dépenses et capital dans le temps."],
+ ["Réemploi du Capital","Pérenniser","Concentration",5000,15000,"Organiser capital, rendement, revenus et transmission."],
+].map(r=>({nm:r[0],axe:r[1],ind:r[2],lo:r[3],hi:r[4],why:r[5]}));
+
+const DIR_COST=[
+ ["Transmission non anticipée",325500,976500,"PrepTransmission"],
+ ["Pérennité financière non modélisée",312500,562500,"PerenniteFin"],
+ ["Valorisation non optimisée",51000,153000,"Valorisabilite"],
+ ["Structuration insuffisante",30600,102000,"Vulnerabilite"],
+ ["Réemploi du capital non structuré",4200,16800,"Concentration"],
+ ["Protection sociale insuffisante",2750,5500,"Vulnerabilite"],
+].map((r,i)=>({nm:r[0],lo:r[1],hi:r[2],ind:r[3],col:['#E67F70','#E6A164','#E7C06A','#C98C6A','#8FA9A0','#B0857A'][i]}));
+
+const DIR_INDS_LABEL={Construire:"Construire",Anticiper:"Anticiper","Pérenniser":"Pérenniser",Vulnerabilite:"Vulnérabilité",Concentration:"Concentration",PerenniteFin:"Pérennité fin.",Valorisabilite:"Valorisabilité",PrepTransmission:"Transmission",Anticipation:"Anticipation"};
+const DIR_RADAR_KEYS=["Construire","Anticiper","Pérenniser","PrepTransmission","PerenniteFin","Concentration","Vulnerabilite","Valorisabilite"];
+const DIR_TILE_KEYS=["Vulnerabilite","Concentration","PerenniteFin","Valorisabilite","PrepTransmission","Anticipation"];
+
+const FRO_PILIERS={RF:["Revenus & flux",20],PE:["Patrimoine & épargne",20],RL:["Retraite & LPP",20],PC:["Protection & crédit",15],DV:["Décisions de vie",15],FR:["Fiscalité raisonnée",10]};
+const FRO_DIAG=[
+ ["D1","RF",5,"Capacité d'épargne régulière supérieure à 20 %"],["D2","RF",3,"Budget mensuel connu et piloté"],["D3","RF",5,"Dépendance au salaire suisse mesurée"],["D4","RF",5,"Taux d'endettement compatible avec les projets"],["D5","RF",3,"Épargne automatique mensuelle en place"],["D6","RF",3,"Patrimoine net suivi annuellement"],
+ ["D7","PE",5,"Diversification suffisante"],["D8","PE",3,"Liquidités de sécurité suffisantes"],["D9","PE",3,"Résidence principale non surpondérée"],["D10","PE",5,"Coût réel des placements connu"],["D11","PE",5,"Allocation cohérente avec l'horizon"],["D12","PE",5,"Stratégie d'investissement formalisée"],
+ ["D13","RL",5,"Estimation retraite France + Suisse réalisée"],["D14","RL",5,"Choix rente / capital LPP étudié"],["D15","RL",5,"Rachat LPP analysé"],["D16","RL",5,"Âge de départ souhaité chiffré"],["D17","RL",3,"Fiscalité de sortie LPP comprise"],["D18","RL",5,"Plan de revenus retraite formalisé"],
+ ["D19","PC",5,"Protection décès suffisante"],["D20","PC",5,"Protection invalidité adaptée"],["D21","PC",3,"Assurance emprunteur cohérente"],["D22","PC",3,"CMU / LAMal réévaluée"],["D23","PC",3,"Organisation connue du conjoint"],["D24","PC",5,"Arrêt de travail simulé"],
+ ["D25","DV",5,"Rembourser crédit / investir étudié"],["D26","DV",5,"Décisions des 10 prochaines années identifiées"],["D27","DV",3,"Retour en France anticipé"],["D28","DV",5,"Retraite anticipée chiffrée"],["D29","DV",5,"Décisions priorisées par impact"],["D30","DV",3,"Plan d'action à 12 mois défini"],
+ ["D31","FR",5,"Fiscalité analysée après la stratégie"],["D32","FR",3,"PER / produits fiscaux revus objectivement"],["D33","FR",5,"Rachat LPP comparé aux solutions fiscales françaises"],["D34","FR",5,"Impôt futur anticipé"],["D35","FR",5,"Défiscalisation évitée si elle dégrade la stratégie"],["D36","FR",3,"Acceptation de payer l'impôt quand c'est préférable"],
+].map(r=>({id:r[0],pil:r[1],w:r[2],inv:false,t:r[3]}));
+const FRO_FLASH=[
+ ["F1","RF","Capacité d'épargne supérieure à 20 % des revenus ?"],["F2","RF","Niveau de vie préservé si le salaire suisse baisse de 30 % ?"],["F3","RF","Patrimoine net suivi chaque année ?"],
+ ["F4","PE","Patrimoine réellement diversifié ?"],["F5","PE","Coût réel des placements connu ?"],["F6","PE","Liquidités de sécurité suffisantes ?"],
+ ["F7","RL","Revenu futur à la retraite connu ?"],["F8","RL","Choix LPP rente ou capital étudié ?"],["F9","RL","Rachat LPP étudié ?"],["F10","RL","Âge possible d'arrêt de travail connu ?"],
+ ["F11","PC","Famille protégée en cas de décès ?"],["F12","PC","Couverture invalidité adaptée ?"],["F13","PC","Assurance emprunteur encore adaptée ?"],
+ ["F14","DV","Rembourser le crédit est-il la meilleure décision ?"],["F15","DV","Stratégie patrimoniale écrite ?"],["F16","DV","Trois décisions majeures des 10 ans identifiées ?"],["F17","DV","Retour en France déjà simulé ?"],
+ ["F18","FR","Solutions passées surtout pour réduire l'impôt ?"],["F19","FR","Fiscalité de sortie LPP anticipée ?"],["F20","FR","Referiez-vous les mêmes choix patrimoniaux aujourd'hui ?"],
+].map(r=>({id:r[0],pil:r[1],w:1,inv:false,t:r[2]}));
+const FRO_MISSIONS=[
+ ["Diagnostic Retraite Franco-Suisse","RL","Haute",1500,3500,"Clarifier AVS, LPP, retraite française, âge et revenus."],
+ ["Étude LPP : rente / capital / rachat","RL","Haute",1000,2500,"Sécuriser les décisions autour du 2ᵉ pilier."],
+ ["Audit Protection Familiale","PC","Haute",1000,2500,"Protéger conjoint, enfants, crédit et revenus."],
+ ["Stratégie Patrimoniale Long Terme","PE","Haute",2500,5000,"Organiser patrimoine, épargne, frais et allocation."],
+ ["Étude Crédit / Investissement","DV","Moyenne",750,1500,"Comparer remboursement, investissement et sécurité."],
+ ["Feuille de route CAP Frontalier","DV","Haute",790,1500,"Classer les décisions par impact et calendrier."],
+ ["Accompagnement annuel CAP Frontalier","RF","Moyenne",990,990,"Suivre la progression et actualiser la stratégie."],
+ ["Optimisation fiscale raisonnée","FR","Faible",750,2000,"Optimiser uniquement si la décision reste pertinente."],
+].map(r=>({nm:r[0],pil:r[1],prio:r[2],lo:r[3],hi:r[4],why:r[5]}));
+const FRO_COST=[
+ ["Choix LPP rente / capital non étudié",20000,55000,"RL"],
+ ["Protection familiale insuffisante",12000,35000,"PC"],
+ ["Épargne non optimisée (frais, allocation)",13000,30000,"PE"],
+].map((r,i)=>({nm:r[0],lo:r[1],hi:r[2],pil:r[3],col:['#E67F70','#E6A164','#E7C06A'][i]}));
+
+const DIR_DEMO={C1:'partiel',C2:'non',C3:'oui',C4:'partiel',C5:'partiel',C6:'non',C7:'non',C8:'partiel',C9:'partiel',C10:'oui',C11:'partiel',C12:'oui',C13:'partiel',C14:'partiel',C15:'non',C16:'oui',C17:'non',C18:'partiel',C19:'partiel',C20:'oui',A1:'partiel',A2:'oui',A3:'partiel',A4:'non',A5:'non',A6:'oui',A7:'partiel',A8:'non',A9:'partiel',A10:'partiel',A11:'non',A12:'partiel',A13:'non',A14:'non',A15:'non',A16:'partiel',A17:'partiel',A18:'partiel',A19:'non',A20:'partiel',P1:'non',P2:'partiel',P3:'partiel',P4:'partiel',P5:'non',P6:'partiel',P7:'non',P8:'partiel',P9:'partiel',P10:'partiel',P11:'non',P12:'non',P13:'non',P14:'non',P15:'partiel',P16:'non',P17:'non',P18:'partiel',P19:'non',P20:'partiel'};
+const DIR_DEMO_FLASH={B1:'partiel',B2:'partiel',B3:'non',B4:'oui',B5:'non',B6:'oui',B7:'partiel',B8:'partiel',B9:'partiel',B10:'oui',B11:'non',B12:'non',B13:'partiel',B14:'non',B15:'non',B16:'partiel',B17:'non',B18:'partiel',B19:'non',B20:'partiel'};
+function froPattern(map){const o={};FRO_DIAG.forEach((q,i)=>{o[q.id]=map[q.pil][i%map[q.pil].length]});return o;}
+const FRO_DEMO=froPattern({RF:['oui','partiel','oui','partiel','oui','partiel'],PE:['partiel','oui','partiel','non','partiel','non'],RL:['non','non','partiel','non','partiel','non'],PC:['oui','oui','partiel','oui','partiel','oui'],DV:['partiel','non','partiel','non','partiel','partiel'],FR:['oui','oui','partiel','oui','oui','partiel']});
+const FRO_DEMO_FLASH={F1:'oui',F2:'partiel',F3:'oui',F4:'partiel',F5:'non',F6:'partiel',F7:'non',F8:'non',F9:'partiel',F10:'non',F11:'oui',F12:'partiel',F13:'oui',F14:'partiel',F15:'non',F16:'partiel',F17:'non',F18:'oui',F19:'partiel',F20:'partiel'};
+
+const CLIENTS={
+ keller:{seg:'dir',nm:"Jean-Marc Keller",meta:[["Société","KELLER Industries SAS"],["Phase","Développement"],["Conseiller","M. Schmitt"],["Revue","15/06/2026"]],
+   patr:{today:2170000,ten:2851534,retraite:2228500,ild:43.4},history:[["2024",33,"1 mission"],["2025",37,"2 missions"]],diag:{...DIR_DEMO},flash:{...DIR_DEMO_FLASH}},
+ muller:{seg:'fro',nm:"Sébastien Muller",meta:[["Statut","Frontalier · Bâle"],["Pôle","Hésingue Franco-Suisse"],["Conseiller","M. Schmitt"],["Revue","02/07/2026"]],
+   patr:{},history:[["2024",44,"1 mission"],["2025",51,"1 mission"]],diag:{...FRO_DEMO},flash:{...FRO_DEMO_FLASH}},
+};
+const ROWS=[
+ {id:'keller',live:1,seg:'dir',nm:"Jean-Marc Keller",sub:"KELLER Industries SAS",segL:"Dirigeant",maj:"15/06/2026",rel:"Juin 2027 · dû",due:1},
+ {id:'muller',live:1,seg:'fro',nm:"Sébastien Muller",sub:"Frontalier · Bâle",segL:"Frontalier",maj:"02/07/2026",rel:"Juil. 2027 · dû",due:1},
+ {id:'weber',live:0,seg:'dir',nm:"Christine Weber",sub:"Weber & Fils Holding",segL:"Dirigeant",score:78,cl:'good',maj:"20/03/2026",rel:"Mars 2027",due:0,mi:1,mc:'good',ina:"≈ 340 k€"},
+ {id:'frey',live:0,seg:'fro',nm:"Laurent Freyburger",sub:"Frontalier · Genève",segL:"Frontalier",score:37,cl:'crit',maj:"28/06/2026",rel:"Juin 2027 · dû",due:1,mi:5,mc:'crit',ina:"≈ 210 k€"},
+ {id:'risch',live:0,seg:'dir',nm:"Antoine Rischmann",sub:"Rischmann Négoce SAS",segL:"Dirigeant",score:54,cl:'orange',maj:"11/05/2026",rel:"Mai 2027",due:0,mi:4,mc:'orange',ina:"≈ 960 k€"},
+ {id:'bianchi',live:0,seg:'fro',nm:"Nadia Bianchi",sub:"Frontalière · Bâle",segL:"Frontalier",score:81,cl:'good',maj:"09/04/2026",rel:"Avr. 2027",due:0,mi:1,mc:'good',ina:"≈ 45 k€"},
+];
+
+function groupScore(qs,answers){let ob=0,mx=0,ans=0;for(const q of qs){const v=qVal(answers[q.id],q.inv);if(v==null)continue;ob+=v*q.w;mx+=5*q.w;ans++;}return{pct:mx?Math.round(ob/mx*100):0,ans,tot:qs.length};}
+function computeDir(c){
+  const A=c.diag;
+  const axes=['Construire','Anticiper','Pérenniser'].map(a=>{const s=groupScore(DIR_DIAG.filter(q=>q.axe===a),A);return{name:a,...s};});
+  const answered=DIR_DIAG.filter(q=>A[q.id]).length;
+  const global=answered?Math.round(axes.reduce((x,a)=>x+a.pct,0)/3):0;
+  const indScore={};["Vulnerabilite","Concentration","PerenniteFin","Valorisabilite","PrepTransmission","Anticipation"].forEach(k=>{indScore[k]=groupScore(DIR_DIAG.filter(q=>q.ind===k),A).pct;});
+  indScore.Construire=axes[0].pct;indScore.Anticiper=axes[1].pct;indScore["Pérenniser"]=axes[2].pct;
+  const cost=DIR_COST.map(it=>({...it,active:(indScore[it.ind]??0)<60}));
+  const clo=cost.filter(x=>x.active).reduce((s,x)=>s+x.lo,0),chi=cost.filter(x=>x.active).reduce((s,x)=>s+x.hi,0);
+  const miss=DIR_MISSIONS.map(m=>{const sc=indScore[m.ind]??50;let prio=sc<40?1:sc<58?2:3;return{...m,sc,prio};}).sort((a,b)=>a.sc-b.sc);
+  const potentiel=miss.filter(m=>m.prio<=2).reduce((s,m)=>s+((m.lo+m.hi)/2),0);
+  return{seg:'dir',axes,global,glecture:lecture(global,'dir'),indScore,cost,clo,chi,miss,potentiel,answered,total:DIR_DIAG.length,
+    trio:[{k:"Liberté de décision — « Combien d'années sans revenu pro ? »",v:c.patr.ild,unit:" ans",lv:lecture(60,'dir')},
+          {k:"Pérennité financière — « Mon patrimoine finance-t-il mon avenir ? »",v:indScore.PerenniteFin,unit:"/100",lv:lecture(indScore.PerenniteFin,'dir')},
+          {k:"Préparation transmission — « Ma famille est-elle prête ? »",v:indScore.PrepTransmission,unit:"/100",lv:lecture(indScore.PrepTransmission,'dir')}]};
+}
+function computeFro(c){
+  const A=c.diag;
+  const pil=Object.entries(FRO_PILIERS).map(([k,[nm,w]])=>{const s=groupScore(FRO_DIAG.filter(q=>q.pil===k),A);return{key:k,name:nm,weight:w,...s};});
+  const answered=FRO_DIAG.filter(q=>A[q.id]).length;
+  const global=answered?Math.round(pil.reduce((x,p)=>x+p.pct*p.weight,0)/100):0;
+  const pmap={};pil.forEach(p=>pmap[p.key]=p.pct);
+  const cost=FRO_COST.map(it=>({...it,active:(pmap[it.pil]??0)<60}));
+  const clo=cost.filter(x=>x.active).reduce((s,x)=>s+x.lo,0),chi=cost.filter(x=>x.active).reduce((s,x)=>s+x.hi,0);
+  const miss=FRO_MISSIONS.map(m=>({...m,sc:pmap[m.pil]??50})).sort((a,b)=>a.sc-b.sc);
+  const potentiel=miss.filter(m=>m.sc<60).reduce((s,m)=>s+((m.lo+m.hi)/2),0);
+  return{seg:'fro',pil,global,glecture:lecture(global,'fro'),cost,clo,chi,miss,potentiel,answered,total:FRO_DIAG.length};
+}
+const compute=c=>c.seg==='dir'?computeDir(c):computeFro(c);
+function detected(c,cp){return cp.miss.filter(m=>c.seg==='dir'?m.sc<58:m.sc<60);}
+
+/* ============================================================
+   GRAPHIQUES SVG SUR-MESURE
+   ============================================================ */
+function gauge(score,cl,label,size){
+  size=size||156;const r=(size/2)-13,c=2*Math.PI*r,off=c-(score/100)*c;
+  return `<div class="gauge" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle class="gtrack" cx="${size/2}" cy="${size/2}" r="${r}"/>
+    <circle class="garc" cx="${size/2}" cy="${size/2}" r="${r}" stroke="var(--${cl})" style="--c:${c.toFixed(1)};--off:${off.toFixed(1)}"/>
+  </svg><div class="gmid"><div class="gv" data-count="${score}">0</div><div class="go">/ 100${label?'<br>'+label:''}</div></div></div>`;
+}
+function bar(pct,cl){return `<span class="track"><i class="bg-${cl}" style="--w:${pct}%"></i></span>`;}
+function radar(items){
+  const size=280,pad=52,r=(size/2)-pad,cx=size/2,cy=size/2,n=items.length,lv=4;
+  const ang=i=>(-90+i*360/n)*Math.PI/180;
+  const pt=(i,v)=>[cx+Math.cos(ang(i))*r*(v/100),cy+Math.sin(ang(i))*r*(v/100)];
+  let grid='';
+  for(let l=1;l<=lv;l++){const rr=r*l/lv;let p='';for(let i=0;i<n;i++){const x=cx+Math.cos(ang(i))*rr,y=cy+Math.sin(ang(i))*rr;p+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);}grid+=`<path class="rgrid" d="${p}Z"/>`;}
+  let spokes='',labels='';
+  for(let i=0;i<n;i++){const ex=cx+Math.cos(ang(i))*r,ey=cy+Math.sin(ang(i))*r;spokes+=`<line class="rspoke" x1="${cx}" y1="${cy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}"/>`;
+    const lr=r+16,lx=cx+Math.cos(ang(i))*lr,ly=cy+Math.sin(ang(i))*lr,cosv=Math.cos(ang(i));
+    const anc=Math.abs(cosv)<0.35?'middle':(cosv>0?'start':'end');
+    labels+=`<text class="rlab" x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anc}">${items[i].label}</text><text class="rval" x="${lx.toFixed(1)}" y="${(ly+14).toFixed(1)}" text-anchor="${anc}">${items[i].value}</text>`;}
+  let dpath='',dots='';for(let i=0;i<n;i++){const[x,y]=pt(i,items[i].value);dpath+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);dots+=`<circle class="rdot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4"/>`;}
+  return `<svg class="radar" viewBox="0 0 ${size} ${size}" width="100%" style="max-width:${size}px">
+    <defs><radialGradient id="rgrad"><stop offset="0" stop-color="rgba(95,167,168,.45)"/><stop offset="1" stop-color="rgba(95,167,168,.1)"/></radialGradient></defs>
+    ${grid}${spokes}<path class="rpoly" d="${dpath}Z"/>${dots}${labels}</svg>`;
+}
+function miniRing(v,cl){const size=52,r=21,c=2*Math.PI*r,off=c-(v/100)*c;
+  return `<div class="ringmini" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle class="rt" cx="${size/2}" cy="${size/2}" r="${r}"/><circle class="rp" cx="${size/2}" cy="${size/2}" r="${r}" stroke="var(--${cl})" style="--c:${c.toFixed(1)};--off:${off.toFixed(1)}"/></svg><div class="rc lv-${cl}">${v}</div></div>`;}
+function areaChart(vals){
+  const w=460,h=140,pad=14;const max=Math.max(...vals)*1.08,min=Math.min(...vals)*0.9;
+  const X=i=>pad+i*(w-2*pad)/(vals.length-1);const Y=v=>h-pad-((v-min)/(max-min))*(h-2*pad);
+  let line='',dots='';vals.forEach((v,i)=>{line+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1);dots+=`<circle class="tdot" cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="4.2"/>`;});
+  const fill=line+`L${X(vals.length-1).toFixed(1)} ${h} L${X(0).toFixed(1)} ${h} Z`;
+  const len=1400;
+  return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <defs><linearGradient id="tgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(95,167,168,.34)"/><stop offset="1" stop-color="rgba(95,167,168,0)"/></linearGradient></defs>
+    <path class="tfill" d="${fill}" fill="url(#tgrad)"/><path class="tpath" d="${line}" style="--len:${len}"/>${dots}</svg>`;
+}
+
+/* ============================================================
+   RENDU
+   ============================================================ */
+const $=s=>document.querySelector(s);
+let cur={id:null,tab:'synthese'};
+function enter(root){
+  root.classList.remove('anim');void root.offsetWidth;root.classList.add('anim');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  root.querySelectorAll('[data-count]').forEach(el=>{
+    const target=parseInt(el.dataset.count,10)||0;if(reduce){el.textContent=target;return;}
+    const t0=performance.now(),dur=1100;
+    function step(t){const k=Math.min(1,(t-t0)/dur);el.textContent=Math.round(target*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step);}
+    requestAnimationFrame(step);
+  });
+}
+function renderRows(filter){
+  $('#rows').innerHTML=ROWS.filter(r=>filter==='all'||(filter==='due'?r.due:r.seg===filter)).map(r=>{
+    let score,cl,mi,mc,ina;
+    if(r.live){const cp=compute(CLIENTS[r.id]);score=cp.global;cl=cp.glecture.c;ina='≈ '+moneyK(cp.chi);mi=detected(CLIENTS[r.id],cp).length;mc=cl;}
+    else{score=r.score;cl=r.cl;mi=r.mi;mc=r.mc;ina=r.ina;}
+    return `<tr class="${r.live?'live':'static'}" data-seg="${r.seg}" data-due="${r.due}" ${r.live?`data-open="${r.id}"`:''}>
+      <td><span class="cli">${r.nm}${r.live?'<span class="demo-pill">démo live</span>':''}<small>${r.sub}</small></span></td>
+      <td><span class="seg ${r.seg==='dir'?'dir':''}">${r.segL}</span></td>
+      <td><span class="score-chip lv-${cl}">${score}<span class="bar"><i class="bg-${cl}" style="width:${score}%"></i></span></span></td>
+      <td class="num">${r.maj}</td><td><span class="relance ${r.due?'due':''}">${r.rel}</span></td>
+      <td class="num" style="font-weight:600">${mi} <span class="c-${mc}">●</span></td>
+      <td class="num">${ina}</td><td class="arrow">${r.live?'→':''}</td></tr>`;
+  }).join('');
+}
+function openClient(id){
+  cur={id,tab:'synthese'};const c=CLIENTS[id];const cp=compute(c);
+  $('#chead').innerHTML=`<div><div class="nm">${c.nm}</div><div class="meta">${c.meta.map(m=>`<span><b>${m[0]}</b> ${m[1]}</span>`).join('')}</div></div>
+    <div class="miniglobe"><div class="v lv-${cp.glecture.c}">${cp.global}</div><div class="o">CAP / 100 · ${cp.glecture.l}</div></div>`;
+  const tabs=[['synthese','Synthèse'],['flash','CAP Flash'],['diag','Diagnostic complet'],['missions','Missions & plan'],['rapport','Rapport client'],['evo','Évolution']];
+  $('#subnav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" class="${t[0]===cur.tab?'active':''}">${t[1]}${t[0]==='missions'?`<span class="badge">${detected(c,cp).length}</span>`:''}</button>`).join('');
+  showView('client');renderTab();
+}
+function renderTab(){
+  const c=CLIENTS[cur.id],cp=compute(c),el=$('#content');
+  document.querySelectorAll('#subnav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===cur.tab));
+  if(cur.tab==='synthese')el.innerHTML=c.seg==='dir'?synDir(c,cp):synFro(c,cp);
+  else if(cur.tab==='flash')el.innerHTML=viewQuest(c,'flash');
+  else if(cur.tab==='diag')el.innerHTML=viewQuest(c,'diag');
+  else if(cur.tab==='missions')el.innerHTML=viewMissions(c,cp);
+  else if(cur.tab==='rapport')el.innerHTML=viewRapport(c,cp);
+  else if(cur.tab==='evo')el.innerHTML=viewEvo(c,cp);
+  enter(el);
+}
+function synDir(c,cp){
+  const axesHtml=cp.axes.map(a=>{const lc=lecture(a.pct,'dir');return `<div class="axline"><span class="lab">${a.name}</span>${bar(a.pct,lc.c)}<span class="vv lv-${lc.c}">${a.pct}</span></div>`;}).join('');
+  const radItems=DIR_RADAR_KEYS.map(k=>({label:DIR_INDS_LABEL[k],value:cp.indScore[k]??0}));
+  const totalActive=cp.cost.filter(x=>x.active);const sumHi=cp.cost.reduce((s,x)=>s+x.hi,0);
+  const costbar=cp.cost.map(it=>`<i style="width:${it.active?(it.hi/sumHi*100):0}%;background:${it.col}"></i>`).join('');
+  const costleg=cp.cost.map(it=>`<div class="cl ${it.active?'':'off'}"><span class="sw" style="background:${it.col}"></span><span class="n">${it.nm}${it.active?'':'<span class="rez">✓ traité</span>'}</span><span class="a">${moneyK(it.lo)} – ${moneyK(it.hi)}</span></div>`).join('');
+  const trio=cp.trio.map(t=>`<div class="t"><div class="k">${t.k}</div><div class="val"><span data-count="${Math.round(t.v)}">0</span>${t.v%1?','+String(t.v).split('.')[1]:''}<small>${t.unit}</small></div><div class="lv lv-${t.lv.c}">${t.lv.l}</div></div>`).join('');
+  const tiles=DIR_TILE_KEYS.map(k=>{const v=cp.indScore[k];const cl=lecture(v,'dir').c;return `<div class="indtile">${miniRing(v,cl)}<div class="k">${DIR_INDS_LABEL[k]}</div></div>`;}).join('')
+    +`<div class="indtile">${miniRing(Math.min(100,Math.round(c.patr.ild/60*100)),'warn').replace(/>(\d+)<\/div>/,'>'+String(c.patr.ild).replace('.',',')+'</div>')}<div class="k">Liberté de décision <small style="color:var(--moon-faint)">(ans)</small></div></div>`;
+  const p=c.patr;
+  return `
+  <div class="grid row-2">
+    <div class="card"><div class="eyebrow">Score CAP global</div>
+      <div class="hero">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}<div class="axes"><div class="lead">Les 3 axes de la méthode CAP</div>${axesHtml}</div></div></div>
+    <div class="card inaction"><div class="lbl">◆ Coût de l'inaction</div>
+      <div class="amount"><b>${money(cp.clo)}</b><span class="dash">→</span><b>${money(cp.chi)}</b></div>
+      <div class="cap">Impact patrimonial potentiel si les décisions prioritaires ne sont pas prises. Ce que le dirigeant risque de perdre — pas ce qu'il paie en honoraires.</div>
+      <div class="costbar">${costbar}</div><div class="costleg">${costleg}</div></div>
+  </div>
+  <div class="grid row-2">
+    <div class="card"><div class="eyebrow">Cartographie CAP <span class="hint">— 8 indicateurs clés</span></div><div class="radarwrap">${radar(radItems)}
+      <div class="side">${radItems.map(it=>{const cl=lecture(it.value,'dir').c;return `<div class="legrow"><span class="dot bg-${cl}"></span><span class="nm">${it.label}</span><span class="vv lv-${cl}">${it.value}</span></div>`;}).join('')}</div></div></div>
+    <div class="card"><div class="eyebrow">Le Trio Eligi <span class="hint">— les 3 questions qui comptent</span></div><div class="trio">${trio}</div>
+      <div style="margin-top:18px;font-size:12.5px;color:var(--moon-faint);line-height:1.6">Ces trois indicateurs résument la capacité du dirigeant à garder sa liberté de décision, sécuriser son niveau de vie et transmettre.</div></div>
+  </div>
+  <div class="grid"><div class="card"><div class="eyebrow">Les 9 indicateurs Eligi <span class="hint">— calculés en direct depuis le diagnostic</span></div><div class="ind">${tiles}</div></div></div>
+  <div class="grid row-2">
+    <div class="card traj"><div class="eyebrow">Trajectoire patrimoniale</div>${areaChart([p.today,p.ten,p.retraite,p.retraite])}
+      <div class="marks"><div class="m"><div class="yr">Aujourd'hui</div><div class="amt">${moneyK(p.today)}</div></div><div class="m"><div class="yr">10 ans</div><div class="amt">${moneyK(p.ten)}</div></div><div class="m"><div class="yr">Retraite</div><div class="amt">${moneyK(p.retraite)}</div></div><div class="m"><div class="yr">95 ans</div><div class="amt">?</div></div></div></div>
+    <div class="card"><div class="eyebrow">Évolution année par année</div>${evoCols(c,cp)}<div class="evonote">Le score progresse à mesure que les missions sont réalisées. C'est ce suivi qui <b>déclenche les missions complémentaires</b> et fidélise le client. Une relance part automatiquement chaque année.</div></div>
+  </div>`;
+}
+function synFro(c,cp){
+  const radItems=cp.pil.map(p=>({label:p.name.split(' ')[0],value:p.pct}));
+  const pilHtml=cp.pil.map(p=>{const lc=lecture(p.pct,'fro');return `<div class="axline"><span class="lab">${p.name}</span>${bar(p.pct,lc.c)}<span class="vv lv-${lc.c}">${p.pct}</span></div>`;}).join('');
+  const sumHi=cp.cost.reduce((s,x)=>s+x.hi,0);
+  const costbar=cp.cost.map(it=>`<i style="width:${it.active?(it.hi/sumHi*100):0}%;background:${it.col}"></i>`).join('');
+  const costleg=cp.cost.map(it=>`<div class="cl ${it.active?'':'off'}"><span class="sw" style="background:${it.col}"></span><span class="n">${it.nm}${it.active?'':'<span class="rez">✓ traité</span>'}</span><span class="a">${moneyK(it.lo)} – ${moneyK(it.hi)}</span></div>`).join('');
+  return `
+  <div class="grid row-2">
+    <div class="card"><div class="eyebrow">Indice CAP Frontalier</div><div class="hero">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}<div class="axes"><div class="lead">6 piliers · fiscalité pondérée à 10 % volontairement</div>${pilHtml}</div></div></div>
+    <div class="card inaction"><div class="lbl">◆ Coût de l'inaction</div><div class="amount"><b>${money(cp.clo)}</b><span class="dash">→</span><b>${money(cp.chi)}</b></div>
+      <div class="cap">« Vous gagnez bien votre vie en Suisse. Notre rôle est de vérifier que cet argent construit réellement votre avenir. »</div>
+      <div class="costbar">${costbar}</div><div class="costleg">${costleg}</div></div>
+  </div>
+  <div class="grid row-2">
+    <div class="card"><div class="eyebrow">Cartographie des 6 piliers</div><div class="radarwrap">${radar(radItems)}<div class="side">${cp.pil.map(p=>{const cl=lecture(p.pct,'fro').c;return `<div class="legrow"><span class="dot bg-${cl}"></span><span class="nm">${p.name}</span><span class="vv lv-${cl}">${p.pct}</span></div>`;}).join('')}</div></div></div>
+    <div class="card"><div class="eyebrow">Évolution année par année</div>${evoCols(c,cp)}<div class="evonote">Le suivi annuel <b>déclenche les missions complémentaires</b> : retraite franco-suisse, 2ᵉ pilier, protection famille. Les produits sont des conséquences, pas le point de départ.</div></div>
+  </div>`;
+}
+function viewQuest(c,kind){
+  const isFlash=kind==='flash';
+  const data=c.seg==='dir'?(isFlash?DIR_FLASH:DIR_DIAG):(isFlash?FRO_FLASH:FRO_DIAG);
+  const answers=c[kind];
+  const groups={};data.forEach(q=>{const g=c.seg==='dir'?q.axe:FRO_PILIERS[q.pil][0];(groups[g]=groups[g]||[]).push(q);});
+  const answered=data.filter(q=>answers[q.id]).length,pct=Math.round(answered/data.length*100);
+  const gs=groupScore(data,answers),lc=lecture(gs.pct,c.seg);
+  const title=isFlash?(c.seg==='dir'?'Boussole CAP — 20 questions':'CAP Flash — 20 questions'):(c.seg==='dir'?'Diagnostic CAP — 60 questions':'Diagnostic Frontalier — 36 questions');
+  const desc=isFlash?"Diagnostic initial, rapide, en rendez-vous découverte — pour décider si l'on va plus loin.":"Diagnostic complet et pondéré. C'est lui qui alimente le cockpit, le coût de l'inaction et les missions.";
+  let blocks='';
+  for(const g in groups){const bs=groupScore(groups[g],answers),blc=lecture(bs.pct,c.seg);
+    blocks+=`<div class="qblock"><div class="bh"><span class="t">${g}</span><span class="s lv-${blc.c}">${bs.ans}/${bs.tot} · ${bs.pct}/100</span></div>`;
+    blocks+=groups[g].map(q=>{const a=answers[q.id];const btns=[['oui','Oui'],['partiel','Partiel'],['non','Non'],['na','N-C']].map(o=>`<button data-q="${q.id}" data-a="${o[0]}" class="${a===o[0]?'sel':''}">${o[1]}</button>`).join('');
+      return `<div class="q"><div class="qt"><span class="qid">${q.id}</span>${q.t}${q.inv?' <span style="color:var(--moon-faint);font-size:11px">(inversée)</span>':''}</div><div class="seg-ctl">${btns}</div></div>`;}).join('');
+    blocks+='</div>';}
+  return `<div class="qintro"><div class="txt"><h3>${title}</h3><p>${desc} Répondu avec le client ; chaque réponse recalcule le score en direct.</p></div>
+    <div class="qactions"><button class="btn-ghost accent" data-fill="${kind}">⚡ Pré-remplir (démo)</button><button class="btn-ghost" data-reset="${kind}">Réinitialiser</button></div></div>
+    <div class="qlayout"><div>${blocks}</div>
+      <div class="qside"><div class="card">${gauge(gs.pct,lc.c,lc.l,140)}
+        <div class="progresswrap"><div class="progressbar"><i style="width:${pct}%"></i></div><div class="progresslabel">${answered} / ${data.length} questions</div></div>
+        ${isFlash?`<div class="flashcta" style="margin-top:16px"><button class="btn" data-goto="diag">Lancer le Diagnostic →</button></div><p style="font-size:11.5px;color:var(--moon-faint);margin:12px 0 0;line-height:1.5">${gs.pct<60?'Vulnérabilités détectées : le diagnostic complet est recommandé.':'Base saine : le diagnostic complet affinera les priorités.'}</p>`:''}
+      </div></div></div>`;
+}
+function viewMissions(c,cp){
+  const det=detected(c,cp),top=det.slice(0,4),rest=det.slice(4);
+  const rows=top.map((m,i)=>{const prioL=c.seg==='dir'?(m.prio===1?'Priorité 1':'Priorité 2'):m.prio;const prioC=c.seg==='dir'?(m.prio===1?'p1':'p2'):(m.prio==='Haute'?'p1':'p2');
+    const hz=['Immédiat','3 – 6 mois','6 – 12 mois','12 mois'][i]||'12 mois';const fee=m.lo===m.hi?money(m.lo):`${money(m.lo)} – ${money(m.hi)}`;
+    return `<div class="m"><div class="rk">${i+1}</div><div class="body"><div class="nm">${m.nm}</div><div class="why">${m.why}</div><div class="tags"><span class="tag ${prioC}">${prioL}</span><span class="tag">Pilier à ${m.sc}/100</span><span class="tag hz">${hz}</span></div></div><div class="fee"><div class="amt">${fee}</div><div class="st">À proposer</div></div></div>`;}).join('');
+  const restHtml=rest.length?`<div class="restpistes"><b>${rest.length} autres pistes détectées</b> — ${rest.map(m=>m.nm).join(' · ')}</div>`:'';
+  return `<div class="grid"><div class="card"><div class="eyebrow">Plan d'action 12 mois <span class="hint">— missions détectées automatiquement</span></div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 20px;line-height:1.55">Les missions se déclenchent selon les scores faibles du diagnostic. Modifiez une réponse dans le Diagnostic : la liste et l'ordre se recomposent en direct.</p>
+    <div class="miss">${rows||'<p style="color:var(--moon-faint)">Aucune mission prioritaire — situation maîtrisée.</p>'}</div>${restHtml}
+    <div class="misstotal"><span class="l">Potentiel d'honoraires détecté sur ce dossier</span><span class="r" data-count="${Math.round(cp.potentiel)}">0</span></div></div></div>`;
+}
+function viewRapport(c,cp){
+  const top=detected(c,cp).slice(0,3);
+  const concl=c.seg==='dir'?`Votre situation mérite une structuration prioritaire. ${cp.indScore.PrepTransmission<40?'La transmission familiale constitue un enjeu majeur. ':''}${cp.indScore.PerenniteFin<40?'La pérennité financière doit être quantifiée plus finement.':''}`:`CAP Frontalier ne vise pas à vendre un produit fiscal : il identifie les décisions prioritaires, mesure le coût de l'inaction et organise une feuille de route.`;
+  return `<div class="grid"><div class="card">
+    <div class="eyebrow">Rapport ${c.seg==='dir'?'dirigeant':'client'} <span class="hint">— restitution</span></div>
+    <div class="rapport-hero">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}<div class="txt"><div class="nm">${c.nm}</div><p>${c.seg==='dir'?"Votre entreprise et votre patrimoine ont été analysés selon la méthode CAP Eligi. Les priorités ci-dessous sont les décisions à plus fort impact à court terme.":"Vous gagnez bien votre vie en Suisse. Notre rôle est de vérifier que cet argent construit réellement votre avenir."}</p></div></div>
+    <div class="rap-cost"><div class="l">Coût de l'inaction estimé</div><div class="v">${money(cp.clo)} <span style="color:var(--moon-faint)">→</span> ${money(cp.chi)}</div></div>
+    <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin:20px 0 12px">Vos ${top.length} priorités</div>
+    <div class="miss">${top.map((m,i)=>`<div class="m"><div class="rk">${i+1}</div><div class="body"><div class="nm">${m.nm}</div><div class="why">${m.why}</div></div><div class="fee"><div class="amt">${m.lo===m.hi?money(m.lo):money(m.lo)+' – '+money(m.hi)}</div></div></div>`).join('')}</div>
+    <p class="concl">${concl}</p>
+    <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><button class="btn-ghost accent" data-toast="Génération du PDF — gérée par un scénario Make.com dans la version finale.">⬇ Exporter le rapport PDF</button><button class="btn-ghost" data-toast="Rétro-planning envoyé au client (démo).">Envoyer le rétro-planning</button></div>
+  </div></div>`;
+}
+function evoCols(c,cp){
+  const years=[...c.history,[String(2026),cp.global,'en cours']];
+  return `<div class="cols">${years.map((y,i)=>{const cl=lecture(y[1],c.seg).c;const cur=i===years.length-1;return `<div class="col ${cur?'':'past'}"><div class="bwrap"><div class="b" style="--h:${y[1]}%"><div class="v lv-${cl}">${y[1]}</div></div></div><div class="yl">${y[0]}</div><div class="dl">${y[2]}</div></div>`;}).join('')}</div>`;
+}
+function viewEvo(c,cp){
+  const rows=(c.seg==='dir'?cp.axes.map(a=>[a.name,a.pct]):cp.pil.map(p=>[p.name,p.pct]));
+  return `<div class="grid"><div class="card"><div class="eyebrow">Évolution du CAP année par année</div>${evoCols(c,cp)}<div class="evonote">Chaque revue annuelle est archivée. Le client <b>voit sa progression</b> — c'est le meilleur argument pour poursuivre l'accompagnement.</div></div>
+    <div class="card"><div class="eyebrow">Comparatif N-1 → N par ${c.seg==='dir'?'axe':'pilier'}</div>
+      ${rows.map(x=>{const prev=Math.max(0,x[1]-(5+((x[0].length*3)%8)));const d=x[1]-prev;const cl=lecture(x[1],c.seg).c;
+        return `<div class="axline" style="margin-bottom:14px"><span class="lab" style="width:158px">${x[0]}</span>${bar(x[1],cl)}<span class="vv lv-${cl}">${x[1]}</span><span style="width:50px;text-align:right;font-size:12px;color:var(--good)">▲ +${d}</span></div>`;}).join('')}
+      <p style="font-size:12px;color:var(--moon-faint);margin-top:18px">Illustration de la mécanique N-1 → N. En production, chaque revue est comparée automatiquement à la précédente.</p></div></div>`;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));const el=$('#v-'+v);el.classList.add('on');el.classList.remove('fadein-view');void el.offsetWidth;el.classList.add('fadein-view');window.scrollTo({top:0,behavior:'smooth'});}
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600);}
+$('#enter').onclick=()=>{$('#login').style.display='none';$('#app').classList.add('on');renderRows('all');};
+$('#logout').onclick=()=>{$('#app').classList.remove('on');$('#login').style.display='grid';};
+document.addEventListener('click',e=>{
+  const nav=e.target.closest('[data-nav]');if(nav){showView(nav.dataset.nav);if(nav.dataset.nav==='clients')renderRows(document.querySelector('.chip.active')?.dataset.filter||'all');return;}
+  const row=e.target.closest('tr.live');if(row&&row.dataset.open){openClient(row.dataset.open);return;}
+  const chip=e.target.closest('.chip');if(chip){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');renderRows(chip.dataset.filter);return;}
+  const tab=e.target.closest('#subnav button');if(tab){cur.tab=tab.dataset.tab;renderTab();return;}
+  const goto=e.target.closest('[data-goto]');if(goto){cur.tab=goto.dataset.goto;renderTab();return;}
+  const ans=e.target.closest('.seg-ctl button');if(ans){CLIENTS[cur.id][cur.tab][ans.dataset.q]=ans.dataset.a;renderTab();refreshHead();return;}
+  const fill=e.target.closest('[data-fill]');if(fill){const c=CLIENTS[cur.id],k=fill.dataset.fill;const src=c.seg==='dir'?(k==='flash'?DIR_DEMO_FLASH:DIR_DEMO):(k==='flash'?FRO_DEMO_FLASH:FRO_DEMO);c[k]={...src};renderTab();refreshHead();toast('Réponses de démonstration chargées.');return;}
+  const reset=e.target.closest('[data-reset]');if(reset){CLIENTS[cur.id][reset.dataset.reset]={};renderTab();refreshHead();return;}
+  const tt=e.target.closest('[data-toast]');if(tt){toast(tt.dataset.toast);return;}
+});
+function refreshHead(){const c=CLIENTS[cur.id],cp=compute(c);const mg=$('#chead .miniglobe');if(mg)mg.innerHTML=`<div class="v lv-${cp.glecture.c}">${cp.global}</div><div class="o">CAP / 100 · ${cp.glecture.l}</div>`;
+  const badge=document.querySelector('#subnav button[data-tab="missions"] .badge');if(badge)badge.textContent=detected(c,cp).length;}
+</script>
+</body>
+</html>
