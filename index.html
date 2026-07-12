@@ -398,8 +398,8 @@
         <h1 class="h1">Portefeuille clients</h1></div>
         <button class="btn-add" data-newclient>＋ Nouveau dossier</button>
       </div>
-      <p class="sub">Chaque fiche regroupe l'historique complet du client, année par année. Un clic ouvre son cockpit : profil, diagnostic, score CAP, coût de l'inaction et missions à déclencher.</p>
-      <div class="banner"><span class="pulse"></span><b id="dueCount">clients à relancer</b><span>— revue annuelle CAP à échéance. Une relance est envoyée automatiquement au conseiller.</span></div>
+      <p class="sub">L'ensemble des clients suivis par le cabinet.</p>
+      <div class="banner"><span class="pulse"></span><b id="dueCount">clients à relancer</b><span>— revue annuelle à échéance</span></div>
       <div class="filters">
         <button class="chip active" data-filter="all">Tous</button>
         <button class="chip" data-filter="dir">Dirigeants</button>
@@ -757,11 +757,10 @@ function viewProfile(c,cp){
   const totalLine=c.seg==='dir'?`<div class="ptotal"><span class="l">Patrimoine total consolidé</span><span class="r" id="patTotal">${money(cp.patrimoine)}</span></div>`:'';
   return `<div class="pgrid">
     <div class="card"><div class="eyebrow">Profil & données patrimoniales</div><div class="pform">${fields}</div>${totalLine}
-      <div class="pnote"><b>Revenus / train de vie :</b> renseignés par le conseiller — le dirigeant les communique, le client ne les saisit pas. Ces montants alimentent directement le <b>coût de l'inaction</b> et la <b>trajectoire patrimoniale</b>. Modifie une valeur et regarde la Synthèse se recalculer.</div></div>
+      <div class="pnote"><b>Revenus / train de vie :</b> renseignés par le conseiller — le dirigeant les communique. Ces montants alimentent le coût de l'inaction et la trajectoire patrimoniale.</div></div>
     <div class="card"><div class="eyebrow">Impact immédiat</div>
       <div class="hero" style="justify-content:center">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}</div>
-      <div class="ptotal" style="margin-top:20px"><span class="l">Coût de l'inaction estimé</span><span class="r" style="color:var(--crit);font-size:20px">${moneyK(cp.clo)} – ${moneyK(cp.chi)}</span></div>
-      <p style="font-size:12px;color:var(--moon-faint);margin-top:14px;line-height:1.6">Ces chiffres découlent des données saisies ici + des réponses au diagnostic. C'est le cœur de la restitution client.</p></div>
+      <div class="ptotal" style="margin-top:20px"><span class="l">Coût de l'inaction estimé</span><span class="r" style="color:var(--crit);font-size:20px">${moneyK(cp.clo)} – ${moneyK(cp.chi)}</span></div></div>
   </div>`;
 }
 
@@ -783,16 +782,15 @@ function synDir(c,cp){
       <div class="costbar">${costbar}</div><div class="costleg">${costleg}</div>`:`<div class="amount" style="font-size:24px;font-family:var(--sans);font-weight:500;color:var(--moon-dim)">À déterminer</div><div class="cap">Le coût de l'inaction s'affiche une fois le diagnostic renseigné.</div>`}</div>
   </div>
   <div class="grid row-2">
-    <div class="card"><div class="eyebrow">Cartographie CAP <span class="hint">— 8 indicateurs clés</span></div><div class="radarwrap">${radar(radItems)}
+    <div class="card"><div class="eyebrow">Cartographie CAP</div><div class="radarwrap">${radar(radItems)}
       <div class="side">${radItems.map(it=>{const cl=lecture(it.value,'dir').c;return `<div class="legrow"><span class="dot bg-${cl}"></span><span class="nm">${it.label}</span><span class="vv lv-${cl}">${it.value}</span></div>`;}).join('')}</div></div></div>
-    <div class="card"><div class="eyebrow">Le Trio Eligi <span class="hint">— les 3 questions qui comptent</span></div><div class="trio">${trio}</div>
-      <div style="margin-top:18px;font-size:12.5px;color:var(--moon-faint);line-height:1.6">Résume la capacité du dirigeant à garder sa liberté de décision, sécuriser son niveau de vie et transmettre.</div></div>
+    <div class="card"><div class="eyebrow">Le Trio Eligi</div><div class="trio">${trio}</div></div>
   </div>
-  <div class="grid"><div class="card"><div class="eyebrow">Les 9 indicateurs Eligi <span class="hint">— calculés en direct depuis le diagnostic</span></div><div class="ind">${tiles}</div></div></div>
+  <div class="grid"><div class="card"><div class="eyebrow">Les 9 indicateurs Eligi</div><div class="ind">${tiles}</div></div></div>
   <div class="grid row-2">
     <div class="card traj"><div class="eyebrow">Trajectoire patrimoniale</div>${areaChart([p.today,p.ten,p.retraite,p.retraite])}
       <div class="marks"><div class="m"><div class="yr">Aujourd'hui</div><div class="amt">${moneyK(p.today)}</div></div><div class="m"><div class="yr">10 ans</div><div class="amt">${moneyK(p.ten)}</div></div><div class="m"><div class="yr">Retraite</div><div class="amt">${moneyK(p.retraite)}</div></div><div class="m"><div class="yr">95 ans</div><div class="amt">?</div></div></div></div>
-    <div class="card"><div class="eyebrow">Évolution année par année</div>${evoCols(c,cp)}<div class="evonote">Le score progresse à mesure que les missions sont réalisées. C'est ce suivi qui <b>déclenche les missions complémentaires</b> et fidélise le client. Une relance part automatiquement chaque année.</div></div>
+    <div class="card"><div class="eyebrow">Évolution année par année</div>${evoCols(c,cp)}</div>
   </div>`;
 }
 function synFro(c,cp){
@@ -803,14 +801,14 @@ function synFro(c,cp){
   const costleg=cp.cost.map(it=>`<div class="cl ${it.active?'':'off'}"><span class="sw" style="background:${it.col}"></span><span class="n">${it.nm}${it.active?'':'<span class="rez">✓ traité</span>'}</span><span class="a">${moneyK(it.lo)} – ${moneyK(it.hi)}</span></div>`).join('');
   return `
   <div class="grid row-2">
-    <div class="card"><div class="eyebrow">Indice CAP Frontalier</div><div class="hero">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}<div class="axes"><div class="lead">6 piliers · fiscalité pondérée à 10 % volontairement</div>${pilHtml}</div></div></div>
+    <div class="card"><div class="eyebrow">Indice CAP Frontalier</div><div class="hero">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}<div class="axes"><div class="lead">6 piliers · fiscalité pondérée à 10 %</div>${pilHtml}</div></div></div>
     <div class="card inaction"><div class="lbl">◆ Coût de l'inaction</div>${cp.answered>0?`<div class="amount"><b>${money(cp.clo)}</b><span class="dash">→</span><b>${money(cp.chi)}</b></div>
       <div class="cap">« Vous gagnez bien votre vie en Suisse. Notre rôle est de vérifier que cet argent construit réellement votre avenir. »</div>
       <div class="costbar">${costbar}</div><div class="costleg">${costleg}</div>`:`<div class="amount" style="font-size:24px;font-family:var(--sans);font-weight:500;color:var(--moon-dim)">À déterminer</div><div class="cap">Le coût de l'inaction s'affiche une fois le diagnostic renseigné.</div>`}</div>
   </div>
   <div class="grid row-2">
     <div class="card"><div class="eyebrow">Cartographie des 6 piliers</div><div class="radarwrap">${radar(radItems)}<div class="side">${cp.pil.map(p=>{const cl=lecture(p.pct,'fro').c;return `<div class="legrow"><span class="dot bg-${cl}"></span><span class="nm">${p.name}</span><span class="vv lv-${cl}">${p.pct}</span></div>`;}).join('')}</div></div></div>
-    <div class="card"><div class="eyebrow">Évolution année par année</div>${evoCols(c,cp)}<div class="evonote">Le suivi annuel <b>déclenche les missions complémentaires</b> : retraite franco-suisse, 2ᵉ pilier, protection famille. Les produits sont des conséquences, pas le point de départ.</div></div>
+    <div class="card"><div class="eyebrow">Évolution année par année</div>${evoCols(c,cp)}</div>
   </div>`;
 }
 function viewQuest(c,kind){
@@ -821,15 +819,15 @@ function viewQuest(c,kind){
   const answered=data.filter(q=>answers[q.id]).length,pct=Math.round(answered/data.length*100);
   const gs=groupScore(data,answers),lc=lecture(gs.pct,c.seg);
   const title=isFlash?(c.seg==='dir'?'Boussole CAP — 20 questions':'CAP Flash — 20 questions'):(c.seg==='dir'?'Diagnostic CAP — 60 questions':'Diagnostic Frontalier — 36 questions');
-  const desc=isFlash?"Diagnostic initial, rapide, en rendez-vous découverte — pour décider si l'on va plus loin.":"Diagnostic complet et pondéré. C'est lui qui alimente le cockpit, le coût de l'inaction et les missions.";
+  const desc=isFlash?"Diagnostic initial, rapide, en rendez-vous découverte — pour décider si l'on va plus loin.":"Diagnostic complet et pondéré.";
   let blocks='';
   for(const g in groups){const bs=groupScore(groups[g],answers),blc=lecture(bs.pct,c.seg);
     blocks+=`<div class="qblock"><div class="bh"><span class="t">${g}</span><span class="s lv-${blc.c}">${bs.ans}/${bs.tot} · ${bs.pct}/100</span></div>`;
     blocks+=groups[g].map(q=>{const a=answers[q.id];const btns=[['oui','Oui'],['partiel','Partiel'],['non','Non'],['na','N-C']].map(o=>`<button data-q="${q.id}" data-a="${o[0]}" class="${a===o[0]?'sel':''}">${o[1]}</button>`).join('');
       return `<div class="q"><div class="qt"><span class="qid">${q.id}</span>${q.t}${q.inv?' <span style="color:var(--moon-faint);font-size:11px">(inversée)</span>':''}</div><div class="seg-ctl">${btns}</div></div>`;}).join('');
     blocks+='</div>';}
-  return `<div class="qintro"><div class="txt"><h3>${title}</h3><p>${desc} Répondu avec le client ; chaque réponse recalcule le score en direct.</p></div>
-    <div class="qactions"><button class="btn-ghost accent" data-fill="${kind}">⚡ Pré-remplir (exemple)</button><button class="btn-ghost" data-reset="${kind}">Réinitialiser</button></div></div>
+  return `<div class="qintro"><div class="txt"><h3>${title}</h3><p>${desc}</p></div>
+    <div class="qactions"><button class="btn-ghost accent" data-fill="${kind}">Pré-remplir</button><button class="btn-ghost" data-reset="${kind}">Réinitialiser</button></div></div>
     <div class="qlayout"><div>${blocks}</div>
       <div class="qside"><div class="card">${gauge(gs.pct,lc.c,lc.l,140)}
         <div class="progresswrap"><div class="progressbar"><i style="width:${pct}%"></i></div><div class="progresslabel">${answered} / ${data.length} questions</div></div>
@@ -846,17 +844,16 @@ function viewMissions(c,cp){
   const retroCols=[['0 – 3 mois',[]],['3 – 6 mois',[]],['6 – 12 mois',[]]];
   top.forEach((m,i)=>{const c2=i===0?0:i===1?1:2;retroCols[c2][1].push(m);});
   const retro=retroCols.map(col=>`<div class="retrocol"><div class="h"><span class="dotm"></span>${col[0]}</div>${col[1].length?col[1].map(m=>`<div class="retroitem"><b>${m.nm}</b><span>${money(m.lo)} – ${money(m.hi)}</span></div>`).join(''):'<div class="retroitem empty">—</div>'}</div>`).join('');
-  return `<div class="grid"><div class="card"><div class="eyebrow">Missions détectées automatiquement <span class="hint">— selon les scores faibles du diagnostic</span></div>
-    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 20px;line-height:1.55">Modifie une réponse dans le Diagnostic : la liste, l'ordre et le potentiel se recomposent en direct.</p>
+  return `<div class="grid"><div class="card"><div class="eyebrow">Missions détectées</div>
     <div class="miss">${rows||'<p style="color:var(--moon-faint)">Aucune mission prioritaire — situation maîtrisée.</p>'}</div>${restHtml}
     <div class="misstotal"><span class="l">Potentiel d'honoraires détecté sur ce dossier</span><span class="r" data-count="${Math.round(cp.potentiel)}" data-money>0</span></div></div></div>
-    <div class="grid"><div class="card"><div class="eyebrow">Rétro-planning 12 mois <span class="hint">— feuille de route des actions</span></div><div class="retro">${retro}</div></div></div>`;
+    <div class="grid"><div class="card"><div class="eyebrow">Rétro-planning 12 mois</div><div class="retro">${retro}</div></div></div>`;
 }
 function viewRapport(c,cp){
   const top=detected(c,cp).slice(0,3);
   const concl=c.seg==='dir'?`Votre situation mérite une structuration prioritaire. ${cp.indScore.PrepTransmission<40?'La transmission familiale constitue un enjeu majeur. ':''}${cp.indScore.PerenniteFin<40?'La pérennité financière doit être quantifiée plus finement.':''}`:`CAP Frontalier ne vise pas à vendre un produit fiscal : il identifie les décisions prioritaires, mesure le coût de l'inaction et organise une feuille de route.`;
   return `<div class="grid"><div class="card">
-    <div class="eyebrow">Rapport ${c.seg==='dir'?'dirigeant':'client'} <span class="hint">— restitution</span></div>
+    <div class="eyebrow">Rapport ${c.seg==='dir'?'dirigeant':'client'}</div>
     <div class="rapport-hero">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}<div class="txt"><div class="nm">${c.nm}</div><p>${c.seg==='dir'?"Votre entreprise et votre patrimoine ont été analysés selon la méthode CAP Eligi. Les priorités ci-dessous sont les décisions à plus fort impact à court terme.":"Vous gagnez bien votre vie en Suisse. Notre rôle est de vérifier que cet argent construit réellement votre avenir."}</p></div></div>
     <div class="rap-cost"><div class="l">Coût de l'inaction estimé</div><div class="v">${money(cp.clo)} <span style="color:var(--moon-faint)">→</span> ${money(cp.chi)}</div></div>
     <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin:20px 0 12px">Vos ${top.length} priorités</div>
@@ -871,11 +868,10 @@ function evoCols(c,cp){
 }
 function viewEvo(c,cp){
   const rows=(c.seg==='dir'?cp.axes.map(a=>[a.name,a.pct]):cp.pil.map(p=>[p.name,p.pct]));
-  return `<div class="grid"><div class="card"><div class="eyebrow">Évolution du CAP année par année</div>${evoCols(c,cp)}<div class="evonote">Chaque revue annuelle est archivée. Le client <b>voit sa progression</b> — le meilleur argument pour poursuivre l'accompagnement.</div></div>
+  return `<div class="grid"><div class="card"><div class="eyebrow">Évolution du CAP année par année</div>${evoCols(c,cp)}</div>
     <div class="card"><div class="eyebrow">Comparatif N-1 → N par ${c.seg==='dir'?'axe':'pilier'}</div>
       ${rows.map(x=>{const prev=Math.max(0,x[1]-(5+((x[0].length*3)%8)));const d=x[1]-prev;const cl=lecture(x[1],c.seg).c;
-        return `<div class="axline" style="margin-bottom:14px"><span class="lab" style="width:158px">${x[0]}</span>${bar(x[1],cl)}<span class="vv lv-${cl}">${x[1]}</span><span style="width:50px;text-align:right;font-size:12px;color:var(--good)">▲ +${d}</span></div>`;}).join('')}
-      <p style="font-size:12px;color:var(--moon-faint);margin-top:18px">Illustration de la mécanique N-1 → N. En production, chaque revue est comparée automatiquement à la précédente.</p></div></div>`;
+        return `<div class="axline" style="margin-bottom:14px"><span class="lab" style="width:158px">${x[0]}</span>${bar(x[1],cl)}<span class="vv lv-${cl}">${x[1]}</span><span style="width:50px;text-align:right;font-size:12px;color:var(--good)">▲ +${d}</span></div>`;}).join('')}</div></div>`;
 }
 
 /* ---- vues cabinet ---- */
@@ -890,7 +886,7 @@ function viewSuivi(){
     <td><span class="relance ${c.due&&!c.relanced?'due':''}">${c.rel}</span></td>
     <td>${c.due?(c.relanced?'<span class="relbtn done">✓ relancé</span>':`<button class="relbtn" data-relance="${id}" onclick="event.stopPropagation()">Envoyer relance</button>`):'<span style="color:var(--moon-faint);font-size:12px">à jour</span>'}</td></tr>`).join('');
   return `<div class="topbar"><div><div class="crumb">Pilotage · proactivité</div><h1 class="h1">Suivi annuel</h1></div></div>
-    <p class="sub">Objectif : être proactif. Les clients dont la revue CAP arrive à échéance sont relancés chaque année, automatiquement — pour venir avec des solutions, pas attendre les problèmes.</p>
+    <p class="sub">Clients dont la revue annuelle arrive à échéance.</p>
     <div class="kpis">
       <div class="kpi"><div class="k">Clients suivis</div><div class="v">${CLIENT_ORDER.length}</div><div class="d">portefeuille actif</div></div>
       <div class="kpi"><div class="k">À relancer</div><div class="v lv-warn">${due}</div><div class="d">revue à échéance</div></div>
@@ -907,7 +903,7 @@ function viewPipeline(){
   const maxSum=Math.max(...missList.map(m=>m.sum),1);
   const byClient=all.map(x=>({...x,det:detected(x.c,x.cp).length})).sort((a,b)=>b.cp.potentiel-a.cp.potentiel);
   return `<div class="topbar"><div><div class="crumb">Pilotage · développement</div><h1 class="h1">Missions & honoraires</h1></div></div>
-    <p class="sub">Vue cabinet : le potentiel d'honoraires détecté sur l'ensemble du portefeuille, agrégé par mission. Le CAP ne fait pas que diagnostiquer — il alimente le développement du cabinet.</p>
+    <p class="sub">Potentiel d'honoraires détecté sur l'ensemble du portefeuille.</p>
     <div class="kpis">
       <div class="kpi"><div class="k">Potentiel total détecté</div><div class="v lv-good" data-count="${Math.round(totalPot)}" data-money>0</div><div class="d">honoraires (fourchette moyenne)</div></div>
       <div class="kpi"><div class="k">Missions détectées</div><div class="v">${all.reduce((s,x)=>s+detected(x.c,x.cp).length,0)}</div><div class="d">sur ${CLIENT_ORDER.length} clients</div></div>
