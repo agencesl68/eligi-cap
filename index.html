@@ -29,7 +29,7 @@
   ::selection{background:rgba(95,167,168,.3)}
   button{font-family:inherit}
 
-  /* ===================== LOGIN ===================== */
+  /* LOGIN */
   #login{position:fixed;inset:0;display:grid;place-items:center;padding:24px;overflow:hidden;
     background:radial-gradient(1400px 800px at 78% -10%,rgba(95,167,168,.16),transparent 55%),radial-gradient(1000px 700px at -10% 110%,rgba(70,125,127,.16),transparent 55%),var(--bg-0);z-index:100}
   .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;animation:float 18s ease-in-out infinite}
@@ -45,18 +45,18 @@
   .loginbox .base{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--moon-dim);margin-top:8px}
   .loginform{margin-top:40px;display:flex;flex-direction:column;gap:13px;text-align:left}
   .field label{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin-bottom:7px;display:block}
-  .field input{width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:var(--moon);font-family:var(--sans);font-size:14px;transition:.2s}
-  .field input:focus{outline:none;border-color:var(--teal);background:rgba(95,167,168,.06);box-shadow:0 0 0 3px rgba(95,167,168,.12)}
+  .field input,.field select{width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:var(--moon);font-family:var(--sans);font-size:14px;transition:.2s}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--teal);background:rgba(95,167,168,.06);box-shadow:0 0 0 3px rgba(95,167,168,.12)}
   .btn{border:none;cursor:pointer;border-radius:12px;font-size:14px;font-weight:600;padding:15px;background:linear-gradient(180deg,var(--teal-2),var(--teal));color:#0B1719;transition:.18s;letter-spacing:.01em}
   .btn:hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 12px 30px -10px var(--teal-glow)}
   .btn:active{transform:none}
   .loginhint{font-size:11.5px;color:var(--moon-faint);margin-top:22px;line-height:1.7}
 
-  /* ===================== SHELL ===================== */
+  /* SHELL */
   #app{display:none;grid-template-columns:256px 1fr;min-height:100vh}
   #app.on{display:grid}
   @media(max-width:900px){#app{grid-template-columns:1fr}.rail{display:none}}
-  .rail{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:28px 20px;display:flex;flex-direction:column;gap:26px;
+  .rail{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:28px 20px;display:flex;flex-direction:column;gap:24px;
     background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 40%),var(--bg-1)}
   .brand .word{font-family:var(--serif);font-weight:600;font-size:40px;line-height:.85}
   .brand .word b{color:var(--teal)}
@@ -76,13 +76,16 @@
   .logout{font-size:11px;color:var(--moon-faint);cursor:pointer;text-align:left;background:none;border:none;padding:2px}
   .logout:hover{color:var(--teal)}
 
-  .main{padding:34px 44px 70px;max-width:1220px}
+  .main{padding:34px 44px 70px;max-width:1240px}
   @media(max-width:640px){.main{padding:22px 18px 50px}}
   .view{display:none}.view.on{display:block}
 
+  .topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
   .crumb{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin-bottom:8px}
   .h1{font-family:var(--serif);font-weight:600;font-size:40px;line-height:1.02;margin:0;letter-spacing:.01em;text-wrap:balance}
   .sub{color:var(--moon-dim);font-size:14px;margin-top:10px;max-width:64ch;line-height:1.6}
+  .btn-add{border:none;cursor:pointer;border-radius:11px;font-size:13px;font-weight:600;padding:11px 18px;background:var(--teal);color:#0B1719;transition:.16s;white-space:nowrap}
+  .btn-add:hover{filter:brightness(1.07);transform:translateY(-1px)}
 
   .banner{display:flex;align-items:center;gap:15px;margin:24px 0 26px;padding:15px 20px;border-radius:14px;background:linear-gradient(90deg,rgba(231,192,106,.15),rgba(231,192,106,.02));border:1px solid rgba(231,192,106,.28)}
   .banner .pulse{width:9px;height:9px;border-radius:50%;background:var(--warn);animation:pulse 2.2s infinite;flex-shrink:0}
@@ -97,15 +100,12 @@
   .tablewrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.014);box-shadow:var(--shadow)}
   table{width:100%;border-collapse:collapse;font-size:13px}
   thead th{text-align:left;font-weight:600;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--moon-faint);padding:15px 20px;border-bottom:1px solid var(--line)}
-  tbody tr{transition:.14s;border-bottom:1px solid var(--line)}
+  tbody tr{transition:.14s;border-bottom:1px solid var(--line);cursor:pointer}
   tbody tr:last-child{border-bottom:none}
-  tbody tr.live{cursor:pointer}
-  tbody tr.live:hover{background:rgba(95,167,168,.08)}
-  tbody tr.live:hover .arrow{color:var(--teal);transform:translateX(3px)}
-  tbody tr.static{opacity:.48}
+  tbody tr:hover{background:rgba(95,167,168,.08)}
+  tbody tr:hover .arrow{color:var(--teal);transform:translateX(3px)}
   tbody td{padding:16px 20px;vertical-align:middle}
   .cli{font-weight:600}.cli small{display:block;font-weight:400;color:var(--moon-faint);font-size:11px;margin-top:2px}
-  .demo-pill{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(95,167,168,.4);border-radius:5px;padding:2px 6px;margin-left:8px;vertical-align:middle}
   .seg{font-size:11px;padding:4px 10px;border-radius:7px;border:1px solid var(--line-2);color:var(--moon-dim)}
   .seg.dir{color:var(--teal);border-color:rgba(95,167,168,.35);background:rgba(95,167,168,.08)}
   .score-chip{display:inline-flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums;font-weight:600}
@@ -114,7 +114,7 @@
   .relance{font-size:12px;color:var(--moon-dim)}.relance.due{color:var(--warn);font-weight:600}
   .arrow{color:var(--moon-faint);text-align:right;font-size:16px;transition:.16s;display:inline-block}
 
-  /* ===================== WORKSPACE ===================== */
+  /* WORKSPACE */
   .backlink{display:inline-flex;gap:8px;color:var(--moon-dim);font-size:12.5px;cursor:pointer;margin-bottom:18px;transition:.15s}
   .backlink:hover{color:var(--teal)}
   .chead{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px}
@@ -126,7 +126,7 @@
   .miniglobe .o{font-size:11px;color:var(--moon-faint);margin-top:2px}
 
   .subnav{display:flex;gap:2px;margin:24px 0 6px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-  .subnav button{font-size:13px;padding:12px 16px;border:none;background:none;color:var(--moon-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.16s}
+  .subnav button{font-size:13px;padding:12px 15px;border:none;background:none;color:var(--moon-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.16s}
   .subnav button:hover{color:var(--moon)}
   .subnav button.active{color:var(--moon);border-bottom-color:var(--teal)}
   .subnav button .badge{font-size:10px;background:rgba(230,127,112,.2);color:var(--crit);border-radius:10px;padding:1px 7px;margin-left:6px;font-weight:600}
@@ -135,12 +135,10 @@
   .row-2{grid-template-columns:1.1fr .9fr}
   @media(max-width:920px){.row-2{grid-template-columns:1fr}}
   .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.008));border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--shadow)}
-  .card.tight{padding:22px}
   .eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--moon-faint);margin-bottom:18px;display:flex;align-items:center;gap:10px}
   .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
   .eyebrow .hint{letter-spacing:0;text-transform:none;font-size:10.5px;color:var(--moon-faint)}
 
-  /* gauge */
   .hero{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
   .gauge{position:relative;flex-shrink:0}
   .gtrack{fill:none;stroke:rgba(239,242,241,.08);stroke-width:11}
@@ -160,7 +158,6 @@
   @keyframes grow{to{width:var(--w)}}
   .axline .vv{width:34px;text-align:right;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600}
 
-  /* radar */
   .radar{overflow:visible}
   .radar .rgrid{fill:none;stroke:rgba(239,242,241,.07);stroke-width:1}
   .radar .rspoke{stroke:rgba(239,242,241,.08);stroke-width:1}
@@ -179,7 +176,6 @@
   .legrow .nm{color:var(--moon-dim);flex:1}
   .legrow .vv{font-variant-numeric:tabular-nums;font-weight:600}
 
-  /* inaction */
   .inaction{background:radial-gradient(700px 300px at 15% -20%,rgba(230,127,112,.18),transparent 60%),linear-gradient(180deg,rgba(230,127,112,.1),rgba(255,255,255,.008));border:1px solid rgba(230,127,112,.3);display:flex;flex-direction:column;justify-content:center}
   .inaction .lbl{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:#EBA79D;margin-bottom:14px}
   .inaction .amount{font-family:var(--serif);font-weight:600;line-height:.95;font-variant-numeric:tabular-nums;color:#F5DED7;font-size:clamp(26px,3.4vw,42px)}
@@ -194,7 +190,6 @@
   .cl .n{color:var(--moon-dim);flex:1}.cl .n .rez{color:var(--good);font-size:10.5px;margin-left:6px}
   .cl .a{font-variant-numeric:tabular-nums;color:var(--moon);font-weight:600;white-space:nowrap}
 
-  /* trio */
   .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
   @media(max-width:640px){.trio{grid-template-columns:1fr}}
   .trio .t{border:1px solid var(--line);border-radius:14px;padding:20px;background:rgba(255,255,255,.02);transition:.16s}
@@ -204,7 +199,6 @@
   .trio .t .val small{font-size:16px;color:var(--moon-faint);font-family:var(--sans);font-weight:400}
   .trio .t .lv{font-size:11px;margin-top:9px;font-weight:600}
 
-  /* indicators */
   .ind{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
   @media(max-width:820px){.ind{grid-template-columns:repeat(2,1fr)}}
   .indtile{border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(255,255,255,.02);display:flex;align-items:center;gap:14px;transition:.16s}
@@ -216,23 +210,19 @@
   .ringmini .rc{position:absolute;inset:0;display:grid;place-items:center;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
   .indtile .k{font-size:12px;color:var(--moon-dim);line-height:1.35}
 
-  /* trajectory */
   .traj svg{overflow:visible}
   .traj .tpath{fill:none;stroke:var(--teal);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
   .anim .traj .tpath{animation:draw 1.4s cubic-bezier(.4,0,.2,1) .2s forwards}
   @keyframes draw{to{stroke-dashoffset:0}}
-  .traj .tfill{opacity:0}
-  .anim .traj .tfill{animation:fadein .8s ease .9s forwards}
-  .traj .tdot{fill:var(--teal);opacity:0}
-  .anim .traj .tdot{animation:fadein .4s ease 1s forwards}
+  .traj .tfill{opacity:0}.anim .traj .tfill{animation:fadein .8s ease .9s forwards}
+  .traj .tdot{fill:var(--teal);opacity:0}.anim .traj .tdot{animation:fadein .4s ease 1s forwards}
   .traj .marks{display:flex;justify-content:space-between;margin-top:12px}
   .traj .marks .m{text-align:center;flex:1}
   .traj .marks .m .yr{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--moon-faint)}
   .traj .marks .m .amt{font-family:var(--serif);font-weight:600;font-size:20px;margin-top:4px;font-variant-numeric:tabular-nums}
 
-  /* evolution columns */
   .cols{display:flex;align-items:flex-end;gap:16px;height:150px;padding:0 6px}
-  .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:0;height:100%;justify-content:flex-end}
+  .col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end}
   .col .bwrap{width:100%;max-width:60px;flex:1;display:flex;align-items:flex-end}
   .col .b{width:100%;border-radius:8px 8px 3px 3px;height:0;position:relative;background:linear-gradient(180deg,var(--teal-2),var(--teal-dim))}
   .col.past .b{background:linear-gradient(180deg,rgba(122,150,152,.6),rgba(122,150,152,.25))}
@@ -243,7 +233,6 @@
   .col .dl{font-size:10px;color:var(--moon-faint);margin-top:2px}
   .evonote{margin-top:20px;font-size:13px;color:var(--moon-dim);line-height:1.65}.evonote b{color:var(--teal)}
 
-  /* missions */
   .miss{display:flex;flex-direction:column;gap:12px}
   .m{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:17px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);transition:.16s}
   .m:hover{border-color:var(--teal-dim);background:rgba(95,167,168,.05);transform:translateX(2px)}
@@ -261,6 +250,33 @@
   .restpistes b{color:var(--moon)}
   .misstotal{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:16px 18px;border-radius:13px;background:linear-gradient(90deg,rgba(95,167,168,.12),rgba(95,167,168,.03));border:1px solid rgba(95,167,168,.28)}
   .misstotal .l{font-size:12.5px;color:var(--moon-dim)}.misstotal .r{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--teal);font-variant-numeric:tabular-nums}
+
+  /* rétro-planning */
+  .retro{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+  @media(max-width:720px){.retro{grid-template-columns:1fr}}
+  .retrocol{border:1px solid var(--line);border-radius:13px;padding:16px;background:rgba(255,255,255,.015)}
+  .retrocol .h{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .retrocol .h .dotm{width:7px;height:7px;border-radius:50%;background:var(--teal)}
+  .retroitem{font-size:12.5px;padding:10px 12px;border-radius:9px;background:rgba(95,167,168,.06);border:1px solid var(--line);margin-bottom:8px}
+  .retroitem b{display:block;font-weight:600;margin-bottom:2px}
+  .retroitem span{color:var(--moon-faint);font-size:11px}
+  .retroitem.empty{color:var(--moon-faint);background:none;border-style:dashed;text-align:center}
+
+  /* profil */
+  .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.pgrid{grid-template-columns:1fr}}
+  .pform{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+  @media(max-width:560px){.pform{grid-template-columns:1fr}}
+  .pf{display:flex;flex-direction:column;gap:6px}
+  .pf label{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--moon-faint)}
+  .pf .inp{display:flex;align-items:center;border:1px solid var(--line-2);border-radius:10px;background:rgba(255,255,255,.03);overflow:hidden;transition:.16s}
+  .pf .inp:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(95,167,168,.12)}
+  .pf .inp input{flex:1;min-width:0;padding:11px 13px;background:none;border:none;color:var(--moon);font-family:var(--sans);font-size:14px;font-variant-numeric:tabular-nums}
+  .pf .inp input:focus{outline:none}
+  .pf .inp .unit{padding:0 12px;font-size:12px;color:var(--moon-faint)}
+  .ptotal{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:16px 18px;border-radius:13px;background:rgba(95,167,168,.1);border:1px solid rgba(95,167,168,.28)}
+  .ptotal .l{font-size:12.5px;color:var(--moon-dim)}.ptotal .r{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--teal);font-variant-numeric:tabular-nums}
+  .pnote{font-size:12px;color:var(--moon-faint);line-height:1.6;margin-top:16px;padding:14px 16px;border-left:2px solid var(--teal-dim);background:rgba(95,167,168,.05);border-radius:0 10px 10px 0}
 
   /* questionnaire */
   .qintro{display:flex;justify-content:space-between;align-items:flex-start;gap:22px;flex-wrap:wrap;margin-bottom:6px}
@@ -294,11 +310,8 @@
   .seg-ctl button.sel[data-a="partiel"]{background:var(--warn);color:#0B1719;font-weight:600}
   .seg-ctl button.sel[data-a="non"]{background:var(--crit);color:#0B1719;font-weight:600}
   .seg-ctl button.sel[data-a="na"]{background:var(--moon-faint);color:#0B1719;font-weight:600}
-
-  .flashcta{margin-top:6px}
   .flashcta .btn{width:100%;padding:13px}
 
-  /* rapport */
   .rapport-hero{display:flex;gap:28px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
   .rapport-hero .txt{flex:1;min-width:240px}
   .rapport-hero .txt .nm{font-family:var(--serif);font-weight:600;font-size:26px;margin-bottom:9px}
@@ -308,8 +321,35 @@
   .rap-cost .v{font-family:var(--serif);font-weight:600;font-size:32px;color:#F5DED7;font-variant-numeric:tabular-nums}
   .concl{margin-top:24px;font-family:var(--serif);font-size:19px;font-style:italic;line-height:1.55;color:var(--moon)}
 
+  /* suivi + pipeline */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:22px}
+  @media(max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{border:1px solid var(--line);border-radius:15px;padding:20px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.006))}
+  .kpi .k{font-size:11px;color:var(--moon-faint);letter-spacing:.04em}
+  .kpi .v{font-family:var(--serif);font-weight:600;font-size:34px;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1}
+  .kpi .d{font-size:11px;color:var(--moon-faint);margin-top:6px}
+  .relbtn{border:1px solid var(--teal);background:rgba(95,167,168,.1);color:var(--teal);font-size:11.5px;padding:7px 13px;border-radius:8px;cursor:pointer;transition:.15s}
+  .relbtn:hover{background:var(--teal);color:#0B1719}
+  .relbtn.done{border-color:var(--good);color:var(--good);background:rgba(121,201,166,.08);cursor:default}
+  .pipebar{height:9px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden}
+  .pipebar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal-dim),var(--teal-2));border-radius:5px}
+
   .footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);font-size:11.5px;color:var(--moon-faint);line-height:1.7;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   .footer .word{font-family:var(--serif);font-size:17px;color:var(--moon-dim)}.footer .word b{color:var(--teal-dim)}
+  .footer .reset{color:var(--moon-faint);cursor:pointer;text-decoration:underline}
+  .footer .reset:hover{color:var(--crit)}
+
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(6,14,15,.7);backdrop-filter:blur(4px);display:none;place-items:center;z-index:150;padding:20px}
+  .overlay.on{display:grid}
+  .modal{width:100%;max-width:440px;background:var(--bg-2);border:1px solid var(--line-2);border-radius:20px;padding:28px;box-shadow:var(--shadow);animation:rise .4s ease}
+  .modal h3{font-family:var(--serif);font-weight:600;font-size:26px;margin:0 0 4px}
+  .modal p{font-size:12.5px;color:var(--moon-faint);margin:0 0 20px}
+  .modal .field{margin-bottom:14px}
+  .modal .actions{display:flex;gap:10px;margin-top:22px}
+  .modal .actions .btn{flex:1}
+  .modal .btn-cancel{background:transparent;border:1px solid var(--line-2);color:var(--moon-dim)}
+  .modal .btn-cancel:hover{color:var(--moon);box-shadow:none;transform:none}
 
   .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--raise);border:1px solid var(--line-2);color:var(--moon);padding:13px 22px;border-radius:12px;font-size:13px;box-shadow:0 16px 50px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.28s;z-index:200}
   .toast.on{opacity:1;transform:translateX(-50%)}
@@ -320,12 +360,10 @@
 </head>
 <body>
 
-<!-- LOGIN -->
 <section id="login">
   <div class="blob b1"></div><div class="blob b2"></div>
   <div class="loginbox">
-    <div class="word">Elig<b>i</b></div>
-    <div class="rule"></div>
+    <div class="word">Elig<b>i</b></div><div class="rule"></div>
     <div class="tag">Cockpit conseiller</div>
     <div class="base">Construire · Anticiper · Pérenniser</div>
     <div class="loginform">
@@ -333,19 +371,18 @@
       <div class="field"><label>Mot de passe</label><input type="password" id="pwd" value="demo1234"></div>
       <button class="btn" id="enter">Entrer dans le cockpit</button>
     </div>
-    <div class="loginhint">Prototype de démonstration — cliquez simplement « Entrer ».<br>Aucune donnée réelle, aucune connexion.</div>
+    <div class="loginhint">Prototype de démonstration — cliquez « Entrer ».<br>Les données saisies sont enregistrées dans ce navigateur uniquement.</div>
   </div>
 </section>
 
-<!-- APP -->
 <div id="app">
   <aside class="rail">
     <div class="brand"><div class="word">Elig<b>i</b></div><div class="tag">CAP · Cockpit conseiller</div></div>
     <nav class="nav">
       <div class="lbl">Pilotage</div>
       <a class="active" data-nav="clients"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>Portefeuille clients</a>
-      <a data-nav="clients"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>Suivi annuel</a>
-      <a data-nav="clients"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m0 14h16M8 15l3-4 3 3 4-6"/></svg>Missions &amp; honoraires</a>
+      <a data-nav="suivi"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>Suivi annuel</a>
+      <a data-nav="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m0 14h16M8 15l3-4 3 3 4-6"/></svg>Missions &amp; honoraires</a>
     </nav>
     <div class="advisor">
       <div class="card"><div class="avatar">M</div><div><div class="nm">Marie Schmitt</div><div class="ro">Conseillère Eligi</div></div></div>
@@ -354,12 +391,14 @@
     </div>
   </aside>
   <main class="main">
-    <!-- CLIENTS -->
     <section class="view on" id="v-clients">
-      <div class="crumb">Portefeuille · 100 dirigeants · 100 frontaliers</div>
-      <h1 class="h1">Portefeuille clients</h1>
-      <p class="sub">Chaque fiche regroupe l'historique complet du client, année par année. Un clic ouvre son cockpit : diagnostic, score CAP, coût de l'inaction et missions à déclencher.</p>
-      <div class="banner"><span class="pulse"></span><b>3 clients à relancer ce mois</b><span>— revue annuelle CAP arrivée à échéance. Une relance a été envoyée automatiquement au conseiller.</span></div>
+      <div class="topbar"><div>
+        <div class="crumb">Portefeuille · gestion de patrimoine</div>
+        <h1 class="h1">Portefeuille clients</h1></div>
+        <button class="btn-add" data-newclient>＋ Nouveau dossier</button>
+      </div>
+      <p class="sub">Chaque fiche regroupe l'historique complet du client, année par année. Un clic ouvre son cockpit : profil, diagnostic, score CAP, coût de l'inaction et missions à déclencher.</p>
+      <div class="banner"><span class="pulse"></span><b id="dueCount">clients à relancer</b><span>— revue annuelle CAP à échéance. Une relance est envoyée automatiquement au conseiller.</span></div>
       <div class="filters">
         <button class="chip active" data-filter="all">Tous</button>
         <button class="chip" data-filter="dir">Dirigeants</button>
@@ -370,9 +409,12 @@
         <thead><tr><th>Client</th><th>Segment</th><th>Score CAP</th><th>Dernière MàJ</th><th>Prochaine relance</th><th>Missions</th><th>Coût inaction</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
-      <div class="footer"><div class="word">Elig<b>i</b> · Construire · Anticiper · Pérenniser</div><div>Prototype · 2 dossiers pilotes complets (Keller &amp; Muller). Moteur de calcul dérivé des CAP Eligi V4 &amp; Frontalier V2.</div></div>
+      <div class="footer"><div class="word">Elig<b>i</b> · Construire · Anticiper · Pérenniser</div><div>Prototype — données fictives, enregistrées localement. <span class="reset" id="resetDemo">Réinitialiser la démo</span></div></div>
     </section>
-    <!-- WORKSPACE -->
+
+    <section class="view" id="v-suivi"></section>
+    <section class="view" id="v-pipeline"></section>
+
     <section class="view" id="v-client">
       <div class="backlink" data-nav="clients">← Portefeuille clients</div>
       <div class="chead" id="chead"></div>
@@ -380,6 +422,16 @@
       <div id="content"></div>
     </section>
   </main>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3>Nouveau dossier</h3><p>Crée une fiche client. Tu compléteras le patrimoine et le diagnostic ensuite.</p>
+    <div class="field"><label>Nom du client</label><input type="text" id="nc-nom" placeholder="Ex : Paul Durand"></div>
+    <div class="field"><label>Segment</label><select id="nc-seg"><option value="dir">Dirigeant</option><option value="fro">Frontalier</option></select></div>
+    <div class="field"><label>Société / statut</label><input type="text" id="nc-sub" placeholder="Ex : Durand SAS  ·  ou  Frontalier · Bâle"></div>
+    <div class="actions"><button class="btn btn-cancel" id="nc-cancel">Annuler</button><button class="btn" id="nc-create">Créer le dossier</button></div>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -479,13 +531,13 @@ const DIR_MISSIONS=[
 ].map(r=>({nm:r[0],axe:r[1],ind:r[2],lo:r[3],hi:r[4],why:r[5]}));
 
 const DIR_COST=[
- ["Transmission non anticipée",325500,976500,"PrepTransmission"],
- ["Pérennité financière non modélisée",312500,562500,"PerenniteFin"],
- ["Valorisation non optimisée",51000,153000,"Valorisabilite"],
- ["Structuration insuffisante",30600,102000,"Vulnerabilite"],
- ["Réemploi du capital non structuré",4200,16800,"Concentration"],
- ["Protection sociale insuffisante",2750,5500,"Vulnerabilite"],
-].map((r,i)=>({nm:r[0],lo:r[1],hi:r[2],ind:r[3],col:['#E67F70','#E6A164','#E7C06A','#C98C6A','#8FA9A0','#B0857A'][i]}));
+ ["Transmission non anticipée","total",.15,.45,"PrepTransmission","#E67F70"],
+ ["Pérennité financière non modélisée","capitalCible",.25,.45,"PerenniteFin","#E6A164"],
+ ["Valorisation non optimisée","professionnel",.05,.15,"Valorisabilite","#E7C06A"],
+ ["Structuration insuffisante","professionnel",.03,.10,"Vulnerabilite","#C98C6A"],
+ ["Réemploi du capital non structuré","financier",.02,.08,"Concentration","#8FA9A0"],
+ ["Protection sociale insuffisante","protection",.5,1,"Vulnerabilite","#B0857A"],
+].map(r=>({nm:r[0],base:r[1],pl:r[2],ph:r[3],ind:r[4],col:r[5]}));
 
 const DIR_INDS_LABEL={Construire:"Construire",Anticiper:"Anticiper","Pérenniser":"Pérenniser",Vulnerabilite:"Vulnérabilité",Concentration:"Concentration",PerenniteFin:"Pérennité fin.",Valorisabilite:"Valorisabilité",PrepTransmission:"Transmission",Anticipation:"Anticipation"};
 const DIR_RADAR_KEYS=["Construire","Anticiper","Pérenniser","PrepTransmission","PerenniteFin","Concentration","Vulnerabilite","Valorisabilite"];
@@ -519,56 +571,77 @@ const FRO_MISSIONS=[
  ["Optimisation fiscale raisonnée","FR","Faible",750,2000,"Optimiser uniquement si la décision reste pertinente."],
 ].map(r=>({nm:r[0],pil:r[1],prio:r[2],lo:r[3],hi:r[4],why:r[5]}));
 const FRO_COST=[
- ["Choix LPP rente / capital non étudié",20000,55000,"RL"],
- ["Protection familiale insuffisante",12000,35000,"PC"],
- ["Épargne non optimisée (frais, allocation)",13000,30000,"PE"],
-].map((r,i)=>({nm:r[0],lo:r[1],hi:r[2],pil:r[3],col:['#E67F70','#E6A164','#E7C06A'][i]}));
+ ["Choix LPP rente / capital non étudié","lpp",.08,.22,"RL","#E67F70"],
+ ["Protection familiale insuffisante","patrimoine",.034,.10,"PC","#E6A164"],
+ ["Épargne non optimisée (frais, allocation)","patrimoine",.037,.086,"PE","#E7C06A"],
+].map(r=>({nm:r[0],base:r[1],pl:r[2],ph:r[3],pil:r[4],col:r[5]}));
 
+/* ---- réponses de démo & générateur ---- */
 const DIR_DEMO={C1:'partiel',C2:'non',C3:'oui',C4:'partiel',C5:'partiel',C6:'non',C7:'non',C8:'partiel',C9:'partiel',C10:'oui',C11:'partiel',C12:'oui',C13:'partiel',C14:'partiel',C15:'non',C16:'oui',C17:'non',C18:'partiel',C19:'partiel',C20:'oui',A1:'partiel',A2:'oui',A3:'partiel',A4:'non',A5:'non',A6:'oui',A7:'partiel',A8:'non',A9:'partiel',A10:'partiel',A11:'non',A12:'partiel',A13:'non',A14:'non',A15:'non',A16:'partiel',A17:'partiel',A18:'partiel',A19:'non',A20:'partiel',P1:'non',P2:'partiel',P3:'partiel',P4:'partiel',P5:'non',P6:'partiel',P7:'non',P8:'partiel',P9:'partiel',P10:'partiel',P11:'non',P12:'non',P13:'non',P14:'non',P15:'partiel',P16:'non',P17:'non',P18:'partiel',P19:'non',P20:'partiel'};
 const DIR_DEMO_FLASH={B1:'partiel',B2:'partiel',B3:'non',B4:'oui',B5:'non',B6:'oui',B7:'partiel',B8:'partiel',B9:'partiel',B10:'oui',B11:'non',B12:'non',B13:'partiel',B14:'non',B15:'non',B16:'partiel',B17:'non',B18:'partiel',B19:'non',B20:'partiel'};
 function froPattern(map){const o={};FRO_DIAG.forEach((q,i)=>{o[q.id]=map[q.pil][i%map[q.pil].length]});return o;}
 const FRO_DEMO=froPattern({RF:['oui','partiel','oui','partiel','oui','partiel'],PE:['partiel','oui','partiel','non','partiel','non'],RL:['non','non','partiel','non','partiel','non'],PC:['oui','oui','partiel','oui','partiel','oui'],DV:['partiel','non','partiel','non','partiel','partiel'],FR:['oui','oui','partiel','oui','oui','partiel']});
 const FRO_DEMO_FLASH={F1:'oui',F2:'partiel',F3:'oui',F4:'partiel',F5:'non',F6:'partiel',F7:'non',F8:'non',F9:'partiel',F10:'non',F11:'oui',F12:'partiel',F13:'oui',F14:'partiel',F15:'non',F16:'partiel',F17:'non',F18:'oui',F19:'partiel',F20:'partiel'};
+function genAns(list,profile){const w={good:[.68,.27],medium:[.34,.4],weak:[.12,.33]}[profile];const o={};list.forEach((q,i)=>{const r=((i*37+17)%100)/100;o[q.id]=r<w[0]?'oui':r<w[0]+w[1]?'partiel':'non';});return o;}
+
+const DEFAULT_FIN={
+  dir:{immobilier:500000,financier:150000,professionnel:800000,autres:0,capitalCible:1000000,protection:5500,ild:20,revenus:120000,trainDeVie:80000},
+  fro:{salaireCHF:110000,conjoint:0,patrimoine:250000,lpp:180000,credit:200000,liquidites:30000,impot:8000}
+};
+function metaDir(sub){return [["Société",sub],["Phase","Développement"],["Conseiller","M. Schmitt"]];}
+function metaFro(sub){return [["Statut",sub],["Pôle","Hésingue Franco-Suisse"],["Conseiller","M. Schmitt"]];}
 
 const CLIENTS={
- keller:{seg:'dir',nm:"Jean-Marc Keller",meta:[["Société","KELLER Industries SAS"],["Phase","Développement"],["Conseiller","M. Schmitt"],["Revue","15/06/2026"]],
-   patr:{today:2170000,ten:2851534,retraite:2228500,ild:43.4},history:[["2024",33,"1 mission"],["2025",37,"2 missions"]],diag:{...DIR_DEMO},flash:{...DIR_DEMO_FLASH}},
- muller:{seg:'fro',nm:"Sébastien Muller",meta:[["Statut","Frontalier · Bâle"],["Pôle","Hésingue Franco-Suisse"],["Conseiller","M. Schmitt"],["Revue","02/07/2026"]],
-   patr:{},history:[["2024",44,"1 mission"],["2025",51,"1 mission"]],diag:{...FRO_DEMO},flash:{...FRO_DEMO_FLASH}},
+ keller:{seg:'dir',nm:"Jean-Marc Keller",sub:"KELLER Industries SAS",maj:"15/06/2026",rel:"Juin 2027",due:1,relanced:false,
+   fin:{immobilier:880000,financier:210000,professionnel:1020000,autres:60000,capitalCible:1250000,protection:5500,ild:43.4,revenus:180000,trainDeVie:96000},
+   history:[["2024",33,"1 mission"],["2025",37,"2 missions"]],diag:{...DIR_DEMO},flash:{...DIR_DEMO_FLASH}},
+ muller:{seg:'fro',nm:"Sébastien Muller",sub:"Frontalier · Bâle",maj:"02/07/2026",rel:"Juil. 2027",due:1,relanced:false,
+   fin:{salaireCHF:130000,conjoint:45000,patrimoine:350000,lpp:250000,credit:210000,liquidites:40000,impot:9000},
+   history:[["2024",44,"1 mission"],["2025",51,"1 mission"]],diag:{...FRO_DEMO},flash:{...FRO_DEMO_FLASH}},
+ weber:{seg:'dir',nm:"Christine Weber",sub:"Weber & Fils Holding",maj:"20/03/2026",rel:"Mars 2027",due:0,relanced:false,
+   fin:{immobilier:1200000,financier:600000,professionnel:1600000,autres:150000,capitalCible:1400000,protection:5500,ild:58,revenus:240000,trainDeVie:120000},
+   history:[["2024",68,"1 mission"],["2025",74,"1 mission"]],diag:genAns(DIR_DIAG,'good'),flash:genAns(DIR_FLASH,'good')},
+ frey:{seg:'fro',nm:"Laurent Freyburger",sub:"Frontalier · Genève",maj:"28/06/2026",rel:"Juin 2027",due:1,relanced:false,
+   fin:{salaireCHF:150000,conjoint:0,patrimoine:280000,lpp:300000,credit:340000,liquidites:20000,impot:12000},
+   history:[["2024",30,"0 mission"],["2025",34,"1 mission"]],diag:genAns(FRO_DIAG,'weak'),flash:genAns(FRO_FLASH,'weak')},
+ risch:{seg:'dir',nm:"Antoine Rischmann",sub:"Rischmann Négoce SAS",maj:"11/05/2026",rel:"Mai 2027",due:0,relanced:false,
+   fin:{immobilier:700000,financier:180000,professionnel:1100000,autres:40000,capitalCible:1150000,protection:5500,ild:31,revenus:160000,trainDeVie:104000},
+   history:[["2024",46,"1 mission"],["2025",50,"1 mission"]],diag:genAns(DIR_DIAG,'medium'),flash:genAns(DIR_FLASH,'medium')},
+ bianchi:{seg:'fro',nm:"Nadia Bianchi",sub:"Frontalière · Bâle",maj:"09/04/2026",rel:"Avr. 2027",due:0,relanced:false,
+   fin:{salaireCHF:120000,conjoint:60000,patrimoine:420000,lpp:220000,credit:150000,liquidites:55000,impot:7000},
+   history:[["2024",72,"1 mission"],["2025",78,"0 mission"]],diag:genAns(FRO_DIAG,'good'),flash:genAns(FRO_FLASH,'good')},
 };
-const ROWS=[
- {id:'keller',live:1,seg:'dir',nm:"Jean-Marc Keller",sub:"KELLER Industries SAS",segL:"Dirigeant",maj:"15/06/2026",rel:"Juin 2027 · dû",due:1},
- {id:'muller',live:1,seg:'fro',nm:"Sébastien Muller",sub:"Frontalier · Bâle",segL:"Frontalier",maj:"02/07/2026",rel:"Juil. 2027 · dû",due:1},
- {id:'weber',live:0,seg:'dir',nm:"Christine Weber",sub:"Weber & Fils Holding",segL:"Dirigeant",score:78,cl:'good',maj:"20/03/2026",rel:"Mars 2027",due:0,mi:1,mc:'good',ina:"≈ 340 k€"},
- {id:'frey',live:0,seg:'fro',nm:"Laurent Freyburger",sub:"Frontalier · Genève",segL:"Frontalier",score:37,cl:'crit',maj:"28/06/2026",rel:"Juin 2027 · dû",due:1,mi:5,mc:'crit',ina:"≈ 210 k€"},
- {id:'risch',live:0,seg:'dir',nm:"Antoine Rischmann",sub:"Rischmann Négoce SAS",segL:"Dirigeant",score:54,cl:'orange',maj:"11/05/2026",rel:"Mai 2027",due:0,mi:4,mc:'orange',ina:"≈ 960 k€"},
- {id:'bianchi',live:0,seg:'fro',nm:"Nadia Bianchi",sub:"Frontalière · Bâle",segL:"Frontalier",score:81,cl:'good',maj:"09/04/2026",rel:"Avr. 2027",due:0,mi:1,mc:'good',ina:"≈ 45 k€"},
-];
+const CLIENT_ORDER=['keller','muller','weber','frey','risch','bianchi'];
 
+/* ---- moteur ---- */
 function groupScore(qs,answers){let ob=0,mx=0,ans=0;for(const q of qs){const v=qVal(answers[q.id],q.inv);if(v==null)continue;ob+=v*q.w;mx+=5*q.w;ans++;}return{pct:mx?Math.round(ob/mx*100):0,ans,tot:qs.length};}
 function computeDir(c){
-  const A=c.diag;
+  const A=c.diag,f=c.fin;
   const axes=['Construire','Anticiper','Pérenniser'].map(a=>{const s=groupScore(DIR_DIAG.filter(q=>q.axe===a),A);return{name:a,...s};});
   const answered=DIR_DIAG.filter(q=>A[q.id]).length;
   const global=answered?Math.round(axes.reduce((x,a)=>x+a.pct,0)/3):0;
   const indScore={};["Vulnerabilite","Concentration","PerenniteFin","Valorisabilite","PrepTransmission","Anticipation"].forEach(k=>{indScore[k]=groupScore(DIR_DIAG.filter(q=>q.ind===k),A).pct;});
   indScore.Construire=axes[0].pct;indScore.Anticiper=axes[1].pct;indScore["Pérenniser"]=axes[2].pct;
-  const cost=DIR_COST.map(it=>({...it,active:(indScore[it.ind]??0)<60}));
+  const total=(f.immobilier||0)+(f.financier||0)+(f.professionnel||0)+(f.autres||0);
+  const bases={total,professionnel:f.professionnel||0,capitalCible:f.capitalCible||0,financier:f.financier||0,protection:f.protection||5500};
+  const cost=DIR_COST.map(it=>({...it,lo:Math.round(bases[it.base]*it.pl),hi:Math.round(bases[it.base]*it.ph),active:(indScore[it.ind]??0)<60}));
   const clo=cost.filter(x=>x.active).reduce((s,x)=>s+x.lo,0),chi=cost.filter(x=>x.active).reduce((s,x)=>s+x.hi,0);
   const miss=DIR_MISSIONS.map(m=>{const sc=indScore[m.ind]??50;let prio=sc<40?1:sc<58?2:3;return{...m,sc,prio};}).sort((a,b)=>a.sc-b.sc);
   const potentiel=miss.filter(m=>m.prio<=2).reduce((s,m)=>s+((m.lo+m.hi)/2),0);
-  return{seg:'dir',axes,global,glecture:lecture(global,'dir'),indScore,cost,clo,chi,miss,potentiel,answered,total:DIR_DIAG.length,
-    trio:[{k:"Liberté de décision — « Combien d'années sans revenu pro ? »",v:c.patr.ild,unit:" ans",lv:lecture(60,'dir')},
+  const traj={today:total,ten:Math.round(total*1.314),retraite:Math.round(total*1.027)};
+  return{seg:'dir',axes,global,glecture:lecture(global,'dir'),indScore,cost,clo,chi,miss,potentiel,answered,total:DIR_DIAG.length,patrimoine:total,traj,ild:f.ild,
+    trio:[{k:"Liberté de décision — « Combien d'années sans revenu pro ? »",v:f.ild,unit:" ans",lv:lecture(60,'dir')},
           {k:"Pérennité financière — « Mon patrimoine finance-t-il mon avenir ? »",v:indScore.PerenniteFin,unit:"/100",lv:lecture(indScore.PerenniteFin,'dir')},
           {k:"Préparation transmission — « Ma famille est-elle prête ? »",v:indScore.PrepTransmission,unit:"/100",lv:lecture(indScore.PrepTransmission,'dir')}]};
 }
 function computeFro(c){
-  const A=c.diag;
+  const A=c.diag,f=c.fin;
   const pil=Object.entries(FRO_PILIERS).map(([k,[nm,w]])=>{const s=groupScore(FRO_DIAG.filter(q=>q.pil===k),A);return{key:k,name:nm,weight:w,...s};});
   const answered=FRO_DIAG.filter(q=>A[q.id]).length;
   const global=answered?Math.round(pil.reduce((x,p)=>x+p.pct*p.weight,0)/100):0;
   const pmap={};pil.forEach(p=>pmap[p.key]=p.pct);
-  const cost=FRO_COST.map(it=>({...it,active:(pmap[it.pil]??0)<60}));
+  const bases={lpp:f.lpp||0,patrimoine:f.patrimoine||0};
+  const cost=FRO_COST.map(it=>({...it,lo:Math.round(bases[it.base]*it.pl),hi:Math.round(bases[it.base]*it.ph),active:(pmap[it.pil]??0)<60}));
   const clo=cost.filter(x=>x.active).reduce((s,x)=>s+x.lo,0),chi=cost.filter(x=>x.active).reduce((s,x)=>s+x.hi,0);
   const miss=FRO_MISSIONS.map(m=>({...m,sc:pmap[m.pil]??50})).sort((a,b)=>a.sc-b.sc);
   const potentiel=miss.filter(m=>m.sc<60).reduce((s,m)=>s+((m.lo+m.hi)/2),0);
@@ -578,7 +651,7 @@ const compute=c=>c.seg==='dir'?computeDir(c):computeFro(c);
 function detected(c,cp){return cp.miss.filter(m=>c.seg==='dir'?m.sc<58:m.sc<60);}
 
 /* ============================================================
-   GRAPHIQUES SVG SUR-MESURE
+   GRAPHIQUES SVG
    ============================================================ */
 function gauge(score,cl,label,size){
   size=size||156;const r=(size/2)-13,c=2*Math.PI*r,off=c-(score/100)*c;
@@ -604,17 +677,16 @@ function radar(items){
     <defs><radialGradient id="rgrad"><stop offset="0" stop-color="rgba(95,167,168,.45)"/><stop offset="1" stop-color="rgba(95,167,168,.1)"/></radialGradient></defs>
     ${grid}${spokes}<path class="rpoly" d="${dpath}Z"/>${dots}${labels}</svg>`;
 }
-function miniRing(v,cl){const size=52,r=21,c=2*Math.PI*r,off=c-(v/100)*c;
-  return `<div class="ringmini" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle class="rt" cx="${size/2}" cy="${size/2}" r="${r}"/><circle class="rp" cx="${size/2}" cy="${size/2}" r="${r}" stroke="var(--${cl})" style="--c:${c.toFixed(1)};--off:${off.toFixed(1)}"/></svg><div class="rc lv-${cl}">${v}</div></div>`;}
+function miniRing(v,cl,txt){const size=52,r=21,c=2*Math.PI*r,off=c-(v/100)*c;
+  return `<div class="ringmini" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle class="rt" cx="${size/2}" cy="${size/2}" r="${r}"/><circle class="rp" cx="${size/2}" cy="${size/2}" r="${r}" stroke="var(--${cl})" style="--c:${c.toFixed(1)};--off:${off.toFixed(1)}"/></svg><div class="rc lv-${cl}">${txt!=null?txt:v}</div></div>`;}
 function areaChart(vals){
-  const w=460,h=140,pad=14;const max=Math.max(...vals)*1.08,min=Math.min(...vals)*0.9;
-  const X=i=>pad+i*(w-2*pad)/(vals.length-1);const Y=v=>h-pad-((v-min)/(max-min))*(h-2*pad);
+  const w=460,h=140,pad=14;const max=Math.max(...vals)*1.08,min=Math.min(...vals)*0.9;const rng=(max-min)||1;
+  const X=i=>pad+i*(w-2*pad)/(vals.length-1);const Y=v=>h-pad-((v-min)/rng)*(h-2*pad);
   let line='',dots='';vals.forEach((v,i)=>{line+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1);dots+=`<circle class="tdot" cx="${X(i).toFixed(1)}" cy="${Y(v).toFixed(1)}" r="4.2"/>`;});
   const fill=line+`L${X(vals.length-1).toFixed(1)} ${h} L${X(0).toFixed(1)} ${h} Z`;
-  const len=1400;
   return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
     <defs><linearGradient id="tgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(95,167,168,.34)"/><stop offset="1" stop-color="rgba(95,167,168,0)"/></linearGradient></defs>
-    <path class="tfill" d="${fill}" fill="url(#tgrad)"/><path class="tpath" d="${line}" style="--len:${len}"/>${dots}</svg>`;
+    <path class="tfill" d="${fill}" fill="url(#tgrad)"/><path class="tpath" d="${line}" style="--len:1400"/>${dots}</svg>`;
 }
 
 /* ============================================================
@@ -626,38 +698,42 @@ function enter(root){
   root.classList.remove('anim');void root.offsetWidth;root.classList.add('anim');
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   root.querySelectorAll('[data-count]').forEach(el=>{
-    const target=parseInt(el.dataset.count,10)||0;if(reduce){el.textContent=target;return;}
-    const t0=performance.now(),dur=1100;
-    function step(t){const k=Math.min(1,(t-t0)/dur);el.textContent=Math.round(target*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step);}
+    const target=parseFloat(el.dataset.count)||0;if(reduce){el.textContent=Number.isInteger(target)?target:target;return;}
+    const t0=performance.now(),dur=1000;
+    function step(t){const k=Math.min(1,(t-t0)/dur);const val=target*(1-Math.pow(1-k,3));el.textContent=Number.isInteger(target)?Math.round(val):val.toFixed(0);if(k<1)requestAnimationFrame(step);}
     requestAnimationFrame(step);
   });
 }
-function renderRows(filter){
-  $('#rows').innerHTML=ROWS.filter(r=>filter==='all'||(filter==='due'?r.due:r.seg===filter)).map(r=>{
-    let score,cl,mi,mc,ina;
-    if(r.live){const cp=compute(CLIENTS[r.id]);score=cp.global;cl=cp.glecture.c;ina='≈ '+moneyK(cp.chi);mi=detected(CLIENTS[r.id],cp).length;mc=cl;}
-    else{score=r.score;cl=r.cl;mi=r.mi;mc=r.mc;ina=r.ina;}
-    return `<tr class="${r.live?'live':'static'}" data-seg="${r.seg}" data-due="${r.due}" ${r.live?`data-open="${r.id}"`:''}>
-      <td><span class="cli">${r.nm}${r.live?'<span class="demo-pill">démo live</span>':''}<small>${r.sub}</small></span></td>
-      <td><span class="seg ${r.seg==='dir'?'dir':''}">${r.segL}</span></td>
-      <td><span class="score-chip lv-${cl}">${score}<span class="bar"><i class="bg-${cl}" style="width:${score}%"></i></span></span></td>
-      <td class="num">${r.maj}</td><td><span class="relance ${r.due?'due':''}">${r.rel}</span></td>
-      <td class="num" style="font-weight:600">${mi} <span class="c-${mc}">●</span></td>
-      <td class="num">${ina}</td><td class="arrow">${r.live?'→':''}</td></tr>`;
+function rowsHTML(filter){
+  return CLIENT_ORDER.filter(id=>{const c=CLIENTS[id];return filter==='all'||(filter==='due'?c.due:c.seg===filter);}).map(id=>{
+    const c=CLIENTS[id],cp=compute(c),cl=cp.glecture.c,mi=detected(c,cp).length;
+    return `<tr data-open="${id}">
+      <td><span class="cli">${c.nm}<small>${c.sub}</small></span></td>
+      <td><span class="seg ${c.seg==='dir'?'dir':''}">${c.seg==='dir'?'Dirigeant':'Frontalier'}</span></td>
+      <td><span class="score-chip lv-${cl}">${cp.global}<span class="bar"><i class="bg-${cl}" style="width:${cp.global}%"></i></span></span></td>
+      <td class="num">${c.maj}</td>
+      <td><span class="relance ${c.due&&!c.relanced?'due':''}">${c.relanced?'✓ relancé':c.rel+(c.due?' · dû':'')}</span></td>
+      <td class="num" style="font-weight:600">${mi} <span class="c-${cl}">●</span></td>
+      <td class="num">≈ ${moneyK(cp.chi)}</td><td class="arrow">→</td></tr>`;
   }).join('');
 }
-function openClient(id){
-  cur={id,tab:'synthese'};const c=CLIENTS[id];const cp=compute(c);
-  $('#chead').innerHTML=`<div><div class="nm">${c.nm}</div><div class="meta">${c.meta.map(m=>`<span><b>${m[0]}</b> ${m[1]}</span>`).join('')}</div></div>
+function renderRows(filter){$('#rows').innerHTML=rowsHTML(filter);
+  const due=CLIENT_ORDER.filter(id=>CLIENTS[id].due&&!CLIENTS[id].relanced).length;
+  $('#dueCount').textContent=due+' client'+(due>1?'s':'')+' à relancer ce mois';}
+
+function openClient(id,tab){
+  cur={id,tab:tab||'synthese'};const c=CLIENTS[id],cp=compute(c);
+  $('#chead').innerHTML=`<div><div class="nm">${c.nm}</div><div class="meta">${(c.seg==='dir'?metaDir(c.sub):metaFro(c.sub)).map(m=>`<span><b>${m[0]}</b> ${m[1]}</span>`).join('')}<span><b>Revue</b> ${c.maj}</span></div></div>
     <div class="miniglobe"><div class="v lv-${cp.glecture.c}">${cp.global}</div><div class="o">CAP / 100 · ${cp.glecture.l}</div></div>`;
-  const tabs=[['synthese','Synthèse'],['flash','CAP Flash'],['diag','Diagnostic complet'],['missions','Missions & plan'],['rapport','Rapport client'],['evo','Évolution']];
+  const tabs=[['profil','Profil & données'],['synthese','Synthèse'],['flash','CAP Flash'],['diag','Diagnostic complet'],['missions','Missions & plan'],['rapport','Rapport client'],['evo','Évolution']];
   $('#subnav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" class="${t[0]===cur.tab?'active':''}">${t[1]}${t[0]==='missions'?`<span class="badge">${detected(c,cp).length}</span>`:''}</button>`).join('');
   showView('client');renderTab();
 }
 function renderTab(){
   const c=CLIENTS[cur.id],cp=compute(c),el=$('#content');
   document.querySelectorAll('#subnav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===cur.tab));
-  if(cur.tab==='synthese')el.innerHTML=c.seg==='dir'?synDir(c,cp):synFro(c,cp);
+  if(cur.tab==='profil')el.innerHTML=viewProfile(c,cp);
+  else if(cur.tab==='synthese')el.innerHTML=c.seg==='dir'?synDir(c,cp):synFro(c,cp);
   else if(cur.tab==='flash')el.innerHTML=viewQuest(c,'flash');
   else if(cur.tab==='diag')el.innerHTML=viewQuest(c,'diag');
   else if(cur.tab==='missions')el.innerHTML=viewMissions(c,cp);
@@ -665,22 +741,41 @@ function renderTab(){
   else if(cur.tab==='evo')el.innerHTML=viewEvo(c,cp);
   enter(el);
 }
+
+function viewProfile(c,cp){
+  const F=[c.seg==='dir'
+    ?[["nm","Nom du client","",c.nm,1],["sub","Société","",c.sub,1],["immobilier","Patrimoine immobilier","€"],["financier","Patrimoine financier mobilisable","€"],["professionnel","Valeur de l'entreprise","€"],["autres","Autres actifs","€"],["capitalCible","Capital cible (niveau de vie futur)","€"],["revenus","Rémunération annuelle","€"],["trainDeVie","Train de vie annuel","€"],["ild","Liberté de décision","ans"]]
+    :[["nm","Nom du client","",c.nm,1],["sub","Statut","",c.sub,1],["salaireCHF","Salaire suisse annuel","€"],["conjoint","Salaire conjoint","€"],["patrimoine","Patrimoine financier","€"],["lpp","Capital LPP (2ᵉ pilier)","€"],["credit","Capital restant dû RP","€"],["liquidites","Liquidités","€"],["impot","Impôt annuel","€"]]][0];
+  const fields=F.map(f=>{
+    const key=f[0],lab=f[1],unit=f[2],txt=f[3],isText=f[4];
+    if(isText)return `<div class="pf"><label>${lab}</label><div class="inp"><input type="text" data-meta="${key}" value="${(txt||'').replace(/"/g,'&quot;')}"></div></div>`;
+    return `<div class="pf"><label>${lab}</label><div class="inp"><input type="number" data-fin="${key}" value="${c.fin[key]??0}">${unit?`<span class="unit">${unit}</span>`:''}</div></div>`;
+  }).join('');
+  const totalLine=c.seg==='dir'?`<div class="ptotal"><span class="l">Patrimoine total consolidé</span><span class="r" id="patTotal">${money(cp.patrimoine)}</span></div>`:'';
+  return `<div class="pgrid">
+    <div class="card"><div class="eyebrow">Profil & données patrimoniales</div><div class="pform">${fields}</div>${totalLine}
+      <div class="pnote"><b>Revenus / train de vie :</b> renseignés par le conseiller — le dirigeant les communique, le client ne les saisit pas. Ces montants alimentent directement le <b>coût de l'inaction</b> et la <b>trajectoire patrimoniale</b>. Modifie une valeur et regarde la Synthèse se recalculer.</div></div>
+    <div class="card"><div class="eyebrow">Impact immédiat</div>
+      <div class="hero" style="justify-content:center">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}</div>
+      <div class="ptotal" style="margin-top:20px"><span class="l">Coût de l'inaction estimé</span><span class="r" style="color:var(--crit);font-size:20px">${moneyK(cp.clo)} – ${moneyK(cp.chi)}</span></div>
+      <p style="font-size:12px;color:var(--moon-faint);margin-top:14px;line-height:1.6">Ces chiffres découlent des données saisies ici + des réponses au diagnostic. C'est le cœur de la restitution client.</p></div>
+  </div>`;
+}
+
 function synDir(c,cp){
   const axesHtml=cp.axes.map(a=>{const lc=lecture(a.pct,'dir');return `<div class="axline"><span class="lab">${a.name}</span>${bar(a.pct,lc.c)}<span class="vv lv-${lc.c}">${a.pct}</span></div>`;}).join('');
   const radItems=DIR_RADAR_KEYS.map(k=>({label:DIR_INDS_LABEL[k],value:cp.indScore[k]??0}));
-  const totalActive=cp.cost.filter(x=>x.active);const sumHi=cp.cost.reduce((s,x)=>s+x.hi,0);
+  const sumHi=cp.cost.reduce((s,x)=>s+x.hi,0)||1;
   const costbar=cp.cost.map(it=>`<i style="width:${it.active?(it.hi/sumHi*100):0}%;background:${it.col}"></i>`).join('');
   const costleg=cp.cost.map(it=>`<div class="cl ${it.active?'':'off'}"><span class="sw" style="background:${it.col}"></span><span class="n">${it.nm}${it.active?'':'<span class="rez">✓ traité</span>'}</span><span class="a">${moneyK(it.lo)} – ${moneyK(it.hi)}</span></div>`).join('');
-  const trio=cp.trio.map(t=>`<div class="t"><div class="k">${t.k}</div><div class="val"><span data-count="${Math.round(t.v)}">0</span>${t.v%1?','+String(t.v).split('.')[1]:''}<small>${t.unit}</small></div><div class="lv lv-${t.lv.c}">${t.lv.l}</div></div>`).join('');
+  const trio=cp.trio.map(t=>{const dec=t.v%1?','+String(t.v).split('.')[1]:'';return `<div class="t"><div class="k">${t.k}</div><div class="val"><span data-count="${Math.floor(t.v)}">0</span>${dec}<small>${t.unit}</small></div><div class="lv lv-${t.lv.c}">${t.lv.l}</div></div>`;}).join('');
   const tiles=DIR_TILE_KEYS.map(k=>{const v=cp.indScore[k];const cl=lecture(v,'dir').c;return `<div class="indtile">${miniRing(v,cl)}<div class="k">${DIR_INDS_LABEL[k]}</div></div>`;}).join('')
-    +`<div class="indtile">${miniRing(Math.min(100,Math.round(c.patr.ild/60*100)),'warn').replace(/>(\d+)<\/div>/,'>'+String(c.patr.ild).replace('.',',')+'</div>')}<div class="k">Liberté de décision <small style="color:var(--moon-faint)">(ans)</small></div></div>`;
-  const p=c.patr;
+    +`<div class="indtile">${miniRing(Math.min(100,Math.round(cp.ild/60*100)),'warn',String(cp.ild).replace('.',','))}<div class="k">Liberté de décision <small style="color:var(--moon-faint)">(ans)</small></div></div>`;
+  const p=cp.traj;
   return `
   <div class="grid row-2">
-    <div class="card"><div class="eyebrow">Score CAP global</div>
-      <div class="hero">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}<div class="axes"><div class="lead">Les 3 axes de la méthode CAP</div>${axesHtml}</div></div></div>
-    <div class="card inaction"><div class="lbl">◆ Coût de l'inaction</div>
-      <div class="amount"><b>${money(cp.clo)}</b><span class="dash">→</span><b>${money(cp.chi)}</b></div>
+    <div class="card"><div class="eyebrow">Score CAP global</div><div class="hero">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}<div class="axes"><div class="lead">Les 3 axes de la méthode CAP</div>${axesHtml}</div></div></div>
+    <div class="card inaction"><div class="lbl">◆ Coût de l'inaction</div><div class="amount"><b>${money(cp.clo)}</b><span class="dash">→</span><b>${money(cp.chi)}</b></div>
       <div class="cap">Impact patrimonial potentiel si les décisions prioritaires ne sont pas prises. Ce que le dirigeant risque de perdre — pas ce qu'il paie en honoraires.</div>
       <div class="costbar">${costbar}</div><div class="costleg">${costleg}</div></div>
   </div>
@@ -688,7 +783,7 @@ function synDir(c,cp){
     <div class="card"><div class="eyebrow">Cartographie CAP <span class="hint">— 8 indicateurs clés</span></div><div class="radarwrap">${radar(radItems)}
       <div class="side">${radItems.map(it=>{const cl=lecture(it.value,'dir').c;return `<div class="legrow"><span class="dot bg-${cl}"></span><span class="nm">${it.label}</span><span class="vv lv-${cl}">${it.value}</span></div>`;}).join('')}</div></div></div>
     <div class="card"><div class="eyebrow">Le Trio Eligi <span class="hint">— les 3 questions qui comptent</span></div><div class="trio">${trio}</div>
-      <div style="margin-top:18px;font-size:12.5px;color:var(--moon-faint);line-height:1.6">Ces trois indicateurs résument la capacité du dirigeant à garder sa liberté de décision, sécuriser son niveau de vie et transmettre.</div></div>
+      <div style="margin-top:18px;font-size:12.5px;color:var(--moon-faint);line-height:1.6">Résume la capacité du dirigeant à garder sa liberté de décision, sécuriser son niveau de vie et transmettre.</div></div>
   </div>
   <div class="grid"><div class="card"><div class="eyebrow">Les 9 indicateurs Eligi <span class="hint">— calculés en direct depuis le diagnostic</span></div><div class="ind">${tiles}</div></div></div>
   <div class="grid row-2">
@@ -700,7 +795,7 @@ function synDir(c,cp){
 function synFro(c,cp){
   const radItems=cp.pil.map(p=>({label:p.name.split(' ')[0],value:p.pct}));
   const pilHtml=cp.pil.map(p=>{const lc=lecture(p.pct,'fro');return `<div class="axline"><span class="lab">${p.name}</span>${bar(p.pct,lc.c)}<span class="vv lv-${lc.c}">${p.pct}</span></div>`;}).join('');
-  const sumHi=cp.cost.reduce((s,x)=>s+x.hi,0);
+  const sumHi=cp.cost.reduce((s,x)=>s+x.hi,0)||1;
   const costbar=cp.cost.map(it=>`<i style="width:${it.active?(it.hi/sumHi*100):0}%;background:${it.col}"></i>`).join('');
   const costleg=cp.cost.map(it=>`<div class="cl ${it.active?'':'off'}"><span class="sw" style="background:${it.col}"></span><span class="n">${it.nm}${it.active?'':'<span class="rez">✓ traité</span>'}</span><span class="a">${moneyK(it.lo)} – ${moneyK(it.hi)}</span></div>`).join('');
   return `
@@ -740,14 +835,19 @@ function viewQuest(c,kind){
 }
 function viewMissions(c,cp){
   const det=detected(c,cp),top=det.slice(0,4),rest=det.slice(4);
+  const hzArr=['Immédiat','3 – 6 mois','6 – 12 mois','6 – 12 mois'];
   const rows=top.map((m,i)=>{const prioL=c.seg==='dir'?(m.prio===1?'Priorité 1':'Priorité 2'):m.prio;const prioC=c.seg==='dir'?(m.prio===1?'p1':'p2'):(m.prio==='Haute'?'p1':'p2');
-    const hz=['Immédiat','3 – 6 mois','6 – 12 mois','12 mois'][i]||'12 mois';const fee=m.lo===m.hi?money(m.lo):`${money(m.lo)} – ${money(m.hi)}`;
-    return `<div class="m"><div class="rk">${i+1}</div><div class="body"><div class="nm">${m.nm}</div><div class="why">${m.why}</div><div class="tags"><span class="tag ${prioC}">${prioL}</span><span class="tag">Pilier à ${m.sc}/100</span><span class="tag hz">${hz}</span></div></div><div class="fee"><div class="amt">${fee}</div><div class="st">À proposer</div></div></div>`;}).join('');
+    const fee=m.lo===m.hi?money(m.lo):`${money(m.lo)} – ${money(m.hi)}`;
+    return `<div class="m"><div class="rk">${i+1}</div><div class="body"><div class="nm">${m.nm}</div><div class="why">${m.why}</div><div class="tags"><span class="tag ${prioC}">${prioL}</span><span class="tag">Pilier à ${m.sc}/100</span><span class="tag hz">${hzArr[i]}</span></div></div><div class="fee"><div class="amt">${fee}</div><div class="st">À proposer</div></div></div>`;}).join('');
   const restHtml=rest.length?`<div class="restpistes"><b>${rest.length} autres pistes détectées</b> — ${rest.map(m=>m.nm).join(' · ')}</div>`:'';
-  return `<div class="grid"><div class="card"><div class="eyebrow">Plan d'action 12 mois <span class="hint">— missions détectées automatiquement</span></div>
-    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 20px;line-height:1.55">Les missions se déclenchent selon les scores faibles du diagnostic. Modifiez une réponse dans le Diagnostic : la liste et l'ordre se recomposent en direct.</p>
+  const retroCols=[['0 – 3 mois',[]],['3 – 6 mois',[]],['6 – 12 mois',[]]];
+  top.forEach((m,i)=>{const c2=i===0?0:i===1?1:2;retroCols[c2][1].push(m);});
+  const retro=retroCols.map(col=>`<div class="retrocol"><div class="h"><span class="dotm"></span>${col[0]}</div>${col[1].length?col[1].map(m=>`<div class="retroitem"><b>${m.nm}</b><span>${money(m.lo)} – ${money(m.hi)}</span></div>`).join(''):'<div class="retroitem empty">—</div>'}</div>`).join('');
+  return `<div class="grid"><div class="card"><div class="eyebrow">Missions détectées automatiquement <span class="hint">— selon les scores faibles du diagnostic</span></div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 20px;line-height:1.55">Modifie une réponse dans le Diagnostic : la liste, l'ordre et le potentiel se recomposent en direct.</p>
     <div class="miss">${rows||'<p style="color:var(--moon-faint)">Aucune mission prioritaire — situation maîtrisée.</p>'}</div>${restHtml}
-    <div class="misstotal"><span class="l">Potentiel d'honoraires détecté sur ce dossier</span><span class="r" data-count="${Math.round(cp.potentiel)}">0</span></div></div></div>`;
+    <div class="misstotal"><span class="l">Potentiel d'honoraires détecté sur ce dossier</span><span class="r" data-count="${Math.round(cp.potentiel)}">0</span></div></div></div>
+    <div class="grid"><div class="card"><div class="eyebrow">Rétro-planning 12 mois <span class="hint">— feuille de route des actions</span></div><div class="retro">${retro}</div></div></div>`;
 }
 function viewRapport(c,cp){
   const top=detected(c,cp).slice(0,3);
@@ -763,38 +863,108 @@ function viewRapport(c,cp){
   </div></div>`;
 }
 function evoCols(c,cp){
-  const years=[...c.history,[String(2026),cp.global,'en cours']];
-  return `<div class="cols">${years.map((y,i)=>{const cl=lecture(y[1],c.seg).c;const cur=i===years.length-1;return `<div class="col ${cur?'':'past'}"><div class="bwrap"><div class="b" style="--h:${y[1]}%"><div class="v lv-${cl}">${y[1]}</div></div></div><div class="yl">${y[0]}</div><div class="dl">${y[2]}</div></div>`;}).join('')}</div>`;
+  const years=[...c.history,["2026",cp.global,"en cours"]];
+  return `<div class="cols">${years.map((y,i)=>{const cl=lecture(y[1],c.seg).c;const isc=i===years.length-1;return `<div class="col ${isc?'':'past'}"><div class="bwrap"><div class="b" style="--h:${y[1]}%"><div class="v lv-${cl}">${y[1]}</div></div></div><div class="yl">${y[0]}</div><div class="dl">${y[2]}</div></div>`;}).join('')}</div>`;
 }
 function viewEvo(c,cp){
   const rows=(c.seg==='dir'?cp.axes.map(a=>[a.name,a.pct]):cp.pil.map(p=>[p.name,p.pct]));
-  return `<div class="grid"><div class="card"><div class="eyebrow">Évolution du CAP année par année</div>${evoCols(c,cp)}<div class="evonote">Chaque revue annuelle est archivée. Le client <b>voit sa progression</b> — c'est le meilleur argument pour poursuivre l'accompagnement.</div></div>
+  return `<div class="grid"><div class="card"><div class="eyebrow">Évolution du CAP année par année</div>${evoCols(c,cp)}<div class="evonote">Chaque revue annuelle est archivée. Le client <b>voit sa progression</b> — le meilleur argument pour poursuivre l'accompagnement.</div></div>
     <div class="card"><div class="eyebrow">Comparatif N-1 → N par ${c.seg==='dir'?'axe':'pilier'}</div>
       ${rows.map(x=>{const prev=Math.max(0,x[1]-(5+((x[0].length*3)%8)));const d=x[1]-prev;const cl=lecture(x[1],c.seg).c;
         return `<div class="axline" style="margin-bottom:14px"><span class="lab" style="width:158px">${x[0]}</span>${bar(x[1],cl)}<span class="vv lv-${cl}">${x[1]}</span><span style="width:50px;text-align:right;font-size:12px;color:var(--good)">▲ +${d}</span></div>`;}).join('')}
       <p style="font-size:12px;color:var(--moon-faint);margin-top:18px">Illustration de la mécanique N-1 → N. En production, chaque revue est comparée automatiquement à la précédente.</p></div></div>`;
 }
 
+/* ---- vues cabinet ---- */
+function viewSuivi(){
+  const list=CLIENT_ORDER.map(id=>({id,c:CLIENTS[id],cp:compute(CLIENTS[id])})).sort((a,b)=>(b.c.due-a.c.due)||(a.cp.global-b.cp.global));
+  const due=list.filter(x=>x.c.due&&!x.c.relanced).length;
+  const rows=list.map(({id,c,cp})=>`<tr data-open="${id}">
+    <td><span class="cli">${c.nm}<small>${c.sub}</small></span></td>
+    <td><span class="seg ${c.seg==='dir'?'dir':''}">${c.seg==='dir'?'Dirigeant':'Frontalier'}</span></td>
+    <td><span class="score-chip lv-${cp.glecture.c}">${cp.global}<span class="bar"><i class="bg-${cp.glecture.c}" style="width:${cp.global}%"></i></span></span></td>
+    <td class="num">${c.maj}</td>
+    <td><span class="relance ${c.due&&!c.relanced?'due':''}">${c.rel}</span></td>
+    <td>${c.due?(c.relanced?'<span class="relbtn done">✓ relancé</span>':`<button class="relbtn" data-relance="${id}" onclick="event.stopPropagation()">Envoyer relance</button>`):'<span style="color:var(--moon-faint);font-size:12px">à jour</span>'}</td></tr>`).join('');
+  return `<div class="topbar"><div><div class="crumb">Pilotage · proactivité</div><h1 class="h1">Suivi annuel</h1></div></div>
+    <p class="sub">Objectif : être proactif. Les clients dont la revue CAP arrive à échéance sont relancés chaque année, automatiquement — pour venir avec des solutions, pas attendre les problèmes.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="k">Clients suivis</div><div class="v">${CLIENT_ORDER.length}</div><div class="d">portefeuille actif</div></div>
+      <div class="kpi"><div class="k">À relancer</div><div class="v lv-warn">${due}</div><div class="d">revue à échéance</div></div>
+      <div class="kpi"><div class="k">Relances envoyées</div><div class="v lv-good">${list.filter(x=>x.c.relanced).length}</div><div class="d">ce mois</div></div>
+      <div class="kpi"><div class="k">Score CAP moyen</div><div class="v">${Math.round(list.reduce((s,x)=>s+x.cp.global,0)/list.length)}</div><div class="d">portefeuille</div></div>
+    </div>
+    <div class="tablewrap" style="margin-top:22px"><table><thead><tr><th>Client</th><th>Segment</th><th>Score CAP</th><th>Dernière revue</th><th>Prochaine</th><th>Relance</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function viewPipeline(){
+  const all=CLIENT_ORDER.map(id=>({id,c:CLIENTS[id],cp:compute(CLIENTS[id])}));
+  const totalPot=all.reduce((s,x)=>s+x.cp.potentiel,0);
+  const agg={};all.forEach(({c,cp})=>detected(c,cp).forEach(m=>{const k=m.nm;agg[k]=agg[k]||{nm:k,count:0,sum:0};agg[k].count++;agg[k].sum+=(m.lo+m.hi)/2;}));
+  const missList=Object.values(agg).sort((a,b)=>b.sum-a.sum);
+  const maxSum=Math.max(...missList.map(m=>m.sum),1);
+  const byClient=all.map(x=>({...x,det:detected(x.c,x.cp).length})).sort((a,b)=>b.cp.potentiel-a.cp.potentiel);
+  return `<div class="topbar"><div><div class="crumb">Pilotage · développement</div><h1 class="h1">Missions & honoraires</h1></div></div>
+    <p class="sub">Vue cabinet : le potentiel d'honoraires détecté sur l'ensemble du portefeuille, agrégé par mission. Le CAP ne fait pas que diagnostiquer — il alimente le développement du cabinet.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="k">Potentiel total détecté</div><div class="v lv-good" data-count="${Math.round(totalPot)}">0</div><div class="d">honoraires (fourchette moyenne)</div></div>
+      <div class="kpi"><div class="k">Missions détectées</div><div class="v">${all.reduce((s,x)=>s+detected(x.c,x.cp).length,0)}</div><div class="d">sur ${CLIENT_ORDER.length} clients</div></div>
+      <div class="kpi"><div class="k">Par client (moy.)</div><div class="v">${money(Math.round(totalPot/CLIENT_ORDER.length))}</div><div class="d">potentiel moyen</div></div>
+      <div class="kpi"><div class="k">Type le plus fréquent</div><div class="v" style="font-size:18px;line-height:1.2;font-family:var(--sans)">${missList[0]?missList[0].nm:'—'}</div><div class="d">${missList[0]?missList[0].count+' clients':''}</div></div>
+    </div>
+    <div class="grid row-2">
+      <div class="card"><div class="eyebrow">Pipeline par mission</div>${missList.map(m=>`<div style="margin-bottom:15px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>${m.nm} <span style="color:var(--moon-faint)">· ${m.count} client${m.count>1?'s':''}</span></span><span class="num" style="font-weight:600">${money(m.sum)}</span></div><div class="pipebar"><i style="width:${Math.round(m.sum/maxSum*100)}%"></i></div></div>`).join('')}</div>
+      <div class="card"><div class="eyebrow">Potentiel par client</div><div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Client</th><th>Missions</th><th>Potentiel</th></tr></thead><tbody>${byClient.map(x=>`<tr data-open="${x.id}"><td><span class="cli">${x.c.nm}<small>${x.c.seg==='dir'?'Dirigeant':'Frontalier'}</small></span></td><td class="num">${x.det}</td><td class="num" style="font-weight:600">${money(Math.round(x.cp.potentiel))}</td></tr>`).join('')}</tbody></table></div></div>
+    </div>`;
+}
+
 /* ============================================================
-   NAVIGATION
+   PERSISTANCE + NAVIGATION
    ============================================================ */
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));const el=$('#v-'+v);el.classList.add('on');el.classList.remove('fadein-view');void el.offsetWidth;el.classList.add('fadein-view');window.scrollTo({top:0,behavior:'smooth'});}
+const KEY='eligi_cap_v3';
+function save(){try{localStorage.setItem(KEY,JSON.stringify({order:CLIENT_ORDER,clients:CLIENTS}))}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.clients){for(const k in CLIENTS)delete CLIENTS[k];Object.assign(CLIENTS,s.clients);CLIENT_ORDER.length=0;s.order.forEach(x=>CLIENT_ORDER.push(x));}}catch(e){}}
+
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));const el=$('#v-'+v);el.classList.add('on');el.classList.remove('fadein-view');void el.offsetWidth;el.classList.add('fadein-view');
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.nav===v));
+  if(v==='suivi'){el.innerHTML=viewSuivi();}if(v==='pipeline'){el.innerHTML=viewPipeline();enter(el);}
+  window.scrollTo({top:0,behavior:'smooth'});}
 let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600);}
+
 $('#enter').onclick=()=>{$('#login').style.display='none';$('#app').classList.add('on');renderRows('all');};
 $('#logout').onclick=()=>{$('#app').classList.remove('on');$('#login').style.display='grid';};
+
 document.addEventListener('click',e=>{
   const nav=e.target.closest('[data-nav]');if(nav){showView(nav.dataset.nav);if(nav.dataset.nav==='clients')renderRows(document.querySelector('.chip.active')?.dataset.filter||'all');return;}
-  const row=e.target.closest('tr.live');if(row&&row.dataset.open){openClient(row.dataset.open);return;}
+  const relance=e.target.closest('[data-relance]');if(relance){CLIENTS[relance.dataset.relance].relanced=true;save();showView('suivi');toast('Relance annuelle envoyée au client (démo).');return;}
+  const row=e.target.closest('tr[data-open]');if(row){openClient(row.dataset.open);return;}
   const chip=e.target.closest('.chip');if(chip){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');renderRows(chip.dataset.filter);return;}
   const tab=e.target.closest('#subnav button');if(tab){cur.tab=tab.dataset.tab;renderTab();return;}
   const goto=e.target.closest('[data-goto]');if(goto){cur.tab=goto.dataset.goto;renderTab();return;}
-  const ans=e.target.closest('.seg-ctl button');if(ans){CLIENTS[cur.id][cur.tab][ans.dataset.q]=ans.dataset.a;renderTab();refreshHead();return;}
-  const fill=e.target.closest('[data-fill]');if(fill){const c=CLIENTS[cur.id],k=fill.dataset.fill;const src=c.seg==='dir'?(k==='flash'?DIR_DEMO_FLASH:DIR_DEMO):(k==='flash'?FRO_DEMO_FLASH:FRO_DEMO);c[k]={...src};renderTab();refreshHead();toast('Réponses de démonstration chargées.');return;}
-  const reset=e.target.closest('[data-reset]');if(reset){CLIENTS[cur.id][reset.dataset.reset]={};renderTab();refreshHead();return;}
+  const ans=e.target.closest('.seg-ctl button');if(ans){CLIENTS[cur.id][cur.tab][ans.dataset.q]=ans.dataset.a;save();renderTab();refreshHead();return;}
+  const fill=e.target.closest('[data-fill]');if(fill){const c=CLIENTS[cur.id],k=fill.dataset.fill;const src=c.seg==='dir'?(k==='flash'?DIR_DEMO_FLASH:DIR_DEMO):(k==='flash'?FRO_DEMO_FLASH:FRO_DEMO);c[k]={...src};save();renderTab();refreshHead();toast('Réponses de démonstration chargées.');return;}
+  const reset=e.target.closest('[data-reset]');if(reset){CLIENTS[cur.id][reset.dataset.reset]={};save();renderTab();refreshHead();return;}
   const tt=e.target.closest('[data-toast]');if(tt){toast(tt.dataset.toast);return;}
+  const nc=e.target.closest('[data-newclient]');if(nc){$('#overlay').classList.add('on');return;}
+  if(e.target.id==='nc-cancel'||e.target===$('#overlay')){$('#overlay').classList.remove('on');return;}
+  if(e.target.id==='nc-create'){createClient();return;}
+  if(e.target.id==='resetDemo'){if(confirm('Réinitialiser toutes les données de démonstration ?')){localStorage.removeItem(KEY);location.reload();}return;}
 });
+document.addEventListener('input',e=>{
+  const fin=e.target.closest('[data-fin]');if(fin){CLIENTS[cur.id].fin[fin.dataset.fin]=parseFloat(fin.value)||0;save();const cp=compute(CLIENTS[cur.id]);const pt=$('#patTotal');if(pt&&cp.patrimoine!=null)pt.textContent=money(cp.patrimoine);refreshHead();return;}
+  const mt=e.target.closest('[data-meta]');if(mt){CLIENTS[cur.id][mt.dataset.meta]=mt.value;save();return;}
+});
+function createClient(){
+  const nom=$('#nc-nom').value.trim()||'Nouveau client';const seg=$('#nc-seg').value;const sub=$('#nc-sub').value.trim()||(seg==='dir'?'Société':'Frontalier');
+  const id='c'+Date.now();
+  CLIENTS[id]={seg,nm:nom,sub,maj:new Date().toLocaleDateString('fr-FR'),rel:'Dans 12 mois',due:0,relanced:false,fin:{...DEFAULT_FIN[seg]},history:[["2025",0,"nouveau"]],diag:{},flash:{}};
+  CLIENT_ORDER.unshift(id);save();
+  $('#overlay').classList.remove('on');$('#nc-nom').value='';$('#nc-sub').value='';
+  openClient(id,'profil');toast('Dossier créé — complète le profil puis le diagnostic.');
+}
 function refreshHead(){const c=CLIENTS[cur.id],cp=compute(c);const mg=$('#chead .miniglobe');if(mg)mg.innerHTML=`<div class="v lv-${cp.glecture.c}">${cp.global}</div><div class="o">CAP / 100 · ${cp.glecture.l}</div>`;
   const badge=document.querySelector('#subnav button[data-tab="missions"] .badge');if(badge)badge.textContent=detected(c,cp).length;}
+
+load();
 </script>
 </body>
 </html>
