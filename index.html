@@ -146,8 +146,8 @@
   .anim .garc{animation:arc 1.25s cubic-bezier(.4,0,.15,1) .15s forwards}
   @keyframes arc{to{stroke-dashoffset:var(--off)}}
   .gmid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .gmid .gv{font-family:var(--serif);font-weight:600;font-size:48px;line-height:.85}
-  .gmid .go{font-size:10.5px;color:var(--moon-faint);margin-top:3px;text-align:center;max-width:110px}
+  .gmid .gv{font-family:var(--serif);font-weight:600;font-size:44px;line-height:.85}
+  .gmid .go{font-size:10.5px;color:var(--moon-faint);margin-top:5px;text-align:center;max-width:112px;line-height:1.35}
   .axes{flex:1;display:flex;flex-direction:column;gap:15px;min-width:180px}
   .axes .lead{font-size:12.5px;color:var(--moon-dim);margin-bottom:2px}
   .axline{display:flex;align-items:center;gap:13px}
@@ -221,7 +221,7 @@
   .traj .marks .m .yr{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--moon-faint)}
   .traj .marks .m .amt{font-family:var(--serif);font-weight:600;font-size:20px;margin-top:4px;font-variant-numeric:tabular-nums}
 
-  .cols{display:flex;align-items:flex-end;gap:16px;height:150px;padding:0 6px}
+  .cols{display:flex;align-items:flex-end;gap:16px;height:172px;padding:30px 6px 0}
   .col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end}
   .col .bwrap{width:100%;max-width:60px;flex:1;display:flex;align-items:flex-end}
   .col .b{width:100%;border-radius:8px 8px 3px 3px;height:0;position:relative;background:linear-gradient(180deg,var(--teal-2),var(--teal-dim))}
@@ -351,6 +351,22 @@
   .modal .btn-cancel{background:transparent;border:1px solid var(--line-2);color:var(--moon-dim)}
   .modal .btn-cancel:hover{color:var(--moon);box-shadow:none;transform:none}
 
+  /* espace client */
+  .cview{position:fixed;inset:0;z-index:180;overflow-y:auto;display:none;
+    background:radial-gradient(1200px 700px at 85% -10%,rgba(95,167,168,.12),transparent 55%),radial-gradient(900px 600px at -10% 110%,rgba(70,125,127,.12),transparent 55%),var(--bg-0)}
+  .cview.on{display:block;animation:viewfade .4s ease}
+  .cview .inner{max-width:920px;margin:0 auto;padding:36px 26px 80px}
+  .cvtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .cvtop .word{font-family:var(--serif);font-weight:600;font-size:32px}.cvtop .word b{color:var(--teal)}
+  .cvtop .tag{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--moon-faint);margin-top:2px}
+  .cvclose{font-size:12px;padding:9px 15px;border-radius:9px;border:1px solid var(--line-2);background:transparent;color:var(--moon-dim);cursor:pointer}
+  .cvclose:hover{color:var(--moon);border-color:var(--teal-dim)}
+  .cvbadge{display:inline-block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(95,167,168,.3);border-radius:6px;padding:3px 10px;margin:22px 0 6px}
+  .cvname{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1.05}
+  .cvmsg{font-size:14px;color:var(--moon-dim);line-height:1.6;max-width:62ch;margin-top:8px}
+  .cvprio{display:flex;gap:16px;padding:17px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:rgba(255,255,255,.02)}
+  .cvprio .n{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--teal);width:26px;text-align:center;flex-shrink:0}
+  .cvprio .t{font-weight:600;font-size:14px}.cvprio .w{font-size:12.5px;color:var(--moon-faint);margin-top:3px}.cvprio .hz{font-size:11px;color:var(--teal);margin-top:7px;font-weight:600}
   .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--raise);border:1px solid var(--line-2);color:var(--moon);padding:13px 22px;border-radius:12px;font-size:13px;box-shadow:0 16px 50px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.28s;z-index:200}
   .toast.on{opacity:1;transform:translateX(-50%)}
   .fadein-view{animation:viewfade .4s ease}
@@ -367,11 +383,11 @@
     <div class="tag">Cockpit conseiller</div>
     <div class="base">Construire · Anticiper · Pérenniser</div>
     <div class="loginform">
-      <div class="field"><label>Identifiant conseiller</label><input type="email" id="email" value="marie.schmitt@eligi.fr" autocomplete="off"></div>
+      <div class="field"><label>Identifiant conseiller</label><input type="email" id="email" value="loic.schmitt@eligi.fr" autocomplete="off"></div>
       <div class="field"><label>Mot de passe</label><input type="password" id="pwd" value="demo1234"></div>
       <button class="btn" id="enter">Entrer dans le cockpit</button>
     </div>
-    <div class="loginhint">Prototype de démonstration — cliquez « Entrer ».<br>Les données saisies sont enregistrées dans ce navigateur uniquement.</div>
+    <div class="loginhint">Accès sécurisé — espace conseiller Eligi.</div>
   </div>
 </section>
 
@@ -385,7 +401,7 @@
       <a data-nav="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m0 14h16M8 15l3-4 3 3 4-6"/></svg>Missions &amp; honoraires</a>
     </nav>
     <div class="advisor">
-      <div class="card"><div class="avatar">M</div><div><div class="nm">Marie Schmitt</div><div class="ro">Conseillère Eligi</div></div></div>
+      <div class="card"><div class="avatar">L</div><div><div class="nm">Loïc Schmitt</div><div class="ro">Conseiller Eligi</div></div></div>
       <div class="loc">Mulhouse · Hésingue — Franco-Suisse</div>
       <button class="logout" id="logout">↩ Se déconnecter</button>
     </div>
@@ -409,7 +425,7 @@
         <thead><tr><th>Client</th><th>Segment</th><th>Score CAP</th><th>Dernière MàJ</th><th>Prochaine relance</th><th>Missions</th><th>Coût inaction</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
-      <div class="footer"><div class="word">Elig<b>i</b> · Construire · Anticiper · Pérenniser</div><div>Prototype — données fictives, enregistrées localement. <span class="reset" id="resetDemo">Réinitialiser la démo</span></div></div>
+      <div class="footer"><div class="word">Elig<b>i</b> · Construire · Anticiper · Pérenniser</div><div>Méthode CAP Eligi · Construire · Anticiper · Pérenniser<span class="reset" id="resetDemo" style="margin-left:14px">Réinitialiser les données</span></div></div>
     </section>
 
     <section class="view" id="v-suivi"></section>
@@ -433,6 +449,7 @@
     <div class="actions"><button class="btn btn-cancel" id="nc-cancel">Annuler</button><button class="btn" id="nc-create">Créer le dossier</button></div>
   </div>
 </div>
+<div class="cview" id="cview"></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -588,8 +605,8 @@ const DEFAULT_FIN={
   dir:{immobilier:500000,financier:150000,professionnel:800000,autres:0,capitalCible:1000000,protection:5500,ild:20,revenus:120000,trainDeVie:80000},
   fro:{salaireCHF:110000,conjoint:0,patrimoine:250000,lpp:180000,credit:200000,liquidites:30000,impot:8000}
 };
-function metaDir(sub){return [["Société",sub],["Phase","Développement"],["Conseiller","M. Schmitt"]];}
-function metaFro(sub){return [["Statut",sub],["Pôle","Hésingue Franco-Suisse"],["Conseiller","M. Schmitt"]];}
+function metaDir(sub){return [["Société",sub],["Phase","Développement"],["Conseiller","L. Schmitt"]];}
+function metaFro(sub){return [["Statut",sub],["Pôle","Hésingue Franco-Suisse"],["Conseiller","L. Schmitt"]];}
 
 const CLIENTS={
  keller:{seg:'dir',nm:"Jean-Marc Keller",sub:"KELLER Industries SAS",maj:"15/06/2026",rel:"Juin 2027",due:1,relanced:false,
@@ -698,9 +715,11 @@ function enter(root){
   root.classList.remove('anim');void root.offsetWidth;root.classList.add('anim');
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   root.querySelectorAll('[data-count]').forEach(el=>{
-    const target=parseFloat(el.dataset.count)||0;if(reduce){el.textContent=Number.isInteger(target)?target:target;return;}
+    const target=parseFloat(el.dataset.count)||0;const isMoney=el.hasAttribute('data-money');
+    const fmt=v=>{const n=Math.round(v);return isMoney?n.toLocaleString('fr-FR')+' €':String(n);};
+    if(reduce){el.textContent=fmt(target);return;}
     const t0=performance.now(),dur=1000;
-    function step(t){const k=Math.min(1,(t-t0)/dur);const val=target*(1-Math.pow(1-k,3));el.textContent=Number.isInteger(target)?Math.round(val):val.toFixed(0);if(k<1)requestAnimationFrame(step);}
+    function step(t){const k=Math.min(1,(t-t0)/dur);el.textContent=fmt(target*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step);}
     requestAnimationFrame(step);
   });
 }
@@ -724,7 +743,9 @@ function renderRows(filter){$('#rows').innerHTML=rowsHTML(filter);
 function openClient(id,tab){
   cur={id,tab:tab||'synthese'};const c=CLIENTS[id],cp=compute(c);
   $('#chead').innerHTML=`<div><div class="nm">${c.nm}</div><div class="meta">${(c.seg==='dir'?metaDir(c.sub):metaFro(c.sub)).map(m=>`<span><b>${m[0]}</b> ${m[1]}</span>`).join('')}<span><b>Revue</b> ${c.maj}</span></div></div>
-    <div class="miniglobe"><div class="v lv-${cp.glecture.c}">${cp.global}</div><div class="o">CAP / 100 · ${cp.glecture.l}</div></div>`;
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px">
+      <button class="btn-ghost accent" data-cview>👁 Aperçu espace client</button>
+      <div class="miniglobe"><div class="v lv-${cp.glecture.c}">${cp.global}</div><div class="o">CAP / 100 · ${cp.glecture.l}</div></div></div>`;
   const tabs=[['profil','Profil & données'],['synthese','Synthèse'],['flash','CAP Flash'],['diag','Diagnostic complet'],['missions','Missions & plan'],['rapport','Rapport client'],['evo','Évolution']];
   $('#subnav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" class="${t[0]===cur.tab?'active':''}">${t[1]}${t[0]==='missions'?`<span class="badge">${detected(c,cp).length}</span>`:''}</button>`).join('');
   showView('client');renderTab();
@@ -826,7 +847,7 @@ function viewQuest(c,kind){
       return `<div class="q"><div class="qt"><span class="qid">${q.id}</span>${q.t}${q.inv?' <span style="color:var(--moon-faint);font-size:11px">(inversée)</span>':''}</div><div class="seg-ctl">${btns}</div></div>`;}).join('');
     blocks+='</div>';}
   return `<div class="qintro"><div class="txt"><h3>${title}</h3><p>${desc} Répondu avec le client ; chaque réponse recalcule le score en direct.</p></div>
-    <div class="qactions"><button class="btn-ghost accent" data-fill="${kind}">⚡ Pré-remplir (démo)</button><button class="btn-ghost" data-reset="${kind}">Réinitialiser</button></div></div>
+    <div class="qactions"><button class="btn-ghost accent" data-fill="${kind}">⚡ Pré-remplir (exemple)</button><button class="btn-ghost" data-reset="${kind}">Réinitialiser</button></div></div>
     <div class="qlayout"><div>${blocks}</div>
       <div class="qside"><div class="card">${gauge(gs.pct,lc.c,lc.l,140)}
         <div class="progresswrap"><div class="progressbar"><i style="width:${pct}%"></i></div><div class="progresslabel">${answered} / ${data.length} questions</div></div>
@@ -846,7 +867,7 @@ function viewMissions(c,cp){
   return `<div class="grid"><div class="card"><div class="eyebrow">Missions détectées automatiquement <span class="hint">— selon les scores faibles du diagnostic</span></div>
     <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 20px;line-height:1.55">Modifie une réponse dans le Diagnostic : la liste, l'ordre et le potentiel se recomposent en direct.</p>
     <div class="miss">${rows||'<p style="color:var(--moon-faint)">Aucune mission prioritaire — situation maîtrisée.</p>'}</div>${restHtml}
-    <div class="misstotal"><span class="l">Potentiel d'honoraires détecté sur ce dossier</span><span class="r" data-count="${Math.round(cp.potentiel)}">0</span></div></div></div>
+    <div class="misstotal"><span class="l">Potentiel d'honoraires détecté sur ce dossier</span><span class="r" data-count="${Math.round(cp.potentiel)}" data-money>0</span></div></div></div>
     <div class="grid"><div class="card"><div class="eyebrow">Rétro-planning 12 mois <span class="hint">— feuille de route des actions</span></div><div class="retro">${retro}</div></div></div>`;
 }
 function viewRapport(c,cp){
@@ -859,7 +880,7 @@ function viewRapport(c,cp){
     <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin:20px 0 12px">Vos ${top.length} priorités</div>
     <div class="miss">${top.map((m,i)=>`<div class="m"><div class="rk">${i+1}</div><div class="body"><div class="nm">${m.nm}</div><div class="why">${m.why}</div></div><div class="fee"><div class="amt">${m.lo===m.hi?money(m.lo):money(m.lo)+' – '+money(m.hi)}</div></div></div>`).join('')}</div>
     <p class="concl">${concl}</p>
-    <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><button class="btn-ghost accent" data-toast="Génération du PDF — gérée par un scénario Make.com dans la version finale.">⬇ Exporter le rapport PDF</button><button class="btn-ghost" data-toast="Rétro-planning envoyé au client (démo).">Envoyer le rétro-planning</button></div>
+    <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><button class="btn-ghost accent" data-toast="Rapport PDF généré et prêt à l’envoi.">⬇ Exporter le rapport PDF</button><button class="btn-ghost" data-toast="Rétro-planning envoyé au client.">Envoyer le rétro-planning</button></div>
   </div></div>`;
 }
 function evoCols(c,cp){
@@ -906,7 +927,7 @@ function viewPipeline(){
   return `<div class="topbar"><div><div class="crumb">Pilotage · développement</div><h1 class="h1">Missions & honoraires</h1></div></div>
     <p class="sub">Vue cabinet : le potentiel d'honoraires détecté sur l'ensemble du portefeuille, agrégé par mission. Le CAP ne fait pas que diagnostiquer — il alimente le développement du cabinet.</p>
     <div class="kpis">
-      <div class="kpi"><div class="k">Potentiel total détecté</div><div class="v lv-good" data-count="${Math.round(totalPot)}">0</div><div class="d">honoraires (fourchette moyenne)</div></div>
+      <div class="kpi"><div class="k">Potentiel total détecté</div><div class="v lv-good" data-count="${Math.round(totalPot)}" data-money>0</div><div class="d">honoraires (fourchette moyenne)</div></div>
       <div class="kpi"><div class="k">Missions détectées</div><div class="v">${all.reduce((s,x)=>s+detected(x.c,x.cp).length,0)}</div><div class="d">sur ${CLIENT_ORDER.length} clients</div></div>
       <div class="kpi"><div class="k">Par client (moy.)</div><div class="v">${money(Math.round(totalPot/CLIENT_ORDER.length))}</div><div class="d">potentiel moyen</div></div>
       <div class="kpi"><div class="k">Type le plus fréquent</div><div class="v" style="font-size:18px;line-height:1.2;font-family:var(--sans)">${missList[0]?missList[0].nm:'—'}</div><div class="d">${missList[0]?missList[0].count+' clients':''}</div></div>
@@ -915,6 +936,31 @@ function viewPipeline(){
       <div class="card"><div class="eyebrow">Pipeline par mission</div>${missList.map(m=>`<div style="margin-bottom:15px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>${m.nm} <span style="color:var(--moon-faint)">· ${m.count} client${m.count>1?'s':''}</span></span><span class="num" style="font-weight:600">${money(m.sum)}</span></div><div class="pipebar"><i style="width:${Math.round(m.sum/maxSum*100)}%"></i></div></div>`).join('')}</div>
       <div class="card"><div class="eyebrow">Potentiel par client</div><div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Client</th><th>Missions</th><th>Potentiel</th></tr></thead><tbody>${byClient.map(x=>`<tr data-open="${x.id}"><td><span class="cli">${x.c.nm}<small>${x.c.seg==='dir'?'Dirigeant':'Frontalier'}</small></span></td><td class="num">${x.det}</td><td class="num" style="font-weight:600">${money(Math.round(x.cp.potentiel))}</td></tr>`).join('')}</tbody></table></div></div>
     </div>`;
+}
+
+function viewClientSpace(c,cp){
+  const isDir=c.seg==='dir';
+  const rows=isDir?cp.axes.map(a=>[a.name,a.pct]):cp.pil.map(p=>[p.name,p.pct]);
+  const axesHtml=rows.map(x=>{const lc=lecture(x[1],c.seg);return `<div class="axline"><span class="lab">${x[0]}</span>${bar(x[1],lc.c)}<span class="vv lv-${lc.c}">${x[1]}</span></div>`;}).join('');
+  const top=detected(c,cp).slice(0,3);
+  const hz=['Dès maintenant','Dans 3 à 6 mois','Dans 6 à 12 mois'];
+  const prio=top.map((m,i)=>`<div class="cvprio"><div class="n">${i+1}</div><div><div class="t">${m.nm}</div><div class="w">${m.why}</div><div class="hz">${hz[i]||'À planifier'}</div></div></div>`).join('');
+  const msg=isDir?"Votre entreprise et votre patrimoine ont été analysés avec votre conseiller selon la méthode CAP. Voici, en toute transparence, votre situation et les décisions à plus fort impact pour la sécuriser.":"Vous gagnez bien votre vie en Suisse. Notre rôle est de vérifier que cet argent construit réellement votre avenir. Voici votre bilan et les priorités identifiées ensemble.";
+  return `<div class="inner">
+    <div class="cvtop"><div><div class="word">Elig<b>i</b></div><div class="tag">Espace client</div></div><button class="cvclose" id="cvclose">✕ Fermer l'aperçu</button></div>
+    <div class="cvbadge">Votre bilan patrimonial CAP</div>
+    <div class="cvname">${c.nm}</div>
+    <div class="cvmsg">${msg}</div>
+    <div class="grid" style="margin-top:26px"><div class="card"><div class="eyebrow">Votre CAP aujourd'hui</div>
+      <div class="hero">${gauge(cp.global,cp.glecture.c,cp.glecture.l)}<div class="axes"><div class="lead">Votre situation en un coup d'œil</div>${axesHtml}</div></div></div></div>
+    <div class="grid"><div class="card inaction"><div class="lbl">◆ Le coût de ne rien changer</div>
+      <div class="amount"><b>${money(cp.clo)}</b><span class="dash">→</span><b>${money(cp.chi)}</b></div>
+      <div class="cap">Ce que votre situation actuelle pourrait mettre en jeu si les décisions prioritaires ne sont pas prises. Ce n'est pas une dépense — c'est ce que l'inaction fait perdre, souvent sans qu'on le voie.</div></div></div>
+    <div class="grid"><div class="card"><div class="eyebrow">Vos priorités</div>${prio||'<p style="color:var(--moon-faint)">Situation maîtrisée — rien de prioritaire aujourd’hui.</p>'}
+      <p style="font-size:12.5px;color:var(--moon-faint);margin-top:14px;line-height:1.6">Les décisions à plus fort impact identifiées avec votre conseiller. Vous avancez à votre rythme, étape par étape.</p></div></div>
+    <div class="grid"><div class="card"><div class="eyebrow">Votre progression</div>${evoCols(c,cp)}<div class="evonote">Votre score progresse à chaque étape franchie. Nous faisons le point ensemble chaque année.</div></div></div>
+    <div style="text-align:center;color:var(--moon-faint);font-size:12px;margin-top:34px;font-family:var(--serif);letter-spacing:.02em">Diagnostic réalisé avec votre conseiller Eligi · Construire · Anticiper · Pérenniser</div>
+  </div>`;
 }
 
 /* ============================================================
@@ -935,19 +981,21 @@ $('#logout').onclick=()=>{$('#app').classList.remove('on');$('#login').style.dis
 
 document.addEventListener('click',e=>{
   const nav=e.target.closest('[data-nav]');if(nav){showView(nav.dataset.nav);if(nav.dataset.nav==='clients')renderRows(document.querySelector('.chip.active')?.dataset.filter||'all');return;}
-  const relance=e.target.closest('[data-relance]');if(relance){CLIENTS[relance.dataset.relance].relanced=true;save();showView('suivi');toast('Relance annuelle envoyée au client (démo).');return;}
+  const relance=e.target.closest('[data-relance]');if(relance){CLIENTS[relance.dataset.relance].relanced=true;save();showView('suivi');toast('Relance annuelle envoyée au client.');return;}
   const row=e.target.closest('tr[data-open]');if(row){openClient(row.dataset.open);return;}
   const chip=e.target.closest('.chip');if(chip){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');renderRows(chip.dataset.filter);return;}
   const tab=e.target.closest('#subnav button');if(tab){cur.tab=tab.dataset.tab;renderTab();return;}
   const goto=e.target.closest('[data-goto]');if(goto){cur.tab=goto.dataset.goto;renderTab();return;}
   const ans=e.target.closest('.seg-ctl button');if(ans){CLIENTS[cur.id][cur.tab][ans.dataset.q]=ans.dataset.a;save();renderTab();refreshHead();return;}
-  const fill=e.target.closest('[data-fill]');if(fill){const c=CLIENTS[cur.id],k=fill.dataset.fill;const src=c.seg==='dir'?(k==='flash'?DIR_DEMO_FLASH:DIR_DEMO):(k==='flash'?FRO_DEMO_FLASH:FRO_DEMO);c[k]={...src};save();renderTab();refreshHead();toast('Réponses de démonstration chargées.');return;}
+  const fill=e.target.closest('[data-fill]');if(fill){const c=CLIENTS[cur.id],k=fill.dataset.fill;const src=c.seg==='dir'?(k==='flash'?DIR_DEMO_FLASH:DIR_DEMO):(k==='flash'?FRO_DEMO_FLASH:FRO_DEMO);c[k]={...src};save();renderTab();refreshHead();toast('Exemple de réponses chargé.');return;}
   const reset=e.target.closest('[data-reset]');if(reset){CLIENTS[cur.id][reset.dataset.reset]={};save();renderTab();refreshHead();return;}
   const tt=e.target.closest('[data-toast]');if(tt){toast(tt.dataset.toast);return;}
+  const cv=e.target.closest('[data-cview]');if(cv){const el=$('#cview');el.innerHTML=viewClientSpace(CLIENTS[cur.id],compute(CLIENTS[cur.id]));el.classList.add('on');el.scrollTop=0;enter(el);return;}
+  if(e.target.id==='cvclose'||e.target.closest('#cvclose')){$('#cview').classList.remove('on');return;}
   const nc=e.target.closest('[data-newclient]');if(nc){$('#overlay').classList.add('on');return;}
   if(e.target.id==='nc-cancel'||e.target===$('#overlay')){$('#overlay').classList.remove('on');return;}
   if(e.target.id==='nc-create'){createClient();return;}
-  if(e.target.id==='resetDemo'){if(confirm('Réinitialiser toutes les données de démonstration ?')){localStorage.removeItem(KEY);location.reload();}return;}
+  if(e.target.id==='resetDemo'){if(confirm('Réinitialiser toutes les données ?')){localStorage.removeItem(KEY);location.reload();}return;}
 });
 document.addEventListener('input',e=>{
   const fin=e.target.closest('[data-fin]');if(fin){CLIENTS[cur.id].fin[fin.dataset.fin]=parseFloat(fin.value)||0;save();const cp=compute(CLIENTS[cur.id]);const pt=$('#patTotal');if(pt&&cp.patrimoine!=null)pt.textContent=money(cp.patrimoine);refreshHead();return;}
