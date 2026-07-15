@@ -384,6 +384,7 @@
       <a class="active" data-nav="clients"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>Portefeuille clients</a>
       <a data-nav="suivi"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>Suivi annuel</a>
       <a data-nav="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5m0 14h16M8 15l3-4 3 3 4-6"/></svg>Missions &amp; honoraires</a>
+      <a data-nav="admin"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.3 3.1-5 7-5s7 1.7 7 5"/></svg>Administration</a>
     </nav>
     <div class="advisor">
       <div class="card"><div class="avatar">L</div><div><div class="nm">Loïc Schmitt</div><div class="ro">Conseiller Eligi</div></div></div>
@@ -396,7 +397,7 @@
       <div class="topbar"><div>
         <div class="crumb">Portefeuille · gestion de patrimoine</div>
         <h1 class="h1">Portefeuille clients</h1></div>
-        <button class="btn-add" data-newclient>＋ Nouveau dossier</button>
+        <div style="display:flex;gap:10px"><button class="btn-add" data-import style="background:transparent;border:1px solid var(--line-2);color:var(--moon-dim)">↥ Importer un dossier</button><button class="btn-add" data-newclient>＋ Nouveau dossier</button></div>
       </div>
       <p class="sub">L'ensemble des clients suivis par le cabinet.</p>
       <div class="banner"><span class="pulse"></span><b id="dueCount">clients à relancer</b><span>— revue annuelle à échéance</span></div>
@@ -415,6 +416,7 @@
 
     <section class="view" id="v-suivi"></section>
     <section class="view" id="v-pipeline"></section>
+    <section class="view" id="v-admin"></section>
 
     <section class="view" id="v-client">
       <div class="backlink" data-nav="clients">← Portefeuille clients</div>
@@ -510,6 +512,16 @@ const DIR_DIAG=[
  ["P18","Pérenniser",3,0,"PerenniteFin","Les capitaux disponibles aujourd'hui sont-ils investis selon une stratégie clairement définie ?"],
  ["P19","Pérenniser",3,0,"PerenniteFin","Savez-vous comment vous réemploieriez le produit d'une cession d'entreprise ?"],
  ["P20","Pérenniser",5,0,"PerenniteFin","Les décisions patrimoniales prises aujourd'hui sécurisent-elles votre niveau de vie futur ?"],
+ ["C21","Construire",2,0,"Valorisabilite","Le loyer versé pour votre immobilier professionnel est-il cohérent avec le marché et votre stratégie patrimoniale ?"],
+ ["C22","Construire",3,0,"Valorisabilite","Le mode de détention de votre immobilier professionnel a-t-il été arbitré au cours des 5 dernières années ?"],
+ ["C23","Construire",3,0,"Construire","Le coût global de votre rémunération (charges sociales et fiscalité) est-il analysé chaque année ?"],
+ ["C24","Construire",2,1,"Construire","Avez-vous le sentiment de payer plus de charges et d'impôts que nécessaire au regard de votre situation ?"],
+ ["A21","Anticiper",3,0,"PerenniteFin","Vos droits à la retraite acquis à ce jour sont-ils connus précisément (relevé de carrière analysé) ?"],
+ ["A22","Anticiper",3,0,"Anticipation","L'âge et les conditions de votre départ en retraite ont-ils été définis en tenant compte de leurs impacts financiers ?"],
+ ["A23","Anticiper",5,0,"PerenniteFin","L'écart entre votre pension estimée et votre besoin de revenus futur a-t-il été chiffré ?"],
+ ["A24","Anticiper",3,1,"Vulnerabilite","En cas d'imprévu majeur, devriez-vous prendre des décisions patrimoniales importantes dans l'urgence ?"],
+ ["P21","Pérenniser",3,1,"Concentration","Une part importante de vos liquidités reste-t-elle durablement non investie (comptes courants, non rémunérés) ?"],
+ ["P22","Pérenniser",3,0,"PerenniteFin","Savez-vous quel niveau de revenus vos placements actuels généreraient s'il fallait en vivre dès demain ?"],
 ].map(r=>({id:r[0],axe:r[1],w:r[2],inv:!!r[3],ind:r[4],t:r[5]}));
 
 const DIR_FLASH=[
@@ -546,20 +558,72 @@ const DIR_TILE_KEYS=["Vulnerabilite","Concentration","PerenniteFin","Valorisabil
 
 const FRO_PILIERS={RF:["Revenus & flux",20],PE:["Patrimoine & épargne",20],RL:["Retraite & LPP",20],PC:["Protection & crédit",15],DV:["Décisions de vie",15],FR:["Fiscalité raisonnée",10]};
 const FRO_DIAG=[
- ["D1","RF",5,"Capacité d'épargne régulière supérieure à 20 %"],["D2","RF",3,"Budget mensuel connu et piloté"],["D3","RF",5,"Dépendance au salaire suisse mesurée"],["D4","RF",5,"Taux d'endettement compatible avec les projets"],["D5","RF",3,"Épargne automatique mensuelle en place"],["D6","RF",3,"Patrimoine net suivi annuellement"],
- ["D7","PE",5,"Diversification suffisante"],["D8","PE",3,"Liquidités de sécurité suffisantes"],["D9","PE",3,"Résidence principale non surpondérée"],["D10","PE",5,"Coût réel des placements connu"],["D11","PE",5,"Allocation cohérente avec l'horizon"],["D12","PE",5,"Stratégie d'investissement formalisée"],
- ["D13","RL",5,"Estimation retraite France + Suisse réalisée"],["D14","RL",5,"Choix rente / capital LPP étudié"],["D15","RL",5,"Rachat LPP analysé"],["D16","RL",5,"Âge de départ souhaité chiffré"],["D17","RL",3,"Fiscalité de sortie LPP comprise"],["D18","RL",5,"Plan de revenus retraite formalisé"],
- ["D19","PC",5,"Protection décès suffisante"],["D20","PC",5,"Protection invalidité adaptée"],["D21","PC",3,"Assurance emprunteur cohérente"],["D22","PC",3,"CMU / LAMal réévaluée"],["D23","PC",3,"Organisation connue du conjoint"],["D24","PC",5,"Arrêt de travail simulé"],
- ["D25","DV",5,"Rembourser crédit / investir étudié"],["D26","DV",5,"Décisions des 10 prochaines années identifiées"],["D27","DV",3,"Retour en France anticipé"],["D28","DV",5,"Retraite anticipée chiffrée"],["D29","DV",5,"Décisions priorisées par impact"],["D30","DV",3,"Plan d'action à 12 mois défini"],
- ["D31","FR",5,"Fiscalité analysée après la stratégie"],["D32","FR",3,"PER / produits fiscaux revus objectivement"],["D33","FR",5,"Rachat LPP comparé aux solutions fiscales françaises"],["D34","FR",5,"Impôt futur anticipé"],["D35","FR",5,"Défiscalisation évitée si elle dégrade la stratégie"],["D36","FR",3,"Acceptation de payer l'impôt quand c'est préférable"],
-].map(r=>({id:r[0],pil:r[1],w:r[2],inv:false,t:r[3]}));
+ ["D1","RF",5,"Votre capacité d'épargne mensuelle est-elle chiffrée et réellement disponible après toutes vos dépenses courantes ?","Capacité financière","Stratégie patrimoniale"],
+ ["D2","RF",3,"Connaissez-vous précisément vos revenus, charges fixes, dépenses variables et votre solde mensuel ?","Pilotage budgétaire","Organisation des flux"],
+ ["D3","RF",5,"Pourriez-vous conserver votre niveau de vie en cas de baisse durable ou de perte du salaire suisse ?","Dépendance professionnelle","Protection / budget"],
+ ["D4","RF",5,"Votre taux d'endettement et votre reste à vivre sont-ils compatibles avec vos projets ?","Endettement","Étude crédit"],
+ ["D5","RF",3,"Avez-vous mis en place une épargne automatique et régulière ?","Discipline d'épargne","Plan d'investissement"],
+ ["D6","RF",5,"Connaissez-vous les seuils de télétravail à ne pas dépasser (impôt, sécurité sociale) pour ne pas changer votre statut ?","Télétravail frontalier","Cadrage télétravail frontalier"],
+ ["D7","RF",3,"Pilotez-vous le risque de change, sachant que vous êtes payé en francs et dépensez en euros ?","Risque de change","Stratégie de change"],
+ ["D8","PE",5,"Votre patrimoine est-il suffisamment diversifié entre immobilier, liquidités, placements et retraite ?","Diversification","Allocation patrimoniale"],
+ ["D9","PE",3,"Votre épargne de précaution couvre-t-elle au moins six mois de dépenses essentielles ?","Sécurité financière","Gestion de trésorerie"],
+ ["D10","PE",3,"Votre résidence principale représente-t-elle une part raisonnable de votre patrimoine total ?","Concentration immobilière","Arbitrage immobilier"],
+ ["D11","PE",5,"Connaissez-vous les frais totaux, la performance nette et les risques de vos placements ?","Coûts des placements","Analyse placements"],
+ ["D12","PE",5,"Avez-vous des placements que vous ne comprenez pas vraiment, ou qu'on vous a « vendus » plutôt que conseillés ?","Placements subis","Audit des placements"],
+ ["D13","PE",5,"Votre répartition de placements correspond-elle à vos objectifs, votre horizon et votre profil de risque ?","Adéquation de l'allocation","Allocation financière"],
+ ["D14","PE",5,"Avez-vous une stratégie d'investissement claire (objectifs, montants, horizon, règles d'arbitrage) ?","Stratégie d'investissement","Feuille de route patrimoniale"],
+ ["D15","RL",5,"Une estimation consolidée de vos retraites française, AVS et LPP a-t-elle été réalisée ?","Projection globale","Diagnostic retraite franco-suisse"],
+ ["D16","RL",5,"Avez-vous comparé une sortie LPP en rente et en capital (conséquences financières, fiscales, successorales) ?","Rente ou capital","Étude LPP"],
+ ["D17","RL",5,"Le potentiel d'un rachat LPP a-t-il été analysé au-delà du seul avantage fiscal ?","Rachat LPP","Étude rachat LPP"],
+ ["D18","RL",5,"Votre âge de départ souhaité est-il défini, et le capital pour partir plus tôt chiffré ?","Âge de départ","Indépendance financière"],
+ ["D19","RL",3,"Savez-vous comment et quand demander votre retraite suisse (coordination via la caisse française) ?","Coordination franco-suisse","Coordination retraite franco-suisse"],
+ ["D20","RL",5,"Votre plan de revenus retraite distingue-t-il l'essentiel, les projets et une marge de sécurité ?","Plan de revenus","Plan de revenus retraite"],
+ ["D21","PC",5,"En cas de décès, votre conjoint et vos enfants pourraient-ils conserver leur logement et leur niveau de vie ?","Décès","Audit protection familiale"],
+ ["D22","PC",5,"Connaissez-vous le revenu réellement maintenu en cas d'invalidité, et est-il suffisant ?","Invalidité","Audit prévoyance"],
+ ["D23","PC",3,"Les garanties de votre assurance emprunteur sont-elles adaptées à chaque membre du foyer ?","Assurance emprunteur","Analyse assurance emprunteur"],
+ ["D24","PC",3,"Votre choix LAMal / CMU a-t-il été fait en connaissance de cause (choix quasi définitif) et revu selon votre foyer ?","Couverture santé","Analyse couverture santé"],
+ ["D25","PC",3,"Savez-vous qu'en cas de chômage vous cotisez en Suisse mais êtes indemnisé par la France, et comment cela fonctionne ?","Chômage frontalier","Mécanisme chômage frontalier"],
+ ["D26","PC",3,"Les droits de votre conjoint, vos bénéficiaires et vos dispositions civiles sont-ils clairement organisés ?","Organisation familiale","Organisation familiale"],
+ ["D27","PC",5,"Connaissez-vous le revenu maintenu et la durée de protection en cas d'arrêt de travail prolongé ?","Arrêt de travail","Audit protection des revenus"],
+ ["D28","DV",5,"Avez-vous comparé sur le long terme rembourser le crédit, garder de la liquidité ou investir ?","Crédit ou investissement","Étude crédit / investissement"],
+ ["D29","DV",5,"Vos décisions patrimoniales majeures des dix prochaines années sont-elles identifiées et chiffrées ?","Projets majeurs","Feuille de route CAP"],
+ ["D30","DV",5,"Un éventuel retour en France est-il préparé (fiscal, social, retraite, 2e pilier), idéalement 2 à 5 ans à l'avance ?","Retour en France","Étude franco-suisse"],
+ ["D31","DV",3,"Les conséquences d'un changement d'employeur, de canton ou de statut ont-elles été anticipées ?","Mobilité franco-suisse","Étude franco-suisse"],
+ ["D32","DV",5,"Le coût d'une retraite anticipée et ses solutions de financement ont-ils été simulés ?","Retraite anticipée","Indépendance financière"],
+ ["D33","DV",5,"Vos projets sont-ils classés selon leur importance, leur urgence et leur impact financier ?","Priorisation","Feuille de route CAP"],
+ ["D34","DV",3,"Avez-vous un plan d'action à douze mois (décisions, responsables, échéances) ?","Plan à 12 mois","Accompagnement annuel"],
+ ["D35","FR",5,"Savez-vous où vous êtes imposé (canton) et déclarez-vous correctement votre salaire suisse en France ?","Régime d'imposition","Régime fiscal frontalier"],
+ ["D36","FR",3,"Le statut de quasi-résident a-t-il été étudié pour déduire vos charges réelles (si imposé à la source) ?","Quasi-résident","Étude quasi-résident"],
+ ["D37","FR",5,"Votre stratégie patrimoniale est-elle définie avant de rechercher un avantage fiscal ?","Ordre de décision","Optimisation fiscale raisonnée"],
+ ["D38","FR",3,"Vos produits fiscaux (PER, etc.) sont-ils évalués selon leur coût, leur liquidité et leur utilité réelle ?","Produits fiscaux","Revue des dispositifs fiscaux"],
+ ["D39","FR",5,"Un rachat LPP a-t-il été comparé aux solutions françaises (fiscalité, risque, disponibilité) ?","Comparaison transfrontalière","Étude LPP fiscale"],
+ ["D40","FR",5,"Votre impôt futur (revenus, retraites, capitaux) est-il estimé ?","Fiscalité future","Projection fiscale"],
+ ["D41","FR",5,"Êtes-vous prêt à écarter une défiscalisation si elle dégrade la rentabilité, la liquidité ou le risque ?","Qualité des décisions","Revue globale des dispositifs"],
+ ["D42","FR",3,"Acceptez-vous de payer l'impôt lorsque c'est plus cohérent avec vos objectifs ?","Arbitrage fiscal","Optimisation fiscale raisonnée"],
+].map(r=>({id:r[0],pil:r[1],w:r[2],t:r[3],bloc:r[4],mission:r[5],inv:false}));
 const FRO_FLASH=[
- ["F1","RF","Capacité d'épargne supérieure à 20 % des revenus ?"],["F2","RF","Niveau de vie préservé si le salaire suisse baisse de 30 % ?"],["F3","RF","Patrimoine net suivi chaque année ?"],
- ["F4","PE","Patrimoine réellement diversifié ?"],["F5","PE","Coût réel des placements connu ?"],["F6","PE","Liquidités de sécurité suffisantes ?"],
- ["F7","RL","Revenu futur à la retraite connu ?"],["F8","RL","Choix LPP rente ou capital étudié ?"],["F9","RL","Rachat LPP étudié ?"],["F10","RL","Âge possible d'arrêt de travail connu ?"],
- ["F11","PC","Famille protégée en cas de décès ?"],["F12","PC","Couverture invalidité adaptée ?"],["F13","PC","Assurance emprunteur encore adaptée ?"],
- ["F14","DV","Rembourser le crédit est-il la meilleure décision ?"],["F15","DV","Stratégie patrimoniale écrite ?"],["F16","DV","Trois décisions majeures des 10 ans identifiées ?"],["F17","DV","Retour en France déjà simulé ?"],
- ["F18","FR","Solutions passées surtout pour réduire l'impôt ?"],["F19","FR","Fiscalité de sortie LPP anticipée ?"],["F20","FR","Referiez-vous les mêmes choix patrimoniaux aujourd'hui ?"],
+ ["F1","RF","Si votre salaire suisse s'arrêtait demain, pourriez-vous maintenir votre niveau de vie pendant au moins six mois ?"],
+ ["F2","RF","Savez-vous précisément combien vous pouvez épargner chaque mois sans réduire votre confort de vie ?"],
+ ["F3","RF","Si le franc suisse baissait fortement, votre budget resterait-il équilibré ?"],
+ ["F4","RF","Connaissez-vous les limites de télétravail à ne pas dépasser pour ne pas changer votre imposition ni votre statut ?"],
+ ["F5","PE","Votre patrimoine est-il suffisamment diversifié pour ne pas dépendre principalement de votre résidence principale ?"],
+ ["F6","PE","Connaissez-vous le coût total réel de vos placements, frais compris ?"],
+ ["F7","PE","Votre épargne est-elle organisée selon des objectifs précis et des horizons définis ?"],
+ ["F8","RL","Souhaitez-vous réellement travailler jusqu'à 65 ans, ou voulez-vous pouvoir vous arrêter avant ?"],
+ ["F9","RL","Savez-vous quel revenu mensuel vous percevriez en partant à la retraite à l'âge souhaité ?"],
+ ["F10","RL","Avez-vous déjà comparé concrètement une sortie LPP en rente et en capital ?"],
+ ["F11","RL","Savez-vous si un rachat LPP améliorerait réellement votre retraite, au-delà du seul avantage fiscal ?"],
+ ["F12","PC","Si vous décédiez demain, votre famille pourrait-elle conserver son logement et son niveau de vie ?"],
+ ["F13","PC","En cas d'invalidité ou d'arrêt de travail prolongé, connaissez-vous le revenu réellement maintenu ?"],
+ ["F14","PC","Votre assurance emprunteur protège-t-elle correctement chaque membre du couple ?"],
+ ["F15","DV","Avez-vous comparé l'impact à long terme entre rembourser votre crédit plus vite et investir votre épargne ?"],
+ ["F16","DV","Les trois décisions patrimoniales majeures des dix prochaines années sont-elles clairement identifiées ?"],
+ ["F17","DV","Disposez-vous d'un plan écrit avec des actions, des échéances et un ordre de priorité ?"],
+ ["F18","DV","Avez-vous déjà simulé les conséquences patrimoniales d'un retour en France ou d'un changement de statut ?"],
+ ["F19","FR","Savez-vous où vous êtes réellement imposé, et déclarez-vous correctement votre salaire suisse en France ?"],
+ ["F20","FR","Votre stratégie patrimoniale resterait-elle pertinente si elle ne procurait aucun avantage fiscal ?"],
+ ["F21","FR","Les solutions déjà mises en place répondent-elles d'abord à vos objectifs plutôt qu'à la réduction d'impôt ?"],
+ ["F22","FR","Avec les informations dont vous disposez aujourd'hui, referiez-vous les mêmes choix patrimoniaux ?"],
 ].map(r=>({id:r[0],pil:r[1],w:1,inv:false,t:r[2]}));
 const FRO_MISSIONS=[
  ["Diagnostic Retraite Franco-Suisse","RL","Haute",1500,3500,"Clarifier AVS, LPP, retraite française, âge et revenus."],
@@ -617,11 +681,11 @@ const CLIENT_ORDER=['keller','muller','weber','frey','risch','bianchi'];
 /* ---- moteur ---- */
 function groupScore(qs,answers){let ob=0,mx=0,ans=0;for(const q of qs){const v=qVal(answers[q.id],q.inv);if(v==null)continue;ob+=v*q.w;mx+=5*q.w;ans++;}return{pct:mx?Math.round(ob/mx*100):0,ans,tot:qs.length};}
 function computeDir(c){
-  const A=c.diag,f=c.fin;
-  const axes=['Construire','Anticiper','Pérenniser'].map(a=>{const s=groupScore(DIR_DIAG.filter(q=>q.axe===a),A);return{name:a,...s};});
-  const answered=DIR_DIAG.filter(q=>A[q.id]).length;
+  const A=c.diag,f=c.fin;const DD=dirDiag(c);
+  const axes=['Construire','Anticiper','Pérenniser'].map(a=>{const s=groupScore(DD.filter(q=>q.axe===a),A);return{name:a,...s};});
+  const answered=DD.filter(q=>A[q.id]).length;
   const global=answered?Math.round(axes.reduce((x,a)=>x+a.pct,0)/3):0;
-  const indScore={};["Vulnerabilite","Concentration","PerenniteFin","Valorisabilite","PrepTransmission","Anticipation"].forEach(k=>{indScore[k]=groupScore(DIR_DIAG.filter(q=>q.ind===k),A).pct;});
+  const indScore={};["Vulnerabilite","Concentration","PerenniteFin","Valorisabilite","PrepTransmission","Anticipation"].forEach(k=>{indScore[k]=groupScore(DD.filter(q=>q.ind===k),A).pct;});
   indScore.Construire=axes[0].pct;indScore.Anticiper=axes[1].pct;indScore["Pérenniser"]=axes[2].pct;
   const total=(f.immobilier||0)+(f.financier||0)+(f.professionnel||0)+(f.autres||0);
   const bases={total,professionnel:f.professionnel||0,capitalCible:f.capitalCible||0,financier:f.financier||0,protection:f.protection||5500};
@@ -630,7 +694,7 @@ function computeDir(c){
   const miss=DIR_MISSIONS.map(m=>{const sc=indScore[m.ind]??50;let prio=sc<40?1:sc<58?2:3;return{...m,sc,prio};}).sort((a,b)=>a.sc-b.sc);
   const potentiel=miss.filter(m=>m.prio<=2).reduce((s,m)=>s+((m.lo+m.hi)/2),0);
   const traj={today:total,ten:Math.round(total*1.314),retraite:Math.round(total*1.027)};
-  return{seg:'dir',axes,global,glecture:lecture(global,'dir'),indScore,cost,clo,chi,miss,potentiel,answered,total:DIR_DIAG.length,patrimoine:total,traj,ild:f.ild,
+  return{seg:'dir',axes,global,glecture:lecture(global,'dir'),indScore,cost,clo,chi,miss,potentiel,answered,total:DD.length,patrimoine:total,traj,ild:f.ild,
     trio:[{k:"Liberté de décision — « Combien d'années sans revenu pro ? »",v:f.ild,unit:" ans",lv:lecture(60,'dir')},
           {k:"Pérennité financière — « Mon patrimoine finance-t-il mon avenir ? »",v:indScore.PerenniteFin,unit:"/100",lv:lecture(indScore.PerenniteFin,'dir')},
           {k:"Préparation transmission — « Ma famille est-elle prête ? »",v:indScore.PrepTransmission,unit:"/100",lv:lecture(indScore.PrepTransmission,'dir')}]};
@@ -728,7 +792,9 @@ function openClient(id,tab){
   cur={id,tab:tab||'synthese'};const c=CLIENTS[id],cp=compute(c);
   $('#chead').innerHTML=`<div><div class="nm">${c.nm}</div><div class="meta">${(c.seg==='dir'?metaDir(c.sub):metaFro(c.sub)).map(m=>`<span><b>${m[0]}</b> ${m[1]}</span>`).join('')}<span><b>Revue</b> ${c.maj}</span></div></div>
     <div class="miniglobe"><div class="v lv-${cp.glecture.c}">${cp.global}</div><div class="o">CAP / 100 · ${cp.glecture.l}</div></div>`;
-  const tabs=[['profil','Profil & données'],['synthese','Synthèse'],['flash','CAP Flash'],['diag','Diagnostic complet'],['missions','Missions & plan'],['rapport','Rapport client'],['evo','Évolution']];
+  const tabs=c.seg==='dir'
+   ?[['profil','Profil'],['synthese','Synthèse'],['flash','CAP Flash'],['flashrep','Rapport Flash'],['diag','Diagnostic'],['analyse','Analyse fin.'],['plan',"Plan d'action"],['missions','Missions'],['orga','Organigramme'],['pieces','Pièces'],['params','Paramètres'],['rapport','Rapport']]
+   :[['profil','Profil'],['synthese','Synthèse'],['flash','CAP Flash'],['flashrep','Rapport Flash'],['diag','Diagnostic'],['bilan','Bilan'],['synthpat','Synthèse patrim.'],['plan',"Plan d'action"],['echeancier','Échéancier'],['proposition','Proposition'],['missions','Missions'],['pieces','Pièces'],['params','Paramètres'],['rapport','Rapport']];
   $('#subnav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" class="${t[0]===cur.tab?'active':''}">${t[1]}${t[0]==='missions'?`<span class="badge">${detected(c,cp).length}</span>`:''}</button>`).join('');
   showView('client');renderTab();
 }
@@ -742,6 +808,16 @@ function renderTab(){
   else if(cur.tab==='missions')el.innerHTML=viewMissions(c,cp);
   else if(cur.tab==='rapport')el.innerHTML=viewRapport(c,cp);
   else if(cur.tab==='evo')el.innerHTML=viewEvo(c,cp);
+  else if(cur.tab==='flashrep')el.innerHTML=viewFlashReport(c);
+  else if(cur.tab==='plan')el.innerHTML=viewPlan(c,cp);
+  else if(cur.tab==='pieces')el.innerHTML=viewPieces(c);
+  else if(cur.tab==='params')el.innerHTML=viewParams(c);
+  else if(cur.tab==='bilan')el.innerHTML=viewBilan(c);
+  else if(cur.tab==='orga')el.innerHTML=viewOrga(c);
+  else if(cur.tab==='analyse')el.innerHTML=viewAnalyse(c);
+  else if(cur.tab==='echeancier')el.innerHTML=viewEcheancier(c);
+  else if(cur.tab==='proposition')el.innerHTML=viewProposition(c,cp);
+  else if(cur.tab==='synthpat')el.innerHTML=viewSynthPat(c);
   enter(el);
 }
 
@@ -813,7 +889,7 @@ function synFro(c,cp){
 }
 function viewQuest(c,kind){
   const isFlash=kind==='flash';
-  const data=c.seg==='dir'?(isFlash?DIR_FLASH:DIR_DIAG):(isFlash?FRO_FLASH:FRO_DIAG);
+  const data=c.seg==='dir'?(isFlash?DIR_FLASH:dirDiag(c)):(isFlash?FRO_FLASH:FRO_DIAG);
   const answers=c[kind];
   const groups={};data.forEach(q=>{const g=c.seg==='dir'?q.axe:FRO_PILIERS[q.pil][0];(groups[g]=groups[g]||[]).push(q);});
   const answered=data.filter(q=>answers[q.id]).length,pct=Math.round(answered/data.length*100);
@@ -916,6 +992,208 @@ function viewPipeline(){
     </div>`;
 }
 
+
+/* ===================== DONNÉES — copie conforme finale ===================== */
+const FRO_PIECES=[
+ ["Identité & statut",[["Pièce d'identité (CNI ou passeport)","Essentiel","Vérification d'identité"],["Permis G (ou attestation frontalière)","Essentiel","Statut de frontalier"],["Contrat de travail suisse et avenants","Essentiel","Durée du permis, télétravail"],["Justificatif de domicile en France","Complémentaire","Résidence fiscale française"],["Livret de famille / situation matrimoniale","Complémentaire","Composition du foyer"]]],
+ ["Fiscalité",[["Avis d'imposition français (dernier)","Essentiel","Taux d'imposition, RFR"],["Bulletins de salaire suisses (3 derniers)","Essentiel","Rémunération, retenue à la source"],["Déclarations de revenus (2042 / 2047)","Complémentaire","Reporting du salaire suisse"],["Attestation 2041-AS (accord 1983)","Complémentaire","Éviter la retenue à la source"],["Relevés des comptes détenus en Suisse","Complémentaire","Déclaration 3916"]]],
+ ["Santé & prévoyance sociale",[["Attestation d'affiliation LAMal ou CMU","Essentiel","Régime maladie, exonération CSG"],["Contrat d'assurance maladie + complémentaire","Complémentaire","Couverture et coût"]]],
+ ["Retraite & prévoyance",[["Certificat de prévoyance 2e pilier (LPP)","Essentiel","Avoir LPP, sortie en capital"],["Attestation 3e pilier (3a / 3b)","Complémentaire","Épargne retraite"],["Relevé individuel de situation (RIS) France","Complémentaire","Totalisation des droits"],["Relevé de compte AVS suisse","Complémentaire","Droits retraite suisses"]]],
+ ["Patrimoine & placements",[["Relevés de comptes (Suisse et France)","Essentiel","Liquidités, exposition CHF/EUR"],["Contrats et relevés d'assurance-vie","Complémentaire","Épargne financière, transmission"],["Relevés PEA / compte-titres / PER","Complémentaire","Allocation, fiscalité"]]],
+ ["Immobilier & crédits",[["Estimation des biens (RP et locatif)","Essentiel","Valeur du patrimoine immobilier"],["Tableaux d'amortissement des crédits","Complémentaire","Endettement, mensualités"],["Contrats d'assurance emprunteur","Complémentaire","Protection du foyer"]]],
+ ["Transmission",[["Testament, donations antérieures","Complémentaire","Planification successorale"],["Contrat de mariage ou PACS","Complémentaire","Régime matrimonial, transmission"]]],
+];
+const DIR_PIECES=[
+ ["Entreprise",[["Liasses fiscales des 3 derniers exercices","Essentiel","Expert-comptable (mandat simple)"],["Dernière situation comptable","Essentiel","Expert-comptable"],["Statuts à jour et pacte d'associés","Essentiel","Greffe / avocat"]]],
+ ["Retraite & prévoyance",[["Relevé de carrière (info-retraite.fr)","Essentiel","FranceConnect — en séance"],["Contrats de prévoyance (arrêt, invalidité, décès)","Essentiel","Assureur / courtier"],["Contrats retraite (PER, Madelin, art. 83)","Essentiel","Assureur"]]],
+ ["Patrimoine & crédits",[["Relevés assurance-vie et comptes-titres","Essentiel","Espace bancaire — en séance"],["Tableaux d'amortissement des prêts","Essentiel","Espace bancaire — en séance"],["Avis d'imposition (IR, IFI)","Essentiel","impots.gouv.fr — en séance"],["Titres de propriété et baux locatifs","Complémentaire","Notaire / dossier personnel"]]],
+ ["Transmission",[["Contrat de mariage / donation entre époux","Complémentaire","Notaire"],["Actes des donations réalisées","Complémentaire","Notaire"]]],
+];
+const DIR_PARAMS=[["Taux de retrait (capital cible)","tauxRetrait",4,"%"],["Multiple EBE — bas","ebeBas",4,"×"],["Multiple EBE — central","ebeCentral",6,"×"],["Multiple EBE — haut","ebeHaut",8,"×"],["Seuil ILD — dépendance forte","ildForte",3,"ans"],["Seuil ILD — dépendance modérée","ildMod",10,"ans"],["Seuil ILD — autonomie solide","ildSolide",20,"ans"],["Trésorerie excédentaire mobilisable","tresoMob",60,"%"]];
+const FRO_PARAMS=[["Concentration immobilier max","concImmo",65,"%"],["Part résidence principale max","rpMax",50,"%"],["Liquidités min","liqMin",5,"%"],["Précaution min","precMin",3,"mois"],["Endettement max","endMax",35,"%"],["Exposition CHF max","chfMax",70,"%"],["Épargne financière min","epFinMin",10,"%"],["Taux d'épargne min","tauxEpMin",10,"%"]];
+const DIR_PHASES=["Construction","Développement","Pré-cession","Post-cession"];
+
+/* ===================== ÉCRANS — copie conforme finale ===================== */
+function viewFlashReport(c){
+  const data=c.seg==='dir'?DIR_FLASH:FRO_FLASH,A=c.flash;
+  const groups={};data.forEach(q=>{const g=c.seg==='dir'?q.axe:FRO_PILIERS[q.pil][0];(groups[g]=groups[g]||[]).push(q);});
+  const gs=groupScore(data,A),lc=lecture(gs.pct,c.seg);
+  const answered=data.filter(q=>A[q.id]).length,nonC=data.filter(q=>A[q.id]==='non').length;
+  const bars=Object.entries(groups).map(([g,qs])=>{const s=groupScore(qs,A),l=lecture(s.pct,c.seg);return `<div class="axline" style="margin-bottom:12px"><span class="lab" style="width:158px">${g}</span>${bar(s.ans?s.pct:0,l.c)}<span class="vv lv-${l.c}">${s.ans?s.pct:'—'}</span></div>`;}).join('');
+  const phrase=c.seg==='dir'?"Le CAP Flash est une première lecture, pas un diagnostic. Un pilier sous 60 appelle une analyse approfondie.":"Le sujet n'est pas de payer moins d'impôt, mais de sécuriser les décisions à fort impact. Un pilier sous 60 appelle une analyse approfondie.";
+  return `<div class="grid"><div class="card">
+    <div class="eyebrow">Rapport CAP Flash</div>
+    <div class="rapport-hero">${gauge(answered?gs.pct:0,lc.c,answered?lc.l:'À compléter')}<div class="txt"><div class="nm">${c.nm}</div><p>Prise de conscience — ${answered} / ${data.length} questions. ${phrase}</p></div></div>
+    <div style="margin:24px 0 14px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint)">Structuration par pilier</div>${bars}
+    <div class="kpis" style="grid-template-columns:repeat(3,1fr);margin-top:22px">
+      <div class="kpi"><div class="k">Indice Flash</div><div class="v lv-${lc.c}">${answered?gs.pct:'—'}</div><div class="d">/ 100</div></div>
+      <div class="kpi"><div class="k">Sujets prioritaires</div><div class="v lv-crit">${nonC}</div><div class="d">réponses « Non »</div></div>
+      <div class="kpi"><div class="k">Prochaine étape</div><div class="v" style="font-size:17px;font-family:var(--sans);line-height:1.2">Diagnostic complet</div><div class="d">analyse approfondie</div></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><button class="btn-ghost accent" data-goto="diag">Lancer le Diagnostic →</button><button class="btn-ghost" data-toast="Rapport CAP Flash exporté en PDF.">⬇ Exporter en PDF</button></div>
+  </div></div>`;
+}
+function viewPieces(c){
+  const data=c.seg==='dir'?DIR_PIECES:FRO_PIECES;if(!c.pieces)c.pieces={};
+  let total=0,recu=0;
+  const sections=data.map(([sec,items],si)=>{
+    const rows=items.map((it,ii)=>{const key=si+'-'+ii,niv=it[1];let st=c.pieces[key]||'À demander';total++;if(st==='Reçu')recu++;
+      const stc=st==='Reçu'?'good':st==='En séance'?'warn':'orange';
+      return `<div class="q"><div class="qt"><span class="tag ${niv==='Essentiel'?'p1':''}" style="margin-right:8px">${niv}</span>${it[0]}${it[2]?`<span style="color:var(--moon-faint);font-size:11px;display:block;margin-top:4px;padding-left:2px">${it[2]}</span>`:''}</div><button class="btn-ghost lv-${stc}" data-piece="${key}" style="min-width:118px">${st}</button></div>`;}).join('');
+    return `<div class="qblock"><div class="bh"><span class="t">${sec}</span></div>${rows}</div>`;}).join('');
+  return `<div class="grid"><div class="card"><div class="eyebrow">Pièces & documents</div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 10px;line-height:1.5">${c.seg==='dir'?"À demander après le diagnostic — liste courte, un maximum récupéré en séance. Cliquez le statut pour le faire évoluer.":"Pour un premier rendez-vous, les pièces « Essentiel » suffisent. Cliquez le statut pour le faire évoluer."}</p>
+    <div class="ptotal"><span class="l">Avancement de la collecte</span><span class="r">${recu} / ${total}</span></div>${sections}
+    <div style="margin-top:16px"><button class="btn-ghost accent" data-toast="E-mail de demande généré avec les seules pièces manquantes.">✉ Générer l'e-mail de demande</button></div>
+  </div></div>`;
+}
+function viewParams(c){
+  const defs=c.seg==='dir'?DIR_PARAMS:FRO_PARAMS;if(!c.params)c.params={};
+  const fields=defs.map(d=>{const val=c.params[d[1]]!=null?c.params[d[1]]:d[2];return `<div class="pf"><label>${d[0]}</label><div class="inp"><input type="number" step="any" data-param="${d[1]}" value="${val}"><span class="unit">${d[3]}</span></div></div>`;}).join('');
+  let extra='';
+  if(c.seg==='dir'){
+    const phase=c.params.phase||'—';
+    extra=`<div class="pf"><label>Phase de vie</label><div class="inp"><select data-param="phase" style="flex:1;background:none;border:none;color:var(--moon);padding:11px 13px;font-family:var(--sans);font-size:14px;outline:none">${['—'].concat(DIR_PHASES).map(p=>`<option ${phase===p?'selected':''}>${p}</option>`).join('')}</select></div></div>`;
+    const lib=c.liberal?'checked':'';
+    extra+=`<div class="pf" style="grid-column:1/-1"><label>Profil profession libérale / santé</label><div style="display:flex;align-items:center;gap:12px;padding:6px 0"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--moon-dim)"><input type="checkbox" data-liberal ${lib} style="width:18px;height:18px;accent-color:var(--teal)"> Activer les questions et la valorisation patientèle / officine</label></div></div>`;
+  }
+  const libBlock=(c.seg==='dir'&&c.liberal)?`<div class="grid"><div class="card"><div class="eyebrow">Valorisation patientèle / officine — profil santé</div>
+    <div class="pform"><div class="pf"><label>Hypothèse basse (% du CA)</label><div class="inp"><input type="number" data-param="patBas" value="${c.params.patBas!=null?c.params.patBas:30}"><span class="unit">%</span></div></div><div class="pf"><label>Hypothèse centrale</label><div class="inp"><input type="number" data-param="patCentral" value="${c.params.patCentral!=null?c.params.patCentral:40}"><span class="unit">%</span></div></div><div class="pf"><label>Hypothèse haute</label><div class="inp"><input type="number" data-param="patHaut" value="${c.params.patHaut!=null?c.params.patHaut:50}"><span class="unit">%</span></div></div></div>
+    <div class="pnote">Repères : médecin généraliste 10-30 % · spécialiste 20-40 % · chirurgien-dentiste 30-50 % · pharmacie 60-90 % (ou 6-8× EBE retraité). Ajuster à chaque dossier.</div></div></div>`:'';
+  return `<div class="grid"><div class="card"><div class="eyebrow">Paramètres du dossier</div>
+    <p style="font-size:12.5px;color:var(--moon-faint);margin:-8px 0 4px">Réglages propres à ce dossier — valorisation, seuils et hypothèses.</p>
+    <div class="pform">${fields}${extra}</div></div></div>${libBlock}`;
+}
+function viewPlan(c,cp){
+  const data=c.seg==='dir'?dirDiag(c):FRO_DIAG,A=c.diag;
+  const items=data.map(q=>({q,a:A[q.id]})).filter(x=>x.a==='non'||x.a==='partiel').sort((a,b)=>((a.a==='non'?0:1)-(b.a==='non'?0:1))||(b.q.w-a.q.w));
+  const rows=items.slice(0,16).map((x,i)=>{const prio=x.a==='non'?'Prioritaire':'À clarifier',pc=x.a==='non'?'p1':'p2';const title=x.q.bloc||(c.seg==='dir'?x.q.axe:FRO_PILIERS[x.q.pil][0]);
+    return `<div class="m"><div class="rk">${i+1}</div><div class="body"><div class="nm">${title}</div><div class="why">${x.q.t}</div><div class="tags"><span class="tag ${pc}">${prio}</span>${x.q.mission?`<span class="tag hz">${x.q.mission}</span>`:''}<span class="tag">Poids ${x.q.w}</span></div></div></div>`;}).join('');
+  return `<div class="grid"><div class="card"><div class="eyebrow">Plan d'action</div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 18px">Les points « Non » puis « À clarifier », classés par impact — issus du diagnostic.</p>
+    <div class="miss">${rows||'<p style="color:var(--moon-faint)">Renseignez le diagnostic pour générer le plan.</p>'}</div></div></div>`;
+}
+function viewBilan(c){
+  if(!c.bilan)c.bilan={};const B=c.bilan;
+  const actifs=[["rp","Résidence principale"],["immoLoc","Immobilier locatif"],["liquid","Liquidités"],["av","Assurance-vie"],["pea","PEA"],["cto","Compte-titres (CTO)"],["per","PER"],["lpp","2e pilier (LPP)"],["p3","3e pilier (3a/3b)"],["autres","Autres actifs"]];
+  const passifs=[["credRp","Crédit résidence principale"],["credLoc","Crédit(s) locatif"],["credConso","Autres crédits (conso…)"]];
+  const sum=a=>a.reduce((s,x)=>s+(+B[x[0]]||0),0);const totA=sum(actifs),totP=sum(passifs);
+  const f=l=>l.map(x=>`<div class="pf"><label>${x[1]}</label><div class="inp"><input type="number" data-bilan="${x[0]}" value="${B[x[0]]||''}"><span class="unit">€</span></div></div>`).join('');
+  return `<div class="grid row-2">
+    <div class="card"><div class="eyebrow">Actifs</div><div class="pform">${f(actifs)}</div><div class="ptotal"><span class="l">Total actifs</span><span class="r" id="bilanA">${money(totA)}</span></div></div>
+    <div class="card"><div class="eyebrow">Passifs & patrimoine net</div><div class="pform">${f(passifs)}</div><div class="ptotal"><span class="l">Total dettes</span><span class="r" id="bilanP">${money(totP)}</span></div>
+      <div class="ptotal" style="margin-top:14px;background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Patrimoine net</span><span class="r" id="bilanNet">${money(totA-totP)}</span></div></div>
+  </div>`;
+}
+function viewOrga(c){
+  if(!c.orga)c.orga=[{nm:"Holding patrimoniale",forme:"SAS",role:"Holding",det:"Dirigeant",pct:100},{nm:"Société d'exploitation",forme:"SAS",role:"Exploitation",det:"Holding",pct:100},{nm:"SCI immobilier pro",forme:"SCI",role:"Immobilier",det:"Dirigeant",pct:100}];
+  const boxes=c.orga.map(e=>`<div style="border:1px solid var(--line-2);border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.03);min-width:170px;text-align:center"><div style="font-weight:600;font-size:13.5px">${e.nm}</div><div style="font-size:11px;color:var(--moon-faint);margin-top:4px">${e.forme} · ${e.role}</div><div style="font-size:11.5px;color:var(--teal);margin-top:7px">${e.pct}% par ${e.det}</div></div>`).join('');
+  return `<div class="grid"><div class="card"><div class="eyebrow">Groupe & organigramme</div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 22px">Structure de détention (2 niveaux) — % effectif du dirigeant, valeur et trésorerie consolidées.</p>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0 12px">
+      <div style="border:1px solid var(--teal);border-radius:12px;padding:15px 30px;background:rgba(95,167,168,.1);text-align:center"><div style="font-family:var(--serif);font-size:22px;font-weight:600">${c.nm}</div><div style="font-size:11px;color:var(--moon-faint)">Dirigeant</div></div>
+      <div style="width:2px;height:26px;background:var(--line-2)"></div>
+      <div style="display:flex;gap:22px;flex-wrap:wrap;justify-content:center">${boxes}</div>
+    </div>
+    <div style="text-align:center;margin-top:8px"><button class="btn-ghost accent" data-toast="Ajout d'entité — disponible dans la version finale.">＋ Ajouter une entité</button></div>
+  </div></div>`;
+}
+function viewAdmin(){
+  const act=CLIENT_ORDER.filter(id=>CLIENTS[id].access).length;
+  const rows=CLIENT_ORDER.map(id=>{const c=CLIENTS[id];const login=c.nm.toLowerCase().normalize('NFD').replace(/[^a-z ]/g,'').trim().split(' ').slice(0,2).join('.')+'@client.eligi.fr';
+    return `<tr><td><span class="cli">${c.nm}<small>${c.sub}</small></span></td><td><span class="seg ${c.seg==='dir'?'dir':''}">${c.seg==='dir'?'Dirigeant':'Frontalier'}</span></td><td class="num" style="color:var(--moon-dim);font-size:12px">${login}</td><td>${c.access?'<span class="relbtn done">✓ actif</span>':`<button class="relbtn" data-access="${id}" onclick="event.stopPropagation()">Générer identifiants</button>`}</td></tr>`;}).join('');
+  return `<div class="topbar"><div><div class="crumb">Administration</div><h1 class="h1">Comptes & accès</h1></div><button class="btn-add" data-toast="Nouveau conseiller — formulaire dans la version finale.">＋ Nouveau conseiller</button></div>
+    <p class="sub">Attribuez un identifiant pour ouvrir l'accès de chaque client à son espace.</p>
+    <div class="kpis"><div class="kpi"><div class="k">Conseillers</div><div class="v">1</div><div class="d">Loïc Schmitt</div></div><div class="kpi"><div class="k">Clients</div><div class="v">${CLIENT_ORDER.length}</div><div class="d">dossiers</div></div><div class="kpi"><div class="k">Accès actifs</div><div class="v lv-good">${act}</div><div class="d">identifiants générés</div></div><div class="kpi"><div class="k">En attente</div><div class="v lv-warn">${CLIENT_ORDER.length-act}</div><div class="d">à générer</div></div></div>
+    <div class="tablewrap" style="margin-top:22px"><table><thead><tr><th>Client</th><th>Segment</th><th>Identifiant</th><th>Accès</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+
+/* ===== Module profession de santé (activé si profil libéral) ===== */
+const DIR_SANTE=[
+ ["S1","Construire",3,0,"Valorisabilite","La valeur de cession de votre patientèle ou de votre officine a-t-elle été estimée au cours des 3 dernières années ?"],
+ ["S2","Construire",3,0,"Valorisabilite","Votre mode d'exercice (BNC, SELARL, SELAS…) a-t-il été arbitré au regard de vos objectifs de rémunération, retraite et cession ?"],
+ ["S3","Construire",3,0,"Valorisabilite","Une SPFPL ou une structure de détention a-t-elle été étudiée pour organiser vos revenus et votre capital ?"],
+ ["S4","Anticiper",5,0,"Vulnerabilite","Vos indemnités journalières (CARMF, CARPIMKO, CAVP…) plus votre prévoyance couvrent-elles réellement votre train de vie en cas d'arrêt ?"],
+ ["S5","Anticiper",5,0,"Vulnerabilite","L'incapacité d'exercer votre spécialité (invalidité partielle métier) est-elle spécifiquement couverte par vos contrats ?"],
+ ["S6","Anticiper",3,0,"PerenniteFin","Connaissez-vous précisément votre retraite de caisse (base, complémentaire, ASV/PCV) et son écart avec votre besoin futur ?"],
+ ["S7","Anticiper",3,0,"Vulnerabilite","Votre remplacement et la continuité des soins sont-ils organisés en cas d'absence prolongée ?"],
+ ["S8","Pérenniser",5,0,"PerenniteFin","La cession de votre patientèle est-elle intégrée à votre stratégie de retraite (calendrier, valeur, fiscalité) ?"],
+ ["S9","Pérenniser",3,1,"Concentration","Vos revenus dépendent-ils exclusivement de votre activité de soins (aucun revenu passif) ?"],
+ ["S10","Anticiper",3,0,"Vulnerabilite","Les conséquences patrimoniales d'une mise en cause professionnelle (RCP, protection du patrimoine privé) ont-elles été évaluées ?"],
+ ["S11","Anticiper",3,0,"Vulnerabilite","Le délai de carence de vos indemnités journalières de caisse (souvent 90 jours) est-il couvert par une prévoyance complémentaire ?"],
+ ["S12","Anticiper",3,0,"Vulnerabilite","En cas d'arrêt prolongé, le paiement de vos cotisations obligatoires et des frais fixes du cabinet est-il assuré (garantie frais généraux) ?"],
+ ["S13","Pérenniser",3,0,"Valorisabilite","La démographie de votre zone (installations, repreneurs) permet-elle raisonnablement d'espérer céder votre patientèle à sa valeur ?"],
+].map(r=>({id:r[0],axe:r[1],w:r[2],inv:!!r[3],ind:r[4],t:r[5],bloc:"Profession de santé"}));
+function dirDiag(c){return c.liberal?DIR_DIAG.concat(DIR_SANTE):DIR_DIAG;}
+
+/* ===== Écrans restants ===== */
+function viewAnalyse(c){
+  const base=(c.fin.professionnel||1000000);
+  const ca=Math.round(base*0.9),ebe=Math.round(ca*0.18),rn=Math.round(ebe*0.55),caf=Math.round(rn*1.4),tresoN=Math.round(ca*0.16),capEnd=Math.round(3*caf*0.7);
+  const kpi=(k,v,d,cl)=>`<div class="kpi"><div class="k">${k}</div><div class="v ${cl||''}">${v}</div><div class="d">${d}</div></div>`;
+  return `<div class="grid"><div class="card"><div class="eyebrow">Analyse financière — liasses 3 exercices</div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 4px">CAF, BFR et capacité de financement, calculés depuis les liasses fiscales.</p>
+    <div class="kpis" style="margin-top:18px">${kpi("CAF annuelle",money(caf),"capacité d'autofinancement","lv-good")}${kpi("BFR",42+" j","de chiffre d'affaires","lv-warn")}${kpi("Trésorerie nette",money(tresoN),"disponible")}${kpi("Marge d'EBE",Math.round(ebe/ca*100)+" %","rentabilité")}</div>
+  </div></div>
+  <div class="grid row-2">
+    <div class="card"><div class="eyebrow">Ce que la liasse ne vous dit pas</div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:13px;color:var(--moon-dim);line-height:1.55">
+        <div>• Il faudrait <b style="color:var(--moon)">${(base/caf).toFixed(1)} ans</b> de CAF pour rembourser vos dettes financières.</div>
+        <div>• Trésorerie nette au-dessus de 15 % du CA : un excédent mobilisable pour un projet patrimonial.</div>
+        <div>• Une part importante du résultat part en dividendes et remboursements — arbitrage distribution / capitalisation à revoir.</div>
+      </div></div>
+    <div class="card"><div class="eyebrow">Capacité de financement de vos projets</div>
+      <div class="ptotal"><span class="l">CAF disponible / an</span><span class="r">${money(Math.round(caf*0.6))}</span></div>
+      <div class="ptotal" style="margin-top:12px"><span class="l">Capacité d'endettement théorique</span><span class="r">${money(capEnd)}</span></div>
+      <div class="ptotal" style="margin-top:12px;background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Enveloppe mobilisable</span><span class="r">${money(Math.round(capEnd+tresoN*0.6))}</span></div>
+    </div></div>`;
+}
+function viewEcheancier(c){
+  const rows=[["Choix d'assurance maladie (droit d'option)","Prise de poste + 3 mois","01/09/2024","Échu","Choix LAMal vs CMU — irrévocable"],["Statut de quasi-résident (Genève)","31 mars N+1","31/03/2027","À préparer","Simuler quasi-résident vs forfaitaire"],["Renouvellement du permis G","Prise de poste + 5 ans","06/2029","Planifié","Rassembler les pièces avant l'échéance"],["Déclaration de revenus en France","Chaque printemps","Avr.–juin 2027","À préparer","Déclarer le salaire suisse (2047/2042)"],["Préparation du retour en France","Horizon retour saisi","2031","Planifié","Commencer 2 à 5 ans avant"],["13e rente AVS — 1er versement","Fixé","12/2026","À traiter","Versée pour la 1re fois en décembre 2026"]];
+  const badge=a=>{const cc={'Échu':'crit','À traiter':'orange','À préparer':'warn','Planifié':'good'}[a];return `<span class="tag ${cc==='crit'?'p1':''}" style="color:var(--${cc})">${a}</span>`;};
+  const tr=rows.map(r=>`<tr><td><span class="cli">${r[0]}<small>${r[1]}</small></span></td><td class="num">${r[2]}</td><td>${badge(r[3])}</td><td style="color:var(--moon-dim);font-size:12.5px">${r[4]}</td></tr>`).join('');
+  return `<div class="grid"><div class="card"><div class="eyebrow">Échéancier des décisions irréversibles</div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 14px">Les décisions à échéance courte et irréversible d'abord — dates calculées depuis la fiche client.</p>
+    <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Décision</th><th>Échéance</th><th>Alerte</th><th>Ce qu'il faut faire</th></tr></thead><tbody>${tr}</tbody></table></div></div></div>`;
+}
+function viewProposition(c,cp){
+  const top=detected(c,cp).slice(0,3);
+  const ch=top.map((m,i)=>`<div class="m"><div class="rk">${i+1}</div><div class="body"><div class="nm">${m.nm}</div><div class="why">${m.why}</div></div></div>`).join('');
+  return `<div class="grid"><div class="card">
+    <div class="eyebrow">Proposition d'accompagnement</div>
+    <div style="font-family:var(--serif);font-size:24px;font-weight:600;margin-bottom:6px">Préparée pour ${c.nm}</div>
+    <p style="font-size:13.5px;color:var(--moon-dim);line-height:1.6">Cette proposition ne part pas d'un produit — elle part de vos objectifs. Vous décidez de ce que vous en faites. Indice de structuration : ${cp.global} / 100 · ${cp.glecture.l}.</p>
+    <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin:22px 0 12px">Vos chantiers prioritaires</div>
+    <div class="miss">${ch||'<p style="color:var(--moon-faint)">Diagnostic à compléter.</p>'}</div>
+    <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin:24px 0 12px">Nos honoraires</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="m"><div class="body"><div class="nm">Mission ciblée (au forfait)</div><div class="why">Traitement d'un chantier précis identifié par le diagnostic. Prix annoncé à l'avance.</div></div><div class="fee"><div class="amt">sur devis</div></div></div>
+      <div class="m"><div class="body"><div class="nm">Abonnement CAP annuel</div><div class="why">Accès au cabinet toute l'année, revue annuelle du score et de l'échéancier.</div></div><div class="fee"><div class="amt">forfait annuel</div></div></div>
+      <div class="m"><div class="body"><div class="nm">Gestion d'actifs (option)</div><div class="why">Mise en œuvre et pilotage — uniquement si vous le choisissez.</div></div><div class="fee"><div class="amt">selon mandat</div></div></div>
+    </div>
+    <p class="concl">La prochaine étape est simple : vous choisissez par quel chantier commencer.</p>
+    <div style="margin-top:16px"><button class="btn-ghost accent" data-toast="Proposition exportée en PDF.">⬇ Exporter la proposition</button></div>
+  </div></div>`;
+}
+function viewSynthPat(c){
+  const B=c.bilan||{};
+  const A=['rp','immoLoc','liquid','av','pea','cto','per','lpp','p3','autres'].reduce((s,k)=>s+(+B[k]||0),0);
+  const dette=['credRp','credLoc','credConso'].reduce((s,k)=>s+(+B[k]||0),0);
+  const immo=(+B.rp||0)+(+B.immoLoc||0),fin=(+B.av||0)+(+B.pea||0)+(+B.cto||0)+(+B.per||0),liq=(+B.liquid||0);
+  const pct=v=>A?Math.round(v/A*100)+' %':'—';
+  const ratio=(lab,v,ok)=>`<div class="axline" style="margin-bottom:12px"><span class="lab" style="width:190px">${lab}</span>${bar(A?Math.min(100,Math.round(v/A*100)):0,ok?'good':'warn')}<span class="vv">${pct(v)}</span></div>`;
+  const axes=[];
+  if(A){if(immo/A>0.65)axes.push("Patrimoine concentré sur l'immobilier — diversifier vers des actifs financiers plus liquides.");if((+B.rp||0)/A>0.5)axes.push("La résidence principale pèse trop dans le patrimoine — étudier l'investissement locatif ou financier.");if(fin/A<0.1)axes.push("Patrimoine financier peu développé — potentiel via assurance-vie, PEA, PER.");if(liq/A>0.3)axes.push("Excès de liquidités non investies — un rendement dort.");}
+  const axesHtml=axes.length?axes.map(a=>`<div style="font-size:13px;color:var(--moon-dim);margin-bottom:9px;line-height:1.5">• ${a}</div>`).join(''):(A?'<div style="color:var(--good);font-size:13px">✓ Répartition patrimoniale équilibrée au regard des seuils.</div>':'<div style="color:var(--moon-faint);font-size:13px">Renseignez le bilan patrimonial pour générer l’analyse.</div>');
+  return `<div class="grid row-2">
+    <div class="card"><div class="eyebrow">Synthèse patrimoniale</div>
+      <div class="ptotal" style="background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Patrimoine net</span><span class="r">${money(A-dette)}</span></div>
+      <div style="margin-top:18px">${ratio("Poids de l'immobilier",immo,immo/(A||1)<=0.65)}${ratio("Part d'épargne financière",fin,fin/(A||1)>=0.1)}${ratio("Part de liquidités",liq,liq/(A||1)<=0.3)}</div></div>
+    <div class="card"><div class="eyebrow">Axes d'amélioration</div>${axesHtml}</div>
+  </div>`;
+}
+
 /* ============================================================
    PERSISTANCE + NAVIGATION
    ============================================================ */
@@ -925,7 +1203,7 @@ function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&
 
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));const el=$('#v-'+v);el.classList.add('on');el.classList.remove('fadein-view');void el.offsetWidth;el.classList.add('fadein-view');
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.nav===v));
-  if(v==='suivi'){el.innerHTML=viewSuivi();}if(v==='pipeline'){el.innerHTML=viewPipeline();enter(el);}
+  if(v==='suivi'){el.innerHTML=viewSuivi();}if(v==='pipeline'){el.innerHTML=viewPipeline();enter(el);}if(v==='admin'){el.innerHTML=viewAdmin();enter(el);}
   window.scrollTo({top:0,behavior:'smooth'});}
 let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600);}
 
@@ -943,6 +1221,9 @@ document.addEventListener('click',e=>{
   const fill=e.target.closest('[data-fill]');if(fill){const c=CLIENTS[cur.id],k=fill.dataset.fill;const src=c.seg==='dir'?(k==='flash'?DIR_DEMO_FLASH:DIR_DEMO):(k==='flash'?FRO_DEMO_FLASH:FRO_DEMO);c[k]={...src};save();renderTab();refreshHead();toast('Exemple de réponses chargé.');return;}
   const reset=e.target.closest('[data-reset]');if(reset){CLIENTS[cur.id][reset.dataset.reset]={};save();renderTab();refreshHead();return;}
   const tt=e.target.closest('[data-toast]');if(tt){toast(tt.dataset.toast);return;}
+  const imp=e.target.closest('[data-import]');if(imp){importClient();return;}
+  const pce=e.target.closest('[data-piece]');if(pce){const c=CLIENTS[cur.id];if(!c.pieces)c.pieces={};const cs=c.pieces[pce.dataset.piece]||'À demander';c.pieces[pce.dataset.piece]={'À demander':'En séance','En séance':'Reçu','Reçu':'À demander'}[cs];save();renderTab();return;}
+  const acc=e.target.closest('[data-access]');if(acc){CLIENTS[acc.dataset.access].access=true;save();showView('admin');toast('Identifiants générés et envoyés au client.');return;}
   const nc=e.target.closest('[data-newclient]');if(nc){$('#overlay').classList.add('on');return;}
   if(e.target.id==='nc-cancel'||e.target===$('#overlay')){$('#overlay').classList.remove('on');return;}
   if(e.target.id==='nc-create'){createClient();return;}
@@ -951,6 +1232,15 @@ document.addEventListener('click',e=>{
 document.addEventListener('input',e=>{
   const fin=e.target.closest('[data-fin]');if(fin){CLIENTS[cur.id].fin[fin.dataset.fin]=parseFloat(fin.value)||0;save();const cp=compute(CLIENTS[cur.id]);const pt=$('#patTotal');if(pt&&cp.patrimoine!=null)pt.textContent=money(cp.patrimoine);refreshHead();return;}
   const mt=e.target.closest('[data-meta]');if(mt){CLIENTS[cur.id][mt.dataset.meta]=mt.value;save();return;}
+  const pr=e.target.closest('[data-param]');if(pr){const c=CLIENTS[cur.id];if(!c.params)c.params={};c.params[pr.dataset.param]=(pr.dataset.param==='phase')?pr.value:(parseFloat(pr.value)||0);save();return;}
+  const bl=e.target.closest('[data-bilan]');if(bl){const c=CLIENTS[cur.id];if(!c.bilan)c.bilan={};c.bilan[bl.dataset.bilan]=parseFloat(bl.value)||0;save();const B=c.bilan;const a=['rp','immoLoc','liquid','av','pea','cto','per','lpp','p3','autres'].reduce((s,k)=>s+(+B[k]||0),0);const p=['credRp','credLoc','credConso'].reduce((s,k)=>s+(+B[k]||0),0);const eA=$('#bilanA'),eP=$('#bilanP'),eN=$('#bilanNet');if(eA)eA.textContent=money(a);if(eP)eP.textContent=money(p);if(eN)eN.textContent=money(a-p);return;}
+});
+function importClient(){const seg=Math.random()<0.5?'dir':'fro';const id='imp'+Date.now();
+  CLIENTS[id]={seg,nm:seg==='dir'?'Étienne Roth (importé)':'Claire Meyer (importée)',sub:seg==='dir'?'ROTH & Associés SAS':'Frontalier · Bâle',maj:new Date().toLocaleDateString('fr-FR'),rel:'Dans 12 mois',due:0,relanced:false,fin:{...DEFAULT_FIN[seg]},history:[["2025",0,"importé"]],diag:{},flash:{}};
+  CLIENT_ORDER.unshift(id);save();showView('clients');renderRows('all');toast('Dossier client importé — vérifiez le profil et le diagnostic.');}
+document.addEventListener('change',e=>{
+  const pr=e.target.closest('[data-param]');if(pr){const c=CLIENTS[cur.id];if(!c.params)c.params={};c.params[pr.dataset.param]=(pr.dataset.param==='phase')?pr.value:(parseFloat(pr.value)||0);save();return;}
+  const lib=e.target.closest('[data-liberal]');if(lib){CLIENTS[cur.id].liberal=lib.checked;save();renderTab();return;}
 });
 function createClient(){
   const nom=$('#nc-nom').value.trim()||'Nouveau client';const seg=$('#nc-seg').value;const sub=$('#nc-sub').value.trim()||(seg==='dir'?'Société':'Frontalier');
