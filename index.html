@@ -793,15 +793,15 @@ function openClient(id,tab){
   $('#chead').innerHTML=`<div><div class="nm">${c.nm}</div><div class="meta">${(c.seg==='dir'?metaDir(c.sub):metaFro(c.sub)).map(m=>`<span><b>${m[0]}</b> ${m[1]}</span>`).join('')}<span><b>Revue</b> ${c.maj}</span></div></div>
     <div class="miniglobe"><div class="v lv-${cp.glecture.c}">${cp.global}</div><div class="o">CAP / 100 · ${cp.glecture.l}</div></div>`;
   const tabs=c.seg==='dir'
-   ?[['profil','Profil'],['synthese','Synthèse'],['flash','CAP Flash'],['flashrep','Rapport Flash'],['diag','Diagnostic'],['analyse','Analyse fin.'],['plan',"Plan d'action"],['missions','Missions'],['orga','Organigramme'],['pieces','Pièces'],['params','Paramètres'],['rapport','Rapport']]
-   :[['profil','Profil'],['synthese','Synthèse'],['flash','CAP Flash'],['flashrep','Rapport Flash'],['diag','Diagnostic'],['bilan','Bilan'],['synthpat','Synthèse patrim.'],['plan',"Plan d'action"],['echeancier','Échéancier'],['proposition','Proposition'],['missions','Missions'],['pieces','Pièces'],['params','Paramètres'],['rapport','Rapport']];
+   ?[['profil','Profil'],['cadrage','Le principe'],['revenus','Revenus'],['patrimoine','Patrimoine'],['entreprise','Entreprise'],['famille','Famille'],['protection','Protection'],['objectifs','Objectifs'],['pc','Prise de conscience'],['auto','Auto-évaluation'],['synthese','Synthèse'],['flash','CAP Flash'],['flashrep','Rapport Flash'],['diag','Diagnostic'],['analyse','Analyse fin.'],['plan',"Plan d'action"],['missions','Missions'],['orga','Organigramme'],['pieces','Pièces'],['params','Paramètres'],['rapport','Rapport'],['interne','Rapport interne']]
+   :[['profil','Fiche client'],['synthese','Synthèse'],['flash','CAP Flash'],['flashrep','Rapport Flash'],['diag','Diagnostic'],['bilan','Bilan'],['synthpat','Synthèse patrim.'],['plan',"Plan d'action"],['echeancier','Échéancier'],['proposition','Proposition'],['missions','Missions'],['pieces','Pièces'],['params','Paramètres'],['rapport','Rapport']];
   $('#subnav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" class="${t[0]===cur.tab?'active':''}">${t[1]}${t[0]==='missions'?`<span class="badge">${detected(c,cp).length}</span>`:''}</button>`).join('');
   showView('client');renderTab();
 }
 function renderTab(){
   const c=CLIENTS[cur.id],cp=compute(c),el=$('#content');
   document.querySelectorAll('#subnav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===cur.tab));
-  if(cur.tab==='profil')el.innerHTML=viewProfile(c,cp);
+  if(cur.tab==='profil')el.innerHTML=(c.seg==='fro'?viewFiche(c):viewProfile(c,cp));
   else if(cur.tab==='synthese')el.innerHTML=c.seg==='dir'?synDir(c,cp):synFro(c,cp);
   else if(cur.tab==='flash')el.innerHTML=viewQuest(c,'flash');
   else if(cur.tab==='diag')el.innerHTML=viewQuest(c,'diag');
@@ -818,6 +818,16 @@ function renderTab(){
   else if(cur.tab==='echeancier')el.innerHTML=viewEcheancier(c);
   else if(cur.tab==='proposition')el.innerHTML=viewProposition(c,cp);
   else if(cur.tab==='synthpat')el.innerHTML=viewSynthPat(c);
+  else if(cur.tab==='revenus')el.innerHTML=viewRevenus(c);
+  else if(cur.tab==='patrimoine')el.innerHTML=viewPatrimoine(c);
+  else if(cur.tab==='entreprise')el.innerHTML=viewEntreprise(c);
+  else if(cur.tab==='famille')el.innerHTML=viewFamille(c);
+  else if(cur.tab==='protection')el.innerHTML=viewProtection(c);
+  else if(cur.tab==='objectifs')el.innerHTML=viewObjectifs(c);
+  else if(cur.tab==='cadrage')el.innerHTML=viewCadrage(c);
+  else if(cur.tab==='pc')el.innerHTML=viewPriseConscience(c);
+  else if(cur.tab==='auto')el.innerHTML=viewAutoEval(c,cp);
+  else if(cur.tab==='interne')el.innerHTML=viewRapportInterne(c,cp);
   enter(el);
 }
 
@@ -1073,18 +1083,6 @@ function viewPlan(c,cp){
     <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 18px">Les points « Non » puis « À clarifier », classés par impact — issus du diagnostic.</p>
     <div class="miss">${rows||'<p style="color:var(--moon-faint)">Renseignez le diagnostic pour générer le plan.</p>'}</div></div></div>`;
 }
-function viewBilan(c){
-  if(!c.bilan)c.bilan={};const B=c.bilan;
-  const actifs=[["rp","Résidence principale"],["immoLoc","Immobilier locatif"],["liquid","Liquidités"],["av","Assurance-vie"],["pea","PEA"],["cto","Compte-titres (CTO)"],["per","PER"],["lpp","2e pilier (LPP)"],["p3","3e pilier (3a/3b)"],["autres","Autres actifs"]];
-  const passifs=[["credRp","Crédit résidence principale"],["credLoc","Crédit(s) locatif"],["credConso","Autres crédits (conso…)"]];
-  const sum=a=>a.reduce((s,x)=>s+(+B[x[0]]||0),0);const totA=sum(actifs),totP=sum(passifs);
-  const f=l=>l.map(x=>`<div class="pf"><label>${x[1]}</label><div class="inp"><input type="number" data-bilan="${x[0]}" value="${B[x[0]]||''}"><span class="unit">€</span></div></div>`).join('');
-  return `<div class="grid row-2">
-    <div class="card"><div class="eyebrow">Actifs</div><div class="pform">${f(actifs)}</div><div class="ptotal"><span class="l">Total actifs</span><span class="r" id="bilanA">${money(totA)}</span></div></div>
-    <div class="card"><div class="eyebrow">Passifs & patrimoine net</div><div class="pform">${f(passifs)}</div><div class="ptotal"><span class="l">Total dettes</span><span class="r" id="bilanP">${money(totP)}</span></div>
-      <div class="ptotal" style="margin-top:14px;background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Patrimoine net</span><span class="r" id="bilanNet">${money(totA-totP)}</span></div></div>
-  </div>`;
-}
 function viewOrga(c){
   if(!c.orga)c.orga=[{nm:"Holding patrimoniale",forme:"SAS",role:"Holding",det:"Dirigeant",pct:100},{nm:"Société d'exploitation",forme:"SAS",role:"Exploitation",det:"Holding",pct:100},{nm:"SCI immobilier pro",forme:"SCI",role:"Immobilier",det:"Dirigeant",pct:100}];
   const boxes=c.orga.map(e=>`<div style="border:1px solid var(--line-2);border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.03);min-width:170px;text-align:center"><div style="font-weight:600;font-size:13.5px">${e.nm}</div><div style="font-size:11px;color:var(--moon-faint);margin-top:4px">${e.forme} · ${e.role}</div><div style="font-size:11.5px;color:var(--teal);margin-top:7px">${e.pct}% par ${e.det}</div></div>`).join('');
@@ -1098,16 +1096,41 @@ function viewOrga(c){
     <div style="text-align:center;margin-top:8px"><button class="btn-ghost accent" data-toast="Ajout d'entité — disponible dans la version finale.">＋ Ajouter une entité</button></div>
   </div></div>`;
 }
+const ADVISORS=[
+ {id:'a1',nm:'Loïc Schmitt',role:'Gérant',mail:'l.schmitt@eligi-conseil.fr',admin:true,actif:true},
+ {id:'a2',nm:'Marie Schmitt',role:'Conseillère',mail:'m.schmitt@eligi-conseil.fr',admin:false,actif:true},
+ {id:'a3',nm:'Thomas Klein',role:'Conseiller',mail:'t.klein@eligi-conseil.fr',admin:false,actif:false},
+];
+function advOf(c){return c.adv||(c.seg==='dir'?'Loïc Schmitt':'Marie Schmitt');}
 function viewAdmin(){
   const act=CLIENT_ORDER.filter(id=>CLIENTS[id].access).length;
-  const rows=CLIENT_ORDER.map(id=>{const c=CLIENTS[id];const login=c.nm.toLowerCase().normalize('NFD').replace(/[^a-z ]/g,'').trim().split(' ').slice(0,2).join('.')+'@client.eligi.fr';
-    return `<tr><td><span class="cli">${c.nm}<small>${c.sub}</small></span></td><td><span class="seg ${c.seg==='dir'?'dir':''}">${c.seg==='dir'?'Dirigeant':'Frontalier'}</span></td><td class="num" style="color:var(--moon-dim);font-size:12px">${login}</td><td>${c.access?'<span class="relbtn done">✓ actif</span>':`<button class="relbtn" data-access="${id}" onclick="event.stopPropagation()">Générer identifiants</button>`}</td></tr>`;}).join('');
-  return `<div class="topbar"><div><div class="crumb">Administration</div><h1 class="h1">Comptes & accès</h1></div><button class="btn-add" data-toast="Nouveau conseiller — formulaire dans la version finale.">＋ Nouveau conseiller</button></div>
-    <p class="sub">Attribuez un identifiant pour ouvrir l'accès de chaque client à son espace.</p>
-    <div class="kpis"><div class="kpi"><div class="k">Conseillers</div><div class="v">1</div><div class="d">Loïc Schmitt</div></div><div class="kpi"><div class="k">Clients</div><div class="v">${CLIENT_ORDER.length}</div><div class="d">dossiers</div></div><div class="kpi"><div class="k">Accès actifs</div><div class="v lv-good">${act}</div><div class="d">identifiants générés</div></div><div class="kpi"><div class="k">En attente</div><div class="v lv-warn">${CLIENT_ORDER.length-act}</div><div class="d">à générer</div></div></div>
-    <div class="tablewrap" style="margin-top:22px"><table><thead><tr><th>Client</th><th>Segment</th><th>Identifiant</th><th>Accès</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  const advRows=ADVISORS.map(a=>{
+    const n=CLIENT_ORDER.filter(id=>advOf(CLIENTS[id])===a.nm).length;
+    return `<tr><td><span class="cli">${a.nm}<small>${a.role}</small></span></td>
+      <td class="num" style="color:var(--moon-dim);font-size:12px">${a.mail}</td>
+      <td class="num" style="font-weight:600">${n}</td>
+      <td>${a.admin?'<span class="tag p1">Administrateur</span>':'<span class="tag">Conseiller</span>'}</td>
+      <td>${a.actif?'<span class="relbtn done">✓ accès actif</span>':`<button class="relbtn" data-advon="${a.id}">Activer l'accès</button>`}</td></tr>`;}).join('');
+  const rows=CLIENT_ORDER.map(id=>{const c=CLIENTS[id];
+    const login=c.nm.toLowerCase().normalize('NFD').replace(/[^a-z ]/g,'').trim().split(' ').filter(Boolean).slice(0,2).join('.')+'@client.eligi.fr';
+    return `<tr><td><span class="cli">${c.nm}<small>${c.sub}</small></span></td>
+      <td><span class="seg ${c.seg==='dir'?'dir':''}">${c.seg==='dir'?'Dirigeant':'Frontalier'}</span></td>
+      <td style="color:var(--moon-dim);font-size:12.5px">${advOf(c)}</td>
+      <td class="num" style="color:var(--moon-dim);font-size:12px">${login}</td>
+      <td>${c.access?'<span class="relbtn done">✓ actif</span>':`<button class="relbtn" data-access="${id}" onclick="event.stopPropagation()">Générer identifiants</button>`}</td></tr>`;}).join('');
+  return `<div class="topbar"><div><div class="crumb">Administration</div><h1 class="h1">Conseillers & accès</h1></div><button class="btn-add" data-newadvisor>＋ Ajouter un conseiller</button></div>
+    <p class="sub">Gérez les conseillers du cabinet et les accès clients.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="k">Conseillers</div><div class="v">${ADVISORS.length}</div><div class="d">${ADVISORS.filter(a=>a.actif).length} actif(s)</div></div>
+      <div class="kpi"><div class="k">Clients</div><div class="v">${CLIENT_ORDER.length}</div><div class="d">dossiers suivis</div></div>
+      <div class="kpi"><div class="k">Accès clients actifs</div><div class="v lv-good">${act}</div><div class="d">identifiants générés</div></div>
+      <div class="kpi"><div class="k">En attente</div><div class="v lv-warn">${CLIENT_ORDER.length-act}</div><div class="d">à générer</div></div>
+    </div>
+    <div class="grid"><div class="card"><div class="eyebrow">Conseillers du cabinet</div>
+      <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Conseiller</th><th>Identifiant</th><th>Clients</th><th>Rôle</th><th>Accès</th></tr></thead><tbody>${advRows}</tbody></table></div></div></div>
+    <div class="grid"><div class="card"><div class="eyebrow">Accès clients</div>
+      <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Client</th><th>Segment</th><th>Conseiller</th><th>Identifiant</th><th>Accès</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
 }
-
 
 /* ===== Module profession de santé (activé si profil libéral) ===== */
 const DIR_SANTE=[
@@ -1125,30 +1148,9 @@ const DIR_SANTE=[
  ["S12","Anticiper",3,0,"Vulnerabilite","En cas d'arrêt prolongé, le paiement de vos cotisations obligatoires et des frais fixes du cabinet est-il assuré (garantie frais généraux) ?"],
  ["S13","Pérenniser",3,0,"Valorisabilite","La démographie de votre zone (installations, repreneurs) permet-elle raisonnablement d'espérer céder votre patientèle à sa valeur ?"],
 ].map(r=>({id:r[0],axe:r[1],w:r[2],inv:!!r[3],ind:r[4],t:r[5],bloc:"Profession de santé"}));
-function dirDiag(c){return c.liberal?DIR_DIAG.concat(DIR_SANTE):DIR_DIAG;}
+function dirDiag(c){let L=DIR_DIAG;if(c.liberal)L=L.concat(DIR_SANTE);if(c.params&&c.params.phase==='Post-cession')L=L.concat(DIR_POST);return L;}
 
 /* ===== Écrans restants ===== */
-function viewAnalyse(c){
-  const base=(c.fin.professionnel||1000000);
-  const ca=Math.round(base*0.9),ebe=Math.round(ca*0.18),rn=Math.round(ebe*0.55),caf=Math.round(rn*1.4),tresoN=Math.round(ca*0.16),capEnd=Math.round(3*caf*0.7);
-  const kpi=(k,v,d,cl)=>`<div class="kpi"><div class="k">${k}</div><div class="v ${cl||''}">${v}</div><div class="d">${d}</div></div>`;
-  return `<div class="grid"><div class="card"><div class="eyebrow">Analyse financière — liasses 3 exercices</div>
-    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 4px">CAF, BFR et capacité de financement, calculés depuis les liasses fiscales.</p>
-    <div class="kpis" style="margin-top:18px">${kpi("CAF annuelle",money(caf),"capacité d'autofinancement","lv-good")}${kpi("BFR",42+" j","de chiffre d'affaires","lv-warn")}${kpi("Trésorerie nette",money(tresoN),"disponible")}${kpi("Marge d'EBE",Math.round(ebe/ca*100)+" %","rentabilité")}</div>
-  </div></div>
-  <div class="grid row-2">
-    <div class="card"><div class="eyebrow">Ce que la liasse ne vous dit pas</div>
-      <div style="display:flex;flex-direction:column;gap:12px;font-size:13px;color:var(--moon-dim);line-height:1.55">
-        <div>• Il faudrait <b style="color:var(--moon)">${(base/caf).toFixed(1)} ans</b> de CAF pour rembourser vos dettes financières.</div>
-        <div>• Trésorerie nette au-dessus de 15 % du CA : un excédent mobilisable pour un projet patrimonial.</div>
-        <div>• Une part importante du résultat part en dividendes et remboursements — arbitrage distribution / capitalisation à revoir.</div>
-      </div></div>
-    <div class="card"><div class="eyebrow">Capacité de financement de vos projets</div>
-      <div class="ptotal"><span class="l">CAF disponible / an</span><span class="r">${money(Math.round(caf*0.6))}</span></div>
-      <div class="ptotal" style="margin-top:12px"><span class="l">Capacité d'endettement théorique</span><span class="r">${money(capEnd)}</span></div>
-      <div class="ptotal" style="margin-top:12px;background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Enveloppe mobilisable</span><span class="r">${money(Math.round(capEnd+tresoN*0.6))}</span></div>
-    </div></div>`;
-}
 function viewEcheancier(c){
   const rows=[["Choix d'assurance maladie (droit d'option)","Prise de poste + 3 mois","01/09/2024","Échu","Choix LAMal vs CMU — irrévocable"],["Statut de quasi-résident (Genève)","31 mars N+1","31/03/2027","À préparer","Simuler quasi-résident vs forfaitaire"],["Renouvellement du permis G","Prise de poste + 5 ans","06/2029","Planifié","Rassembler les pièces avant l'échéance"],["Déclaration de revenus en France","Chaque printemps","Avr.–juin 2027","À préparer","Déclarer le salaire suisse (2047/2042)"],["Préparation du retour en France","Horizon retour saisi","2031","Planifié","Commencer 2 à 5 ans avant"],["13e rente AVS — 1er versement","Fixé","12/2026","À traiter","Versée pour la 1re fois en décembre 2026"]];
   const badge=a=>{const cc={'Échu':'crit','À traiter':'orange','À préparer':'warn','Planifié':'good'}[a];return `<span class="tag ${cc==='crit'?'p1':''}" style="color:var(--${cc})">${a}</span>`;};
@@ -1176,30 +1178,411 @@ function viewProposition(c,cp){
     <div style="margin-top:16px"><button class="btn-ghost accent" data-toast="Proposition exportée en PDF.">⬇ Exporter la proposition</button></div>
   </div></div>`;
 }
-function viewSynthPat(c){
-  const B=c.bilan||{};
-  const A=['rp','immoLoc','liquid','av','pea','cto','per','lpp','p3','autres'].reduce((s,k)=>s+(+B[k]||0),0);
-  const dette=['credRp','credLoc','credConso'].reduce((s,k)=>s+(+B[k]||0),0);
-  const immo=(+B.rp||0)+(+B.immoLoc||0),fin=(+B.av||0)+(+B.pea||0)+(+B.cto||0)+(+B.per||0),liq=(+B.liquid||0);
-  const pct=v=>A?Math.round(v/A*100)+' %':'—';
-  const ratio=(lab,v,ok)=>`<div class="axline" style="margin-bottom:12px"><span class="lab" style="width:190px">${lab}</span>${bar(A?Math.min(100,Math.round(v/A*100)):0,ok?'good':'warn')}<span class="vv">${pct(v)}</span></div>`;
-  const axes=[];
-  if(A){if(immo/A>0.65)axes.push("Patrimoine concentré sur l'immobilier — diversifier vers des actifs financiers plus liquides.");if((+B.rp||0)/A>0.5)axes.push("La résidence principale pèse trop dans le patrimoine — étudier l'investissement locatif ou financier.");if(fin/A<0.1)axes.push("Patrimoine financier peu développé — potentiel via assurance-vie, PEA, PER.");if(liq/A>0.3)axes.push("Excès de liquidités non investies — un rendement dort.");}
-  const axesHtml=axes.length?axes.map(a=>`<div style="font-size:13px;color:var(--moon-dim);margin-bottom:9px;line-height:1.5">• ${a}</div>`).join(''):(A?'<div style="color:var(--good);font-size:13px">✓ Répartition patrimoniale équilibrée au regard des seuils.</div>':'<div style="color:var(--moon-faint);font-size:13px">Renseignez le bilan patrimonial pour générer l’analyse.</div>');
+
+/* ===================== COLLECTE DIRIGEANT (feuilles 05-10) ===================== */
+function cInit(c){if(!c.col)c.col={};return c.col;}
+function nf(c,k,lab,unit){cInit(c);return `<div class="pf"><label>${lab}</label><div class="inp"><input type="number" data-col="${k}" value="${c.col[k]!=null?c.col[k]:''}"><span class="unit">${unit||'€'}</span></div></div>`;}
+function tfc(c,k,lab){cInit(c);return `<div class="pf"><label>${lab}</label><div class="inp"><input type="text" data-col="${k}" value="${String(c.col[k]==null?'':c.col[k]).replace(/"/g,'&quot;')}"></div></div>`;}
+function sumCol(c,keys){cInit(c);return keys.reduce((s,k)=>s+(+c.col[k]||0),0);}
+function inpMini(c,k){cInit(c);return `<input type="number" data-col="${k}" value="${c.col[k]!=null?c.col[k]:''}" style="width:104px;background:rgba(255,255,255,.04);border:1px solid var(--line-2);border-radius:8px;padding:7px 9px;color:var(--moon);font-family:var(--sans);font-size:13px;font-variant-numeric:tabular-nums">`;}
+function selMini(c,k,opts){cInit(c);return `<select data-col="${k}" style="background:rgba(255,255,255,.04);border:1px solid var(--line-2);border-radius:8px;padding:7px 9px;color:var(--moon);font-family:var(--sans);font-size:12.5px;outline:none">${opts.map(o=>`<option ${c.col[k]===o?'selected':''}>${o}</option>`).join('')}</select>`;}
+
+function viewRevenus(c){
+  cInit(c);
+  const tR=sumCol(c,['remun','dividendes','fonciers','financiers','autresRev']);
+  const tD=sumCol(c,['trainVie','impots','credits','exceptionnelles','autresDep']);
+  const cap=tR-tD;
+  const besoin=+c.col.besoinFutur||Math.round((+c.col.trainVie||0)*0.8);
+  const revFut=sumCol(c,['pensionDir','pensionConj','loyersRet','autresRentes']);
+  const ecart=besoin-revFut, taux=(+(c.params&&c.params.tauxRetrait)||4)/100;
+  const capCible=ecart>0?Math.round(ecart/taux):0;
+  const couv=besoin?Math.round(revFut/besoin*100):0;
   return `<div class="grid row-2">
-    <div class="card"><div class="eyebrow">Synthèse patrimoniale</div>
-      <div class="ptotal" style="background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Patrimoine net</span><span class="r">${money(A-dette)}</span></div>
-      <div style="margin-top:18px">${ratio("Poids de l'immobilier",immo,immo/(A||1)<=0.65)}${ratio("Part d'épargne financière",fin,fin/(A||1)>=0.1)}${ratio("Part de liquidités",liq,liq/(A||1)<=0.3)}</div></div>
-    <div class="card"><div class="eyebrow">Axes d'amélioration</div>${axesHtml}</div>
-  </div>`;
+    <div class="card"><div class="eyebrow">Revenus annuels</div><div class="pform">${nf(c,'remun','Rémunération nette perçue')}${nf(c,'dividendes','Dividendes')}${nf(c,'fonciers','Revenus fonciers')}${nf(c,'financiers','Revenus financiers')}${nf(c,'autresRev','Autres revenus')}</div>
+      <div class="ptotal"><span class="l">Total revenus</span><span class="r">${money(tR)}</span></div></div>
+    <div class="card"><div class="eyebrow">Dépenses annuelles</div><div class="pform">${nf(c,'trainVie','Train de vie courant')}${nf(c,'impots','Impôts personnels')}${nf(c,'credits','Crédits personnels')}${nf(c,'exceptionnelles','Dépenses exceptionnelles')}${nf(c,'autresDep','Autres dépenses')}</div>
+      <div class="ptotal"><span class="l">Total dépenses</span><span class="r">${money(tD)}</span></div></div></div>
+  <div class="grid"><div class="card"><div class="eyebrow">Synthèse — capacité d'épargne & couverture future</div>
+    <div class="kpis">
+      <div class="kpi"><div class="k">Capacité d'épargne</div><div class="v ${cap>=0?'lv-good':'lv-crit'}">${money(cap)}</div><div class="d">par an</div></div>
+      <div class="kpi"><div class="k">Taux d'épargne</div><div class="v">${tR?Math.round(cap/tR*100):0} %</div><div class="d">des revenus</div></div>
+      <div class="kpi"><div class="k">Taux de couverture futur</div><div class="v ${couv>=80?'lv-good':couv>=50?'lv-warn':'lv-crit'}">${couv} %</div><div class="d">du besoin futur</div></div>
+      <div class="kpi"><div class="k">Capital cible</div><div class="v lv-warn">${money(capCible)}</div><div class="d">retrait ${(taux*100).toFixed(0)} %</div></div>
+    </div>
+    <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--moon-faint);margin:22px 0 12px">Revenus futurs récurrents</div>
+    <div class="pform">${nf(c,'besoinFutur','Besoin futur annuel souhaité')}${nf(c,'pensionDir','Pension du dirigeant (estimée)')}${nf(c,'pensionConj','Pension du conjoint')}${nf(c,'loyersRet','Loyers nets conservés')}${nf(c,'autresRentes','Autres rentes (PER, viager…)')}</div>
+    <div class="ptotal" style="margin-top:14px"><span class="l">Écart annuel futur à combler</span><span class="r ${ecart>0?'lv-crit':'lv-good'}">${money(Math.max(0,ecart))}</span></div>
+  </div></div>`;
+}
+
+function viewPatrimoine(c){
+  cInit(c);
+  const L=[['rp','Résidence principale','Immobilier'],['rs','Résidence secondaire','Immobilier'],['loc','Immobilier locatif','Immobilier'],['immopro','Immobilier professionnel','Immobilier'],['sci','SCI / parts immobilières','Immobilier'],['avie','Assurance-vie','Financier mobilisable'],['peacto','PEA / CTO','Financier mobilisable'],['liq','Liquidités','Financier mobilisable'],['cat','Comptes à terme / monétaire','Financier mobilisable'],['perP','PER','Financier long terme'],['expl',"Société d'exploitation",'Professionnel'],['hold','Holding','Professionnel'],['partnc','Participations non cotées','Professionnel'],['autresA','Autres actifs','Autres']];
+  const rows=L.map(x=>{const b=+c.col[x[0]+'_b']||0,d=+c.col[x[0]+'_d']||0;
+    return `<tr><td style="color:var(--moon-faint);font-size:11px">${x[2]}</td><td style="font-size:13px">${x[1]}</td><td>${inpMini(c,x[0]+'_b')}</td><td>${inpMini(c,x[0]+'_d')}</td><td class="num" style="font-weight:600">${money(b-d)}</td></tr>`;}).join('');
+  const cat=k=>L.filter(x=>x[2]===k).reduce((s,x)=>s+((+c.col[x[0]+'_b']||0)-(+c.col[x[0]+'_d']||0)),0);
+  const immo=cat('Immobilier'),fin=cat('Financier mobilisable'),finLT=cat('Financier long terme'),pro=cat('Professionnel'),aut=cat('Autres');
+  const net=immo+fin+finLT+pro+aut,p=v=>net?Math.round(v/net*100)+' %':'—';
+  return `<div class="grid"><div class="card"><div class="eyebrow">Patrimoine consolidé</div>
+    <p style="font-size:12.5px;color:var(--moon-faint);margin:-8px 0 14px">Valeurs de marché estimées, dettes en face de chaque actif.</p>
+    <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Catégorie</th><th>Actif</th><th>Valeur brute</th><th>Dette</th><th>Net</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="ptotal" style="margin-top:16px;background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Patrimoine net total</span><span class="r">${money(net)}</span></div></div></div>
+  <div class="grid row-2"><div class="card"><div class="eyebrow">Répartition</div>
+    ${[['Immobilier',immo],['Financier mobilisable',fin],['Financier long terme',finLT],['Professionnel',pro],['Autres',aut]].map(x=>`<div class="axline" style="margin-bottom:12px"><span class="lab" style="width:180px">${x[0]}</span>${bar(net?Math.round(x[1]/net*100):0,'good')}<span class="vv">${p(x[1])}</span></div>`).join('')}</div>
+    <div class="card"><div class="eyebrow">Indicateurs</div>
+      <div class="ptotal"><span class="l">Financier mobilisable</span><span class="r">${money(fin)}</span></div>
+      <div class="ptotal" style="margin-top:12px"><span class="l">Concentration professionnelle</span><span class="r ${(pro/(net||1))>0.5?'lv-crit':'lv-good'}">${p(pro)}</span></div>
+      <div class="ptotal" style="margin-top:12px"><span class="l">Liquidité financière</span><span class="r">${p(fin)}</span></div></div></div>`;
+}
+
+function viewEntreprise(c){
+  cInit(c);
+  const lignes=[['ca',"Chiffre d'affaires"],['mb','Marge brute'],['ebe','EBE'],['rex',"Résultat d'exploitation"],['rn','Résultat net'],['cp','Capitaux propres'],['treso','Trésorerie disponible'],['dettesF','Dettes financières'],['immos','Immobilisations'],['divid','Dividendes distribués'],['cca','Compte courant dirigeant'],['tresoExc','dont trésorerie excédentaire']];
+  const rows=lignes.map(l=>`<tr><td style="font-size:13px">${l[1]}</td><td>${inpMini(c,l[0]+'_n2')}</td><td>${inpMini(c,l[0]+'_n1')}</td><td>${inpMini(c,l[0]+'_n')}</td></tr>`).join('');
+  const ebeN=+c.col.ebe_n||0;
+  const mb=+(c.params&&c.params.ebeBas)||4,mc=+(c.params&&c.params.ebeCentral)||6,mh=+(c.params&&c.params.ebeHaut)||8;
+  const org=[['comdir','Comité de direction actif'],['relais','Relais opérationnel identifié'],['pacte','Pacte associés'],['succ','Plan succession dirigeant'],['conc','Concentration client maîtrisée'],['savoir','Savoir-faire documentés'],['gouv','Gouvernance formalisée'],['autoco','Autonomie commerciale']];
+  const opts=['—','Oui','Partiellement','Non'];
+  const orgRows=org.map(o=>`<div class="q"><div class="qt">${o[1]}</div>${selMini(c,'org_'+o[0],opts)}</div>`).join('');
+  const sc={Oui:5,Partiellement:3,Non:0};
+  const done=org.filter(o=>c.col['org_'+o[0]]&&c.col['org_'+o[0]]!=='—');
+  const idx=done.length?Math.round(done.reduce((s,o)=>s+(sc[c.col['org_'+o[0]]]||0),0)/(done.length*5)*100):0;
+  return `<div class="grid"><div class="card"><div class="eyebrow">Entreprise — 3 exercices</div>
+    <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Indicateur</th><th>N-2</th><th>N-1</th><th>N</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>
+  <div class="grid row-2">
+    <div class="card"><div class="eyebrow">Organisation & dépendance dirigeant</div>${orgRows}
+      <div class="ptotal" style="margin-top:14px"><span class="l">Indice de valorisabilité</span><span class="r ${idx>=60?'lv-good':idx>=40?'lv-warn':'lv-crit'}">${idx} / 100</span></div></div>
+    <div class="card"><div class="eyebrow">Valorisation (multiples d'EBE)</div>
+      <div class="ptotal"><span class="l">Valeur basse (× ${mb})</span><span class="r">${money(ebeN*mb)}</span></div>
+      <div class="ptotal" style="margin-top:12px;background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Valeur centrale (× ${mc})</span><span class="r">${money(ebeN*mc)}</span></div>
+      <div class="ptotal" style="margin-top:12px"><span class="l">Valeur haute (× ${mh})</span><span class="r">${money(ebeN*mh)}</span></div>
+      <p style="font-size:12px;color:var(--moon-faint);margin-top:14px">Multiples réglables dans l'onglet Paramètres.</p></div></div>`;
+}
+
+function viewFamille(c){
+  cInit(c);
+  const suj=[['testament','Testament'],['donation','Donation / donation-partage'],['dutreil','Pacte Dutreil étudié'],['mandat','Mandat de protection future'],['benef','Désignations bénéficiaires revues'],['conjPat','Conjoint informé du patrimoine'],['conjSoc','Conjoint informé des sociétés'],['docs','Documents importants centralisés'],['relaisF','Personne relais identifiée'],['enfSens','Enfants sensibilisés aux intentions']];
+  const opts=['—','Oui','En cours','Non'];
+  const rows=suj.map(s=>`<div class="q"><div class="qt">${s[1]}</div>${selMini(c,'fam_'+s[0],opts)}</div>`).join('');
+  const sc={Oui:5,'En cours':3,Non:0};
+  const done=suj.filter(s=>c.col['fam_'+s[0]]&&c.col['fam_'+s[0]]!=='—');
+  const ipt=done.length?Math.round(done.reduce((s,x)=>s+(sc[c.col['fam_'+x[0]]]||0),0)/(done.length*5)*100):0;
+  const patNet=+c.col.succPat||0,av=+c.col.succAv||0,nbE=+c.col.succEnf||0;
+  const base=Math.max(0,patNet-av);
+  const parEnf=nbE?Math.max(0,base/nbE-100000):0;
+  const droits=nbE?Math.round(nbE*(parEnf*0.20)):0;
+  const droitsPrep=Math.round(droits*0.45);
+  return `<div class="grid row-2">
+    <div class="card"><div class="eyebrow">Identité & famille</div><div class="pform">${tfc(c,'famConjoint','Conjoint — nom et prénom')}${tfc(c,'famSituation','Situation familiale')}${tfc(c,'famRegime','Régime matrimonial')}${nf(c,'famEnfants',"Nombre d'enfants",'')}${nf(c,'famRevConj','Revenus annuels du conjoint')}${tfc(c,'famRepreneur','Reprise entreprise envisagée par')}</div></div>
+    <div class="card"><div class="eyebrow">Documents & gouvernance familiale</div>${rows}
+      <div class="ptotal" style="margin-top:14px"><span class="l">Préparation transmission</span><span class="r ${ipt>=60?'lv-good':ipt>=40?'lv-warn':'lv-crit'}">${ipt} / 100</span></div></div></div>
+  <div class="grid"><div class="card"><div class="eyebrow">Estimateur — coût de la succession (indicatif)</div>
+    <div class="pform">${nf(c,'succPat','Patrimoine net total')}${nf(c,'succAv','dont assurance-vie (hors succession)')}${nf(c,'succEnf',"Nombre d'enfants",'')}</div>
+    <div class="grid row-2" style="margin-top:6px">
+      <div class="ptotal" style="background:rgba(230,127,112,.1);border-color:rgba(230,127,112,.3)"><span class="l">Droits aujourd'hui (subis)</span><span class="r lv-crit">${money(droits)}</span></div>
+      <div class="ptotal" style="background:rgba(121,201,166,.1);border-color:rgba(121,201,166,.3)"><span class="l">Préparée (Dutreil + donations)</span><span class="r lv-good">${money(droitsPrep)}</span></div></div>
+    <div class="ptotal" style="margin-top:14px"><span class="l">Économie potentielle de la préparation</span><span class="r lv-good">${money(droits-droitsPrep)}</span></div>
+    <p style="font-size:12px;color:var(--moon-faint);margin-top:12px">Hypothèses simplifiées : transmission aux enfants en ligne directe, abattement 100 000 € par enfant. Délai de paiement : 6 mois.</p>
+  </div></div>`;
+}
+
+function viewProtection(c){
+  cInit(c);
+  const R=[['arret','Arrêt de travail','Mensuelle'],['inval','Invalidité','Mensuelle'],['deces','Décès','Capital'],['hcle','Homme-clé','Capital'],['croisee','Garantie croisée associés','Capital'],['sante','Complémentaire santé','Annuelle'],['dep','Dépendance','Mensuelle']];
+  const rows=R.map(r=>{const cv=+c.col['pr_'+r[0]+'_c']||0,bs=+c.col['pr_'+r[0]+'_b']||0,ec=bs-cv;
+    return `<tr><td style="font-size:13px">${r[1]}<small style="display:block;color:var(--moon-faint);font-size:11px">${r[2]}</small></td><td>${inpMini(c,'pr_'+r[0]+'_c')}</td><td>${inpMini(c,'pr_'+r[0]+'_b')}</td><td class="num" style="font-weight:600" class="${ec>0?'lv-crit':'lv-good'}"><span class="${ec>0?'lv-crit':'lv-good'}">${ec>0?money(ec):'✓ couvert'}</span></td></tr>`;}).join('');
+  const manque=R.reduce((s,r)=>{const ec=(+c.col['pr_'+r[0]+'_b']||0)-(+c.col['pr_'+r[0]+'_c']||0);return s+(ec>0?ec:0);},0);
+  const nbOk=R.filter(r=>(+c.col['pr_'+r[0]+'_c']||0)>=(+c.col['pr_'+r[0]+'_b']||0)&&(+c.col['pr_'+r[0]+'_b']||0)>0).length;
+  const nbRens=R.filter(r=>(+c.col['pr_'+r[0]+'_b']||0)>0).length;
+  const score=nbRens?Math.round(nbOk/nbRens*100):0;
+  return `<div class="grid"><div class="card"><div class="eyebrow">Protection sociale du dirigeant</div>
+    <p style="font-size:12.5px;color:var(--moon-faint);margin:-8px 0 14px">Rentes et capitaux en € — l'écart entre la couverture actuelle et le besoin s'affiche automatiquement.</p>
+    <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Risque</th><th>Couverture actuelle</th><th>Besoin estimé</th><th>Écart</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="grid row-2" style="margin-top:16px">
+      <div class="ptotal"><span class="l">Score de protection</span><span class="r ${score>=60?'lv-good':score>=40?'lv-warn':'lv-crit'}">${score} / 100</span></div>
+      <div class="ptotal" style="background:rgba(230,127,112,.1);border-color:rgba(230,127,112,.3)"><span class="l">Capitaux / rentes manquants</span><span class="r lv-crit">${money(manque)}</span></div></div>
+  </div></div>`;
+}
+
+function viewObjectifs(c){
+  cInit(c);
+  const O=[['retraite','Retraite'],['transmission','Transmission'],['cession','Cession'],['diversif','Diversification'],['immo','Immobilier'],['revcompl','Revenus complémentaires'],['fisc','Réduction fiscalité'],['protfam','Protection famille']];
+  const rows=O.map(o=>{const v=+c.col['obj_'+o[0]]||0;
+    return `<div class="axline" style="margin-bottom:12px"><span class="lab" style="width:180px">${o[1]}</span>${bar(v*20,v>=4?'crit':v>=3?'warn':'good')}<span style="width:110px;text-align:right">${selMini(c,'obj_'+o[0],['0','1','2','3','4','5'])}</span></div>`;}).join('');
+  const EV=[['cess',"Cession de l'entreprise",'Cession'],['don','Donation aux enfants','Donation'],['etudes','Études des enfants','Dépense'],['achat','Achat ou travaux immobiliers','Acquisition'],['plaisir','Projet plaisir (voyage, véhicule…)','Dépense'],['herit','Héritage attendu','Autre']];
+  const evRows=EV.map(e=>`<tr><td>${inpMini(c,'ev_'+e[0]+'_an')}</td><td style="font-size:13px">${e[1]}</td><td><span class="tag">${e[2]}</span></td><td>${inpMini(c,'ev_'+e[0]+'_mt')}</td></tr>`).join('');
+  const ST=['Inflation durable','Baisse entreprise −30 %','Retraite anticipée','Cession repoussée','Décès prématuré','Invalidité'];
+  const stRows=ST.map((s,i)=>`<div class="q"><div class="qt">${s}</div>${selMini(c,'st_'+i,['—','À tester','Testé'])}</div>`).join('');
+  return `<div class="grid row-2">
+    <div class="card"><div class="eyebrow">Priorités du dirigeant (1 à 5)</div>${rows}</div>
+    <div class="card"><div class="eyebrow">Stress tests</div>${stRows}</div></div>
+  <div class="grid"><div class="card"><div class="eyebrow">Calendrier patrimonial</div>
+    <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Année</th><th>Événement</th><th>Type</th><th>Montant</th></tr></thead><tbody>${evRows}</tbody></table></div></div></div>`;
+}
+
+
+/* ===================== BLOC 2 — FRONTALIER COMPLET ===================== */
+function viewFiche(c){
+  cInit(c);
+  return `<div class="grid row-2">
+    <div class="card"><div class="eyebrow">Identité & statut frontalier</div><div class="pform">
+      ${tfc(c,'ficheNom','Nom et prénom')}${nf(c,'ficheAge','Âge','ans')}
+      ${tfc(c,'ficheCanton','Canton de travail')}${tfc(c,'fichePermis','Type de permis')}
+      ${tfc(c,'fichePoste','Date de prise de poste en Suisse')}${nf(c,'ficheTeletravail','Part de télétravail','%')}
+      ${tfc(c,'ficheSituation','Situation familiale')}${nf(c,'ficheEnfants','Enfants à charge','')}
+      ${tfc(c,'ficheMaladie','Régime maladie actuel')}${tfc(c,'ficheFiscal','Statut fiscal actuel')}
+      ${nf(c,'ficheHorizon','Horizon de retour en France','ans')}${tfc(c,'ficheImmoProjet','Projet immobilier ?')}
+    </div></div>
+    <div class="card"><div class="eyebrow">Situation financière</div><div class="pform">
+      ${nf(c,'ficheSalaire','Revenu annuel brut','CHF')}${nf(c,'ficheConjoint','Revenus du conjoint')}
+      ${nf(c,'fiche2p','2e pilier — avoir estimé','CHF')}${tfc(c,'fiche3a','3e pilier (3a) en cours ?')}
+      ${nf(c,'fichePatrimoine','Épargne / patrimoine estimé')}${nf(c,'ficheImpot','Impôt annuel')}
+    </div>
+    <div class="pnote">À réunir : certificat LPP, avis d'imposition, prêt RP, contrats de prévoyance et relevés de placements.</div></div></div>
+  <div class="grid"><div class="card"><div class="eyebrow">Votre projet — à écouter en premier</div>
+    <div class="pform" style="grid-template-columns:1fr">
+      ${tfc(c,'projVie','Votre projet de vie : ce que vous souhaitez avant tout')}
+      ${tfc(c,'projPreoc',"Ce qui vous préoccupe le plus aujourd'hui")}
+      ${tfc(c,'projSerein','Ce à quoi ressemblerait une situation « sereine » pour vous')}
+      ${tfc(c,'projObjectifs','Objectifs prioritaires du client')}
+    </div></div></div>`;
+}
+
+const FRO_ACTIFS=[["rp","Résidence principale","EUR"],["immoLoc","Immobilier locatif","EUR"],["autreImmo","Autre immobilier (secondaire…)","EUR"],["liquid","Liquidités (comptes, livrets)","EUR"],["av","Assurance-vie","EUR"],["pea","PEA","EUR"],["cto","Compte-titres (CTO)","EUR"],["per","PER","EUR"],["lpp","2e pilier (LPP) — avoir","CHF"],["p3","3e pilier (3a / 3b)","CHF"],["peq","Private equity / parts de sociétés","EUR"],["autres","Autres actifs","EUR"]];
+const FRO_PASSIFS=[["credRp","Crédit résidence principale"],["credLoc","Crédit(s) immobilier locatif"],["credConso","Autres crédits (conso…)"]];
+function bilSum(c,list){cInit(c);return list.reduce((s,x)=>s+(+c.col['bil_'+x[0]]||0),0);}
+function viewBilan(c){
+  cInit(c);
+  const totA=bilSum(c,FRO_ACTIFS),totP=bilSum(c,FRO_PASSIFS);
+  const rowsA=FRO_ACTIFS.map(x=>`<tr><td style="font-size:13px">${x[1]}</td><td>${inpMini(c,'bil_'+x[0])}</td><td><span class="tag">${x[2]}</span></td></tr>`).join('');
+  const rowsP=FRO_PASSIFS.map(x=>`<tr><td style="font-size:13px">${x[1]}</td><td>${inpMini(c,'bil_'+x[0])}</td><td>${inpMini(c,'bilm_'+x[0])}</td></tr>`).join('');
+  const mens=FRO_PASSIFS.reduce((s,x)=>s+(+c.col['bilm_'+x[0]]||0),0);
+  const rev=+c.col.fluxRev||0,ch=+c.col.fluxCharges||0,imp=+c.col.fluxImpots||0;
+  const capa=rev-ch-imp-mens, taux=rev?Math.round(capa/rev*100):0;
+  return `<div class="grid row-2">
+    <div class="card"><div class="eyebrow">Actifs</div>
+      <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Poste</th><th>Valeur (€)</th><th>Devise</th></tr></thead><tbody>${rowsA}</tbody></table></div>
+      <div class="ptotal" style="margin-top:14px"><span class="l">Total actifs (brut)</span><span class="r">${money(totA)}</span></div></div>
+    <div class="card"><div class="eyebrow">Passifs</div>
+      <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Poste</th><th>Capital restant dû</th><th>Mensualité</th></tr></thead><tbody>${rowsP}</tbody></table></div>
+      <div class="ptotal" style="margin-top:14px"><span class="l">Total dettes</span><span class="r">${money(totP)}</span></div>
+      <div class="ptotal" style="margin-top:12px;background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Patrimoine net</span><span class="r">${money(totA-totP)}</span></div></div></div>
+  <div class="grid"><div class="card"><div class="eyebrow">Flux mensuels</div>
+    <div class="pform">${nf(c,'fluxRev','Revenus nets du foyer','€/mois')}${nf(c,'fluxCharges','Charges de vie hors crédits','€/mois')}${nf(c,'fluxImpots','Impôts mensualisés','€/mois')}
+      <div class="pf"><label>Mensualités de crédit (report auto)</label><div class="inp"><input type="number" value="${mens}" disabled style="opacity:.7"><span class="unit">€/mois</span></div></div></div>
+    <div class="grid row-2" style="margin-top:6px">
+      <div class="ptotal"><span class="l">Capacité d'épargne</span><span class="r ${capa>=0?'lv-good':'lv-crit'}">${money(capa)} / mois</span></div>
+      <div class="ptotal"><span class="l">Taux d'épargne</span><span class="r ${taux>=10?'lv-good':'lv-warn'}">${taux} %</span></div></div>
+  </div></div>`;
+}
+
+function viewSynthPat(c){
+  cInit(c);
+  const g=k=>+c.col['bil_'+k]||0;
+  const totA=bilSum(c,FRO_ACTIFS),dette=bilSum(c,FRO_PASSIFS),net=totA-dette;
+  const immo=g('rp')+g('immoLoc')+g('autreImmo'), liq=g('liquid');
+  const fin=g('av')+g('pea')+g('cto')+g('per'), prev=g('lpp')+g('p3');
+  const chf=g('lpp')+g('p3');
+  const mens=FRO_PASSIFS.reduce((s,x)=>s+(+c.col['bilm_'+x[0]]||0),0);
+  const ch=+c.col.fluxCharges||0, rev=+c.col.fluxRev||0;
+  const capa=rev-ch-(+c.col.fluxImpots||0)-mens;
+  const P=c.params||{};
+  const S={conc:(+P.concImmo||65)/100,rp:(+P.rpMax||50)/100,liq:(+P.liqMin||5)/100,prec:(+P.precMin||3),end:(+P.endMax||35)/100,chf:(+P.chfMax||70)/100,ef:(+P.epFinMin||10)/100,te:(+P.tauxEpMin||10)/100};
+  const r=(v)=>totA?v/totA:0;
+  const prec=(ch+mens)?liq/(ch+mens):0;
+  const tauxEp=rev?capa/rev:0;
+  const line=(lab,val,ok,txt)=>`<div class="axline" style="margin-bottom:12px"><span class="lab" style="width:210px">${lab}</span>${bar(Math.min(100,Math.round(val*100)),ok?'good':'warn')}<span class="vv ${ok?'lv-good':'lv-warn'}">${txt||Math.round(val*100)+' %'}</span></div>`;
+  const ratios=[
+    line("Poids de l'immobilier",r(immo),r(immo)<=S.conc),
+    line("  dont résidence principale",r(g('rp')),r(g('rp'))<=S.rp),
+    line("Taux d'endettement",totA?dette/totA:0,(totA?dette/totA:0)<=S.end),
+    line("Part d'épargne financière",r(fin),r(fin)>=S.ef),
+    line("Part de liquidités",r(liq),r(liq)>=S.liq&&r(liq)<=0.3),
+    line("Épargne de précaution",Math.min(1,prec/12),prec>=S.prec,prec.toFixed(1)+' mois'),
+    line("Exposition au franc (CHF)",r(chf),r(chf)<=S.chf),
+    line("Taux d'épargne",Math.max(0,tauxEp),tauxEp>=S.te),
+  ].join('');
+  const A=[];
+  if(totA){
+    if(r(immo)>S.conc)A.push("Patrimoine concentré sur l'immobilier ("+Math.round(r(immo)*100)+" %) — diversifier vers des actifs financiers plus liquides et fiscalement optimisés.");
+    if(r(g('rp'))>S.rp)A.push("La résidence principale pèse "+Math.round(r(g('rp'))*100)+" % du patrimoine — peu de patrimoine productif ; étudier l'investissement locatif ou financier.");
+    if(r(liq)<S.liq||prec<S.prec)A.push("Épargne de précaution insuffisante — constituer un matelas de sécurité avant d'investir.");
+    if(r(liq)>0.3)A.push("Excès de liquidités non investies ("+Math.round(r(liq)*100)+" %) — un rendement dort ; à placer selon l'horizon.");
+    if(totA&&dette/totA>S.end)A.push("Endettement élevé ("+Math.round(dette/totA*100)+" %) au regard du patrimoine — surveiller la capacité de remboursement.");
+    if(r(chf)>S.chf)A.push("Forte exposition au franc ("+Math.round(r(chf)*100)+" %) — piloter le risque de change (répartition CHF/EUR).");
+    if(r(fin)<S.ef)A.push("Patrimoine financier peu développé ("+Math.round(r(fin)*100)+" %) — potentiel d'optimisation via assurance-vie, PEA, PER.");
+    if(rev&&tauxEp<S.te)A.push("Capacité d'épargne faible ("+Math.round(tauxEp*100)+" %) — structurer un plan d'épargne régulier.");
+  }
+  const axes=A.length?A.map(x=>`<div style="font-size:13px;color:var(--moon-dim);margin-bottom:10px;line-height:1.55">• ${x}</div>`).join('')
+    :(totA?'<div style="color:var(--good);font-size:13px;line-height:1.55">✓ Répartition patrimoniale équilibrée au regard des seuils actuels — maintenir le cap et suivre dans le temps.</div>':'<div style="color:var(--moon-faint);font-size:13px">Renseignez le bilan patrimonial pour générer l’analyse.</div>');
+  return `<div class="grid row-2">
+    <div class="card"><div class="eyebrow">Indicateurs clés</div>
+      <div class="ptotal" style="background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3);margin-bottom:18px"><span class="l">Patrimoine net</span><span class="r">${money(net)}</span></div>
+      ${ratios}</div>
+    <div class="card"><div class="eyebrow">Axes d'amélioration</div>${axes}
+      <p style="font-size:12px;color:var(--moon-faint);margin-top:16px">Seuils réglables dans l'onglet Paramètres.</p></div></div>`;
+}
+
+
+/* ===================== BLOC 3 ===================== */
+const DIR_POST=[
+ ["H1","Pérenniser",3,0,"PerenniteFin","Le produit de cession et les capitaux de votre holding sont-ils investis selon une allocation formalisée (objectifs, horizon, risque) ?"],
+ ["H2","Pérenniser",3,0,"PerenniteFin","Votre politique de distribution (dividendes vs capitalisation) est-elle arbitrée chaque année au regard du train de vie et de la fiscalité ?"],
+ ["H3","Anticiper",3,0,"Vulnerabilite","Si vous avez bénéficié d'un report d'imposition (150-0 B ter), les contraintes de remploi et les délais sont-ils suivis précisément ?"],
+ ["H4","Anticiper",3,0,"PrepTransmission","Le caractère animateur ou passif de votre holding a-t-il été qualifié (impacts Dutreil, IFI, fiscalité des cessions) ?"],
+ ["H5","Anticiper",5,0,"PrepTransmission","La transmission des titres de la holding est-elle engagée (donations, démembrement, pacte) ?"],
+ ["H6","Anticiper",3,0,"Vulnerabilite","La gouvernance de la holding est-elle organisée si vous ne pouvez plus décider (mandats, co-gérance, clauses statutaires) ?"],
+ ["H7","Pérenniser",3,1,"PerenniteFin","Votre train de vie est-il financé par des retraits ponctuels décidés au fil de l'eau, sans plan de distribution ?"],
+ ["H8","Pérenniser",3,0,"PerenniteFin","Votre exposition à l'IFI et son optimisation ont-elles été analysées depuis la cession ?"],
+].map(r=>({id:r[0],axe:r[1],w:r[2],inv:!!r[3],ind:r[4],t:r[5],bloc:"Post-cession"}));
+
+const DIR_PC=[
+ ["PC1","Entreprise & Valeur","Si vous receviez une offre de rachat demain, seriez-vous prêt à engager des discussions immédiatement ?"],
+ ["PC2","Entreprise & Valeur","Savez-vous précisément quels éléments pourraient aujourd'hui réduire la valeur de votre entreprise lors d'une cession ?"],
+ ["PC3","Entreprise & Valeur","L'entreprise pourrait-elle continuer à créer de la valeur pendant plusieurs mois sans votre intervention ?"],
+ ["PC4","Entreprise & Valeur","Les personnes clés seraient-elles capables d'assurer la continuité de l'activité en votre absence ?"],
+ ["PC5","Entreprise & Valeur","Votre patrimoine personnel progresserait-il encore si vous arrêtiez de développer votre entreprise demain ?"],
+ ["PC6","Protection & Famille","Votre famille saurait-elle quoi faire dans les premières semaines si vous étiez brutalement indisponible ?"],
+ ["PC7","Protection & Famille","Votre conjoint serait-il capable de retrouver rapidement l'ensemble de vos actifs et de vos engagements ?"],
+ ["PC8","Protection & Famille","Les décisions importantes concernant votre patrimoine pourraient-elles être prises sans difficulté en votre absence ?"],
+ ["PC9","Protection & Famille","Les conséquences financières d'un arrêt de travail prolongé sont-elles aujourd'hui acceptables pour votre famille ?"],
+ ["PC10","Protection & Famille","Les personnes qui hériteront de votre patrimoine sont-elles préparées à en assurer la gestion ?"],
+ ["PC11","Transmission & Avenir","Savez-vous aujourd'hui combien votre famille recevrait réellement après fiscalité en cas de transmission ?"],
+ ["PC12","Transmission & Avenir","Votre stratégie de transmission est-elle déjà en cours de mise en œuvre ?"],
+ ["PC13","Transmission & Avenir","Les grands événements des dix prochaines années sont-ils aujourd'hui pilotés plutôt que subis ?"],
+ ["PC14","Transmission & Avenir","Disposez-vous d'un plan précis pour les cinq années qui suivront une éventuelle cession ?"],
+ ["PC15","Transmission & Avenir","Les décisions que vous prenez aujourd'hui rapprochent-elles réellement votre famille de ses objectifs futurs ?"],
+ ["PC16","Pérennité & Niveau de vie","Pourriez-vous maintenir durablement votre niveau de vie sans revenu professionnel ?"],
+ ["PC17","Pérennité & Niveau de vie","Connaissez-vous le montant de patrimoine nécessaire pour financer vos projets futurs ?"],
+ ["PC18","Pérennité & Niveau de vie","Savez-vous précisément comment seront financées vos dépenses futures importantes ?"],
+ ["PC19","Pérennité & Niveau de vie","Le produit d'une éventuelle cession a-t-il déjà une destination clairement définie ?"],
+ ["PC20","Pérennité & Niveau de vie","Si votre entreprise perdait 30 % de sa valeur demain, votre situation resterait-elle conforme à vos objectifs de vie ?"],
+];
+
+function viewPriseConscience(c){
+  cInit(c);
+  const groups={};DIR_PC.forEach(q=>{(groups[q[1]]=groups[q[1]]||[]).push(q);});
+  const opts=['—','Oui','En partie','Non'];
+  let html='',nonC=0,rep=0;
+  for(const g in groups){
+    html+=`<div class="qblock"><div class="bh"><span class="t">${g}</span></div>`;
+    html+=groups[g].map(q=>{const v=c.col['pc_'+q[0]];if(v&&v!=='—')rep++;if(v==='Non')nonC++;
+      return `<div class="q"><div class="qt"><span class="qid">${q[0]}</span>${q[2]}</div>${selMini(c,'pc_'+q[0],opts)}</div>`;}).join('');
+    html+='</div>';
+  }
+  return `<div class="grid"><div class="card"><div class="eyebrow">Questions de prise de conscience</div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 4px;line-height:1.55">Ces questions ne se scorent pas : elles servent à faire émerger les sujets que le dirigeant n'a pas encore regardés.</p>
+    <div class="grid row-2" style="margin-top:14px"><div class="ptotal"><span class="l">Questions posées</span><span class="r">${rep} / 20</span></div>
+    <div class="ptotal" style="background:rgba(230,127,112,.1);border-color:rgba(230,127,112,.3)"><span class="l">Angles morts détectés</span><span class="r lv-crit">${nonC}</span></div></div>
+    ${html}</div></div>`;
+}
+
+function viewAutoEval(c,cp){
+  cInit(c);
+  const A=[['Construire',"Dans quelle mesure estimez-vous avoir construit l'entreprise et le patrimoine que vous souhaitiez ?",cp.axes?cp.axes[0].pct:0],
+           ['Anticiper','Dans quelle mesure estimez-vous avoir préparé les événements majeurs des 10 à 15 prochaines années ?',cp.axes?cp.axes[1].pct:0],
+           ['Pérenniser','Dans quelle mesure estimez-vous que votre niveau de vie futur est durablement sécurisé ?',cp.axes?cp.axes[2].pct:0],
+           ['Global','Dans quelle mesure estimez-vous maîtriser aujourd’hui votre situation patrimoniale globale ?',cp.global]];
+  const rows=A.map(x=>{const p10=+c.col['ae_'+x[0]]||0,p100=p10*10,ec=p100-x[2];
+    return `<div style="padding:16px 0;border-bottom:1px solid var(--line)">
+      <div style="font-size:13.5px;margin-bottom:12px">${x[1]}</div>
+      <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+        <div class="pf" style="width:190px"><label>Perception du dirigeant</label><div class="inp"><input type="number" min="0" max="10" data-col="ae_${x[0]}" value="${c.col['ae_'+x[0]]!=null?c.col['ae_'+x[0]]:''}"><span class="unit">/10</span></div></div>
+        <div style="flex:1;min-width:180px">${bar(p100,'warn')}<div style="font-size:11px;color:var(--moon-faint);margin-top:6px">Perception ${p100} / 100</div></div>
+        <div style="flex:1;min-width:180px">${bar(x[2],lecture(x[2],'dir').c)}<div style="font-size:11px;color:var(--moon-faint);margin-top:6px">Diagnostic réel ${x[2]} / 100</div></div>
+        <div style="width:150px;text-align:right;font-weight:600" class="${ec>15?'lv-crit':ec>5?'lv-warn':'lv-good'}">${p10?(ec>15?'Sujet sous-estimé':ec>5?'Léger écart':'Perception juste')+' ('+(ec>0?'+':'')+Math.round(ec)+')':'—'}</div>
+      </div></div>`;}).join('');
+  return `<div class="grid"><div class="card"><div class="eyebrow">Auto-évaluation & écart de perception</div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 8px;line-height:1.55">À remplir avec le dirigeant <b>avant</b> le diagnostic. L'écart entre ce qu'il pense et ce que mesure le CAP est souvent le déclencheur le plus fort.</p>
+    ${rows}</div></div>`;
+}
+
+function viewCadrage(c){
+  const est=["une méthode d'accompagnement stratégique du dirigeant, propre à ELIGI","une mesure objective : votre patrimoine est-il organisé à la hauteur de votre réussite ?","un révélateur des questions invisibles — celles qu'on ne se pose pas tant que tout va bien","un cap : trois directions (Construire, Anticiper, Pérenniser) et des décisions datées","un suivi dans le temps : votre score évolue chaque année avec votre situation"];
+  const nest=["un audit ponctuel qu'on range dans un tiroir","un catalogue de produits financiers","un jugement sur votre parcours d'entrepreneur","une promesse de rendement","un questionnaire réglementaire de plus"];
+  const etapes=[["1. La Boussole — rendez-vous découverte","45 min","Votre position sur 20 questions et les premiers sujets prioritaires, restitués immédiatement."],["2. Le Diagnostic approfondi","1h30 + documents","Scoring complet sur 70 questions, vos angles morts, votre trajectoire patrimoniale chiffrée."],["3. La restitution","1h","Votre rapport : score, coût de l'inaction, points d'appui et vos 3 prochaines décisions datées."],["Chaque année : bilan de mise à jour","45 min","Évolution de votre score, ce qui a progressé, ajustement du plan."]];
+  const eng=["Vous voyez tout ce que nous mesurons : chaque score repose sur vos propres réponses et vos propres chiffres.","Nous vous disons aussi ce qui est solide — et qui ne justifie aucune mission ni aucun honoraire.","Chaque mission proposée est chiffrée : le gain visé en face des honoraires, avant tout engagement.","Vos données restent strictement confidentielles."];
+  const li=(a,col)=>a.map(x=>`<div style="font-size:13px;color:var(--moon-dim);margin-bottom:10px;line-height:1.55">${col} ${x}</div>`).join('');
+  return `<div class="grid"><div class="card">
+    <div class="eyebrow">Votre bilan CAP — le principe</div>
+    <p style="font-family:var(--serif);font-size:19px;font-style:italic;line-height:1.55;color:var(--moon)">« Vous ne payez pas pour obtenir des réponses. Vous payez parce que vous découvrez les questions que vous auriez dû vous poser depuis longtemps. »</p>
+    <p style="font-size:13.5px;color:var(--moon-dim);line-height:1.6;margin-top:14px">Vous avez construit une entreprise et un patrimoine. Le bilan CAP mesure une seule chose : sont-ils préparés et organisés à la hauteur de cette réussite ?</p>
+  </div></div>
+  <div class="grid row-2">
+    <div class="card"><div class="eyebrow">CAP, c'est</div>${li(est,'<span style="color:var(--good)">✓</span>')}</div>
+    <div class="card"><div class="eyebrow">CAP, ce n'est pas</div>${li(nest,'<span style="color:var(--crit)">✕</span>')}</div></div>
+  <div class="grid"><div class="card"><div class="eyebrow">Le déroulé</div>
+    <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Étape</th><th>Durée</th><th>Ce que vous obtenez</th></tr></thead><tbody>
+    ${etapes.map(e=>`<tr><td style="font-weight:600;font-size:13px">${e[0]}</td><td><span class="tag hz">${e[1]}</span></td><td style="color:var(--moon-dim);font-size:12.5px">${e[2]}</td></tr>`).join('')}
+    </tbody></table></div></div></div>
+  <div class="grid"><div class="card"><div class="eyebrow">Nos engagements</div>${li(eng,'<span style="color:var(--teal)">•</span>')}</div></div>`;
+}
+
+function viewRapportInterne(c,cp){
+  const det=detected(c,cp),top=det.slice(0,5);
+  const pot=Math.round(cp.potentiel||0);
+  const seg=pot>60000?'A+ Family Office':pot>30000?'A':pot>15000?'B':'C';
+  const rows=top.map((m,i)=>`<tr><td class="num">${i+1}</td><td style="font-size:13px">${m.nm}</td><td>${c.seg==='dir'?(m.prio===1?'<span class="tag p1">Priorité 1</span>':'<span class="tag p2">Priorité 2</span>'):'<span class="tag p1">'+m.prio+'</span>'}</td><td class="num">${money((m.lo+m.hi)/2)}</td><td><span class="tag">À proposer</span></td></tr>`).join('');
+  const plan=[["0-30 jours","Convertir la priorité 1 : lettre de mission"],["30-90 jours","Lancer la mission signée, premiers livrables"],["3-6 mois","Proposer la mission complémentaire"],["6-12 mois","Basculer en pilotage annuel / abonnement CAP"],["Annuel","Bilan CAP : mise à jour du scoring + archivage"]];
+  return `<div class="topbar"><div><div class="crumb">Confidentiel cabinet</div><h1 class="h1" style="font-size:30px">Rapport interne — pilotage commercial</h1></div></div>
+  <div class="kpis" style="margin-top:18px">
+    <div class="kpi"><div class="k">Segment développement</div><div class="v" style="font-size:26px">${seg}</div><div class="d">potentiel du dossier</div></div>
+    <div class="kpi"><div class="k">Honoraires détectés</div><div class="v lv-good">${money(pot)}</div><div class="d">${det.length} mission(s)</div></div>
+    <div class="kpi"><div class="k">Score CAP</div><div class="v lv-${cp.glecture.c}">${cp.global}</div><div class="d">${cp.glecture.l}</div></div>
+    <div class="kpi"><div class="k">Coût inaction (haut)</div><div class="v lv-crit">${moneyK(cp.chi)}</div><div class="d">argument de restitution</div></div>
+  </div>
+  <div class="grid"><div class="card"><div class="eyebrow">Missions à proposer (top 5)</div>
+    <div class="tablewrap" style="box-shadow:none"><table><thead><tr><th>Rang</th><th>Mission</th><th>Priorité</th><th>Honoraires cible</th><th>Statut</th></tr></thead><tbody>${rows||'<tr><td colspan="5" style="color:var(--moon-faint)">Diagnostic à compléter.</td></tr>'}</tbody></table></div></div></div>
+  <div class="grid row-2">
+    <div class="card"><div class="eyebrow">Plan commercial 12 mois</div>
+      ${plan.map(p=>`<div class="q"><div class="qt"><b>${p[0]}</b><span style="display:block;color:var(--moon-faint);font-size:12px;margin-top:3px">${p[1]}</span></div><span class="tag">En attente</span></div>`).join('')}</div>
+    <div class="card"><div class="eyebrow">Les phrases choc du dossier</div>
+      <p style="font-family:var(--serif);font-size:17px;font-style:italic;line-height:1.6;color:var(--moon)">« Sans action, l'inaction peut vous coûter jusqu'à ${money(cp.chi)}. »</p>
+      <p style="font-family:var(--serif);font-size:17px;font-style:italic;line-height:1.6;color:var(--moon);margin-top:14px">« Votre score de structuration est de ${cp.global}/100 — ${cp.glecture.l}. »</p>
+      <div class="ptotal" style="margin-top:18px"><span class="l">Prochaine action</span><span class="r" style="font-size:15px;font-family:var(--sans)">Programmer la restitution</span></div></div></div>`;
+}
+
+function viewAnalyse(c){
+  cInit(c);const q=k=>+c.col[k]||0;
+  const base=(c.fin.professionnel||1000000);
+  const ca=q('ca_n')||Math.round(base*0.9);
+  const ebe=q('ebe_n')||Math.round(ca*0.18);
+  const rn=q('rn_n')||Math.round(ebe*0.55);
+  const caf=Math.round(rn*1.4);
+  const treso=q('treso_n')||Math.round(ca*0.16);
+  const dettesF=q('dettesF_n')||Math.round(caf*2.2);
+  const divid=q('divid_n');
+  const cp2=q('cp_n')||Math.round(ca*0.35);
+  const annees=caf?dettesF/caf:0;
+  const capEnd=Math.max(0,Math.round(3*caf-dettesF));
+  const tresoMob=(+(c.params&&c.params.tresoMob)||60)/100;
+  const saisi=q('ca_n')>0;
+  const kpi=(k,v,d,cl)=>`<div class="kpi"><div class="k">${k}</div><div class="v ${cl||''}">${v}</div><div class="d">${d}</div></div>`;
+  const lect=[];
+  if(annees>3)lect.push("Il faudrait <b style=\"color:var(--moon)\">"+annees.toFixed(1)+" ans</b> de CAF pour rembourser vos dettes financières — capacité d'endettement contrainte.");
+  else lect.push("Vos dettes financières représentent <b style=\"color:var(--moon)\">"+annees.toFixed(1)+" ans</b> de CAF — capacité d'endettement préservée.");
+  if(treso>0.15*ca)lect.push("Trésorerie nette supérieure à 15 % du CA : un excédent mobilisable pour un projet patrimonial.");
+  if(divid&&caf&&divid/caf>0.5)lect.push("Plus de la moitié de votre CAF part en dividendes — arbitrage distribution / capitalisation à revoir.");
+  if(cp2&&dettesF/cp2>1)lect.push("Vos dettes financières dépassent vos capitaux propres — structure financière à surveiller.");
+  return `<div class="grid"><div class="card"><div class="eyebrow">Analyse financière</div>
+    <p style="font-size:13px;color:var(--moon-dim);margin:-8px 0 4px">${saisi?"Calculée depuis les données saisies dans l'onglet Entreprise.":"Renseignez l'onglet Entreprise (exercice N) pour un calcul réel — valeurs indicatives affichées."}</p>
+    <div class="kpis" style="margin-top:18px">${kpi("CAF annuelle",money(caf),"capacité d'autofinancement","lv-good")}${kpi("Marge d'EBE",(ca?Math.round(ebe/ca*100):0)+" %","rentabilité")}${kpi("Trésorerie",money(treso),"disponible")}${kpi("Dettes / CAF",annees.toFixed(1)+" ans","capacité de remboursement",annees>3?"lv-crit":"lv-good")}</div>
+  </div></div>
+  <div class="grid row-2">
+    <div class="card"><div class="eyebrow">Ce que la liasse ne vous dit pas</div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:13px;color:var(--moon-dim);line-height:1.55">${lect.map(x=>'<div>• '+x+'</div>').join('')}</div></div>
+    <div class="card"><div class="eyebrow">Capacité de financement de vos projets</div>
+      <div class="ptotal"><span class="l">CAF disponible / an</span><span class="r">${money(Math.round(caf-divid))}</span></div>
+      <div class="ptotal" style="margin-top:12px"><span class="l">Capacité d'endettement (3 ans de CAF − dettes)</span><span class="r">${money(capEnd)}</span></div>
+      <div class="ptotal" style="margin-top:12px;background:rgba(95,167,168,.14);border-color:rgba(95,167,168,.3)"><span class="l">Enveloppe mobilisable</span><span class="r">${money(Math.round(capEnd+treso*tresoMob))}</span></div></div></div>`;
 }
 
 /* ============================================================
    PERSISTANCE + NAVIGATION
    ============================================================ */
 const KEY='eligi_cap_v3';
-function save(){try{localStorage.setItem(KEY,JSON.stringify({order:CLIENT_ORDER,clients:CLIENTS}))}catch(e){}}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.clients){for(const k in CLIENTS)delete CLIENTS[k];Object.assign(CLIENTS,s.clients);CLIENT_ORDER.length=0;s.order.forEach(x=>CLIENT_ORDER.push(x));}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({order:CLIENT_ORDER,clients:CLIENTS,advisors:ADVISORS}))}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.clients){for(const k in CLIENTS)delete CLIENTS[k];Object.assign(CLIENTS,s.clients);CLIENT_ORDER.length=0;s.order.forEach(x=>CLIENT_ORDER.push(x));if(s.advisors&&s.advisors.length){ADVISORS.length=0;s.advisors.forEach(a=>ADVISORS.push(a));}}}catch(e){}}
 
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));const el=$('#v-'+v);el.classList.add('on');el.classList.remove('fadein-view');void el.offsetWidth;el.classList.add('fadein-view');
   document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('active',a.dataset.nav===v));
@@ -1224,6 +1607,8 @@ document.addEventListener('click',e=>{
   const imp=e.target.closest('[data-import]');if(imp){importClient();return;}
   const pce=e.target.closest('[data-piece]');if(pce){const c=CLIENTS[cur.id];if(!c.pieces)c.pieces={};const cs=c.pieces[pce.dataset.piece]||'À demander';c.pieces[pce.dataset.piece]={'À demander':'En séance','En séance':'Reçu','Reçu':'À demander'}[cs];save();renderTab();return;}
   const acc=e.target.closest('[data-access]');if(acc){CLIENTS[acc.dataset.access].access=true;save();showView('admin');toast('Identifiants générés et envoyés au client.');return;}
+  const na=e.target.closest('[data-newadvisor]');if(na){const n=ADVISORS.length+1;ADVISORS.push({id:'a'+n,nm:'Conseiller '+n,role:'Conseiller',mail:'conseiller'+n+'@eligi-conseil.fr',admin:false,actif:false});save();showView('admin');toast('Conseiller ajouté — activez son accès.');return;}
+  const ao=e.target.closest('[data-advon]');if(ao){const a=ADVISORS.find(x=>x.id===ao.dataset.advon);if(a)a.actif=true;save();showView('admin');toast('Accès conseiller activé.');return;}
   const nc=e.target.closest('[data-newclient]');if(nc){$('#overlay').classList.add('on');return;}
   if(e.target.id==='nc-cancel'||e.target===$('#overlay')){$('#overlay').classList.remove('on');return;}
   if(e.target.id==='nc-create'){createClient();return;}
@@ -1233,6 +1618,7 @@ document.addEventListener('input',e=>{
   const fin=e.target.closest('[data-fin]');if(fin){CLIENTS[cur.id].fin[fin.dataset.fin]=parseFloat(fin.value)||0;save();const cp=compute(CLIENTS[cur.id]);const pt=$('#patTotal');if(pt&&cp.patrimoine!=null)pt.textContent=money(cp.patrimoine);refreshHead();return;}
   const mt=e.target.closest('[data-meta]');if(mt){CLIENTS[cur.id][mt.dataset.meta]=mt.value;save();return;}
   const pr=e.target.closest('[data-param]');if(pr){const c=CLIENTS[cur.id];if(!c.params)c.params={};c.params[pr.dataset.param]=(pr.dataset.param==='phase')?pr.value:(parseFloat(pr.value)||0);save();return;}
+  const co=e.target.closest('[data-col]');if(co){const c=CLIENTS[cur.id];if(!c.col)c.col={};c.col[co.dataset.col]=co.value;save();return;}
   const bl=e.target.closest('[data-bilan]');if(bl){const c=CLIENTS[cur.id];if(!c.bilan)c.bilan={};c.bilan[bl.dataset.bilan]=parseFloat(bl.value)||0;save();const B=c.bilan;const a=['rp','immoLoc','liquid','av','pea','cto','per','lpp','p3','autres'].reduce((s,k)=>s+(+B[k]||0),0);const p=['credRp','credLoc','credConso'].reduce((s,k)=>s+(+B[k]||0),0);const eA=$('#bilanA'),eP=$('#bilanP'),eN=$('#bilanNet');if(eA)eA.textContent=money(a);if(eP)eP.textContent=money(p);if(eN)eN.textContent=money(a-p);return;}
 });
 function importClient(){const seg=Math.random()<0.5?'dir':'fro';const id='imp'+Date.now();
@@ -1240,6 +1626,7 @@ function importClient(){const seg=Math.random()<0.5?'dir':'fro';const id='imp'+D
   CLIENT_ORDER.unshift(id);save();showView('clients');renderRows('all');toast('Dossier client importé — vérifiez le profil et le diagnostic.');}
 document.addEventListener('change',e=>{
   const pr=e.target.closest('[data-param]');if(pr){const c=CLIENTS[cur.id];if(!c.params)c.params={};c.params[pr.dataset.param]=(pr.dataset.param==='phase')?pr.value:(parseFloat(pr.value)||0);save();return;}
+  const co=e.target.closest('[data-col]');if(co){const c=CLIENTS[cur.id];if(!c.col)c.col={};c.col[co.dataset.col]=co.value;save();renderTab();return;}
   const lib=e.target.closest('[data-liberal]');if(lib){CLIENTS[cur.id].liberal=lib.checked;save();renderTab();return;}
 });
 function createClient(){
